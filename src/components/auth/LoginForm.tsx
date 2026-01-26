@@ -49,7 +49,7 @@ export function LoginForm() {
     setLoading(true)
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data: authData, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
@@ -63,9 +63,26 @@ export function LoginForm() {
         return
       }
 
-      // Redirect po uspešni prijavi
-      const redirectTo = searchParams.get('redirectTo') || '/odvoz'
-      router.push(redirectTo)
+      // Check if user has completed onboarding
+      if (authData.user) {
+        const { data: settings } = await supabase
+          .from('user_settings')
+          .select('em_okolis')
+          .eq('user_id', authData.user.id)
+          .single()
+
+        const needsOnboarding = !settings || settings.em_okolis === null
+
+        if (needsOnboarding) {
+          router.push('/onboarding')
+        } else {
+          const redirectTo = searchParams.get('redirectTo') || '/odvoz'
+          router.push(redirectTo)
+        }
+      } else {
+        router.push('/odvoz')
+      }
+
       router.refresh()
     } catch {
       setError('Prišlo je do napake. Poskusite znova.')

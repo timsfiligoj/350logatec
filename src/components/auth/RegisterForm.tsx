@@ -81,8 +81,8 @@ export function RegisterForm() {
         return
       }
 
-      // Redirect na nastavitve po uspešni registraciji
-      router.push('/nastavitve')
+      // Redirect na onboarding po uspešni registraciji
+      router.push('/onboarding')
       router.refresh()
     } catch {
       setError('Prišlo je do napake. Poskusite znova.')
