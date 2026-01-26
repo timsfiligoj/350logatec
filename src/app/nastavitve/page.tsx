@@ -24,9 +24,10 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { okolisiEM, okolisiBio } from '@/lib/data/okolisi'
+import { okolisiEM, okolisiBio, StreetSearchResult } from '@/lib/data/okolisi'
 import { Settings, MapPin, Bell, Loader2, Check, User } from 'lucide-react'
 import { OkolisiDialog } from '@/components/odvoz/OkolisiDialog'
+import { AddressSearch } from '@/components/odvoz/AddressSearch'
 
 interface UserSettings {
   em_okolis: number | null
@@ -240,6 +241,32 @@ export default function NastavitvePage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
+                {/* Iskanje po naslovu */}
+                <div className="space-y-2">
+                  <Label>Poiščite po naslovu</Label>
+                  <AddressSearch
+                    onSelect={(result: StreetSearchResult) => {
+                      setSettings((s) => ({
+                        ...s,
+                        em_okolis: result.okolisEM,
+                        bio_okolis: result.okolisBio,
+                      }))
+                    }}
+                  />
+                </div>
+
+                {/* Ločilnik */}
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t border-gray-200" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-white px-3 text-muted-foreground">
+                      ali izberite ročno
+                    </span>
+                  </div>
+                </div>
+
                 {/* E/M Okoliš */}
                 <div className="space-y-2">
                   <Label htmlFor="em-okolis">
