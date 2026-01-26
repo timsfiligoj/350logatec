@@ -38,6 +38,7 @@ export function RegisterForm() {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [fullName, setFullName] = useState('')
+  const [acceptedTerms, setAcceptedTerms] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
@@ -49,6 +50,11 @@ export function RegisterForm() {
     setError(null)
 
     // Validacija
+    if (!acceptedTerms) {
+      setError('Strinjati se morate s pogoji uporabe')
+      return
+    }
+
     if (password !== confirmPassword) {
       setError('Gesli se ne ujemata')
       return
@@ -217,6 +223,28 @@ export function RegisterForm() {
                 disabled={loading || googleLoading}
               />
             </div>
+          </div>
+
+          {/* Checkbox za pogoje uporabe */}
+          <div className="flex items-start space-x-2">
+            <input
+              type="checkbox"
+              id="acceptTerms"
+              checked={acceptedTerms}
+              onChange={(e) => setAcceptedTerms(e.target.checked)}
+              className="mt-1 h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
+              disabled={loading || googleLoading}
+            />
+            <label htmlFor="acceptTerms" className="text-sm text-muted-foreground">
+              Strinjam se s{' '}
+              <Link href="/pogoji" className="text-emerald-600 hover:underline" target="_blank">
+                pogoji uporabe
+              </Link>
+              {' '}in{' '}
+              <Link href="/zasebnost" className="text-emerald-600 hover:underline" target="_blank">
+                politiko zasebnosti
+              </Link>
+            </label>
           </div>
         </CardContent>
         <CardFooter className="flex flex-col space-y-4 pt-2">

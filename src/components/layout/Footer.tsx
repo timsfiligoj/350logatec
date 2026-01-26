@@ -33,10 +33,18 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="#kako-deluje"
+                  href="/pogoji"
                   className="text-muted-foreground hover:text-primary transition-colors"
                 >
-                  Kako deluje
+                  Pogoji uporabe
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/zasebnost"
+                  className="text-muted-foreground hover:text-primary transition-colors"
+                >
+                  Zasebnost
                 </Link>
               </li>
               <li>
