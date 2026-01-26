@@ -74,7 +74,7 @@ export function Footer() {
 
         {/* Bottom bar */}
         <div className="mt-12 pt-8 border-t text-center text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} 350logatec · 350life</p>
+          <p>© {new Date().getFullYear()} 350life</p>
           <p className="mt-1">
             Podatki: Komunalno podjetje Logatec d.o.o.
           </p>
