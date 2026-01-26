@@ -24,9 +24,18 @@ export function AboutProject() {
               </h2>
               <div className="space-y-4 text-gray-600 leading-relaxed">
                 <p>
-                  350Logatec je brezplačna aplikacija, razvita kot osebni projekt
-                  digitalnega studia 350life v okviru iniciative Logatec Digi Boost
-                  – kjer s tehnologijo želimo narediti nekaj dobrega za domači kraj.
+                  350logatec je brezplačna aplikacija, razvita kot osebni projekt
+                  digitalnega studia{" "}
+                  <a
+                    href="https://www.350life.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary hover:underline"
+                  >
+                    350life
+                  </a>{" "}
+                  v okviru iniciative Logatec Digi Boost – kjer s tehnologijo
+                  želimo narediti nekaj dobrega za domači kraj.
                 </p>
                 <p>
                   Podatki o odvozih so pridobljeni iz javno dostopnega koledarja
