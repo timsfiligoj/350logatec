@@ -7,9 +7,9 @@ const wasteTypes = [
   {
     name: "Embalaža",
     icon: Recycle,
-    color: "bg-amber-500",
-    bgColor: "bg-amber-50",
-    textColor: "text-amber-700",
+    color: "bg-blue-500",
+    bgColor: "bg-blue-50",
+    textColor: "text-blue-700",
     description: "Plastika, kovine",
   },
   {
@@ -62,7 +62,7 @@ export function Hero() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <Button asChild size="lg" className="gap-2">
                 <Link href="/odvoz">
-                  Začni zdaj
+                  Koledar odvoza
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
