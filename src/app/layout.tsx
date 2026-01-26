@@ -14,7 +14,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "350Logatec - Odvoz odpadkov",
+  title: "350logatec - Odvoz odpadkov",
   description: "Aplikacija za sledenje odvozov odpadkov v občini Logatec",
 };
 

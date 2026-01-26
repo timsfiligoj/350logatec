@@ -48,7 +48,7 @@ export function Navbar() {
             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground transition-transform group-hover:scale-105">
               <Leaf className="h-5 w-5" />
             </div>
-            <span className="font-display text-xl font-bold">350Logatec</span>
+            <span className="font-display text-xl font-bold">350logatec</span>
           </Link>
 
           {/* Desktop Navigation */}

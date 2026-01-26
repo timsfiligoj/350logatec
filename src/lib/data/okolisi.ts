@@ -375,30 +375,584 @@ export interface StreetSearchResult {
   hasMultipleOkolisi?: boolean;
 }
 
+// Konsolidirane ulice - ulice, ki imajo različne hišne številke v različnih okoliših
+// Te se prikažejo kot ena opcija namesto posameznih hišnih številk
+interface ConsolidatedStreet {
+  baseName: string;           // Bazno ime za iskanje (npr. "jačka")
+  displayName: string;        // Prikazano ime (npr. "Jačka (40a, 40b, 40c, 42, 44, 81, 83, 85)")
+  okolisEM: number;
+  okolisBio: number;
+  description: string;        // Podrobnejši opis za pomoč pri izbiri
+}
+
+const consolidatedStreets: ConsolidatedStreet[] = [
+  // Jačka
+  {
+    baseName: 'jačka',
+    displayName: 'Jačka (večstanovanjske stavbe, bloki)',
+    okolisEM: 11,
+    okolisBio: 1,
+    description: 'Tedenski odvoz - za bloke in večstanovanjske stavbe'
+  },
+  {
+    baseName: 'jačka',
+    displayName: 'Jačka (40a, 40b, 40c, 42, 44, 81, 83, 85)',
+    okolisEM: 1,
+    okolisBio: 1,
+    description: 'Hišne številke 40a, 40b, 40c, 42, 44, 81, 83, 85'
+  },
+  {
+    baseName: 'jačka',
+    displayName: 'Jačka (ostale hišne številke)',
+    okolisEM: 4,
+    okolisBio: 1,
+    description: 'Do železniške postaje, do križišča s priključkom na AC'
+  },
+  // Notranjska cesta
+  {
+    baseName: 'notranjska cesta',
+    displayName: 'Notranjska cesta (večstanovanjske stavbe, bloki)',
+    okolisEM: 11,
+    okolisBio: 1,
+    description: 'Tedenski odvoz - za bloke in večstanovanjske stavbe'
+  },
+  {
+    baseName: 'notranjska cesta',
+    displayName: 'Notranjska cesta (68, 68A, 70)',
+    okolisEM: 10,
+    okolisBio: 1,
+    description: 'Samo hišne številke 68, 68A in 70'
+  },
+  {
+    baseName: 'notranjska cesta',
+    displayName: 'Notranjska cesta (od rondoja proti Lazam)',
+    okolisEM: 1,
+    okolisBio: 1,
+    description: 'Od rondoja proti Lazam (razen 68, 68A, 70)'
+  },
+  {
+    baseName: 'notranjska cesta',
+    displayName: 'Notranjska cesta (od rondoja proti centru)',
+    okolisEM: 6,
+    okolisBio: 1,
+    description: 'Od rondoja proti centru Logatca'
+  },
+  // Tržaška cesta
+  {
+    baseName: 'tržaška cesta',
+    displayName: 'Tržaška cesta (večstanovanjske stavbe, bloki)',
+    okolisEM: 11,
+    okolisBio: 1,
+    description: 'Tedenski odvoz - za bloke in večstanovanjske stavbe'
+  },
+  {
+    baseName: 'tržaška cesta',
+    displayName: 'Tržaška cesta (9, 11)',
+    okolisEM: 4,
+    okolisBio: 1,
+    description: 'Samo hišne številke 9 in 11'
+  },
+  {
+    baseName: 'tržaška cesta',
+    displayName: 'Tržaška cesta (Blekova vas - Gorenji Logatec)',
+    okolisEM: 2,
+    okolisBio: 1,
+    description: 'Od križišča Blekova vas do avtobusne postaje Gorenji Logatec'
+  },
+  {
+    baseName: 'tržaška cesta',
+    displayName: 'Tržaška cesta (Kmetijska zadruga - Kalce)',
+    okolisEM: 3,
+    okolisBio: 1,
+    description: 'Od Kmetijske zadruge Gorenji Logatec do Kalc'
+  },
+  {
+    baseName: 'tržaška cesta',
+    displayName: 'Tržaška cesta (center Dolenjega Logatca)',
+    okolisEM: 5,
+    okolisBio: 1,
+    description: 'Od avtobusne postaje Dolenji Logatec do križišča Blekova vas'
+  },
+  {
+    baseName: 'tržaška cesta',
+    displayName: 'Tržaška cesta (Mercator - Dolenji Logatec)',
+    okolisEM: 6,
+    okolisBio: 1,
+    description: 'Od križišča z Mercatorjem do avtobusne postaje Dolenji Logatec'
+  },
+  // Pavšičeva ulica
+  {
+    baseName: 'pavšičeva ulica',
+    displayName: 'Pavšičeva ulica (večstanovanjske stavbe, bloki)',
+    okolisEM: 11,
+    okolisBio: 1,
+    description: 'Tedenski odvoz - za bloke in večstanovanjske stavbe'
+  },
+  {
+    baseName: 'pavšičeva ulica',
+    displayName: 'Pavšičeva ulica (18A-27A, 48, 49, 61)',
+    okolisEM: 10,
+    okolisBio: 1,
+    description: 'Hišne številke 18A, 18B, 21-27A, 48, 49, 61'
+  },
+  {
+    baseName: 'pavšičeva ulica',
+    displayName: 'Pavšičeva ulica (ostale hišne številke)',
+    okolisEM: 5,
+    okolisBio: 1,
+    description: 'Center Dolenjega Logatca'
+  },
+  // Gubčeva ulica
+  {
+    baseName: 'gubčeva ulica',
+    displayName: 'Gubčeva ulica (večstanovanjske stavbe, bloki)',
+    okolisEM: 11,
+    okolisBio: 1,
+    description: 'Tedenski odvoz - za bloke in večstanovanjske stavbe'
+  },
+  {
+    baseName: 'gubčeva ulica',
+    displayName: 'Gubčeva ulica (10, 14, 16, 18, 20)',
+    okolisEM: 10,
+    okolisBio: 1,
+    description: 'Samo hišne številke 10, 14, 16, 18, 20'
+  },
+  {
+    baseName: 'gubčeva ulica',
+    displayName: 'Gubčeva ulica (ostale hišne številke)',
+    okolisEM: 5,
+    okolisBio: 1,
+    description: 'Center Dolenjega Logatca'
+  },
+  // Gozdna pot
+  {
+    baseName: 'gozdna pot',
+    displayName: 'Gozdna pot (24, 24A, 26, 26A)',
+    okolisEM: 10,
+    okolisBio: 1,
+    description: 'Samo hišne številke 24, 24A, 26, 26A'
+  },
+  {
+    baseName: 'gozdna pot',
+    displayName: 'Gozdna pot (ostale hišne številke)',
+    okolisEM: 1,
+    okolisBio: 1,
+    description: 'Od rondoja proti Lazam'
+  },
+  // Klanec
+  {
+    baseName: 'klanec',
+    displayName: 'Klanec (7, 18, 20)',
+    okolisEM: 10,
+    okolisBio: 1,
+    description: 'Samo hišne številke 7, 18, 20'
+  },
+  {
+    baseName: 'klanec',
+    displayName: 'Klanec (ostale hišne številke)',
+    okolisEM: 4,
+    okolisBio: 1,
+    description: 'Industrijska cona'
+  },
+  // Strmica
+  {
+    baseName: 'strmica',
+    displayName: 'Strmica (21A)',
+    okolisEM: 10,
+    okolisBio: 1,
+    description: 'Samo hišna številka 21A'
+  },
+  {
+    baseName: 'strmica',
+    displayName: 'Strmica (ostale hišne številke)',
+    okolisEM: 3,
+    okolisBio: 1,
+    description: 'Grčarevec, Kalce, okolica'
+  },
+  // Zadružna pot
+  {
+    baseName: 'zadružna pot',
+    displayName: 'Zadružna pot (1, 2)',
+    okolisEM: 10,
+    okolisBio: 1,
+    description: 'Samo hišne številke 1 in 2'
+  },
+  {
+    baseName: 'zadružna pot',
+    displayName: 'Zadružna pot (ostale hišne številke)',
+    okolisEM: 3,
+    okolisBio: 1,
+    description: 'Grčarevec, Kalce, okolica'
+  },
+  // Žibrše
+  {
+    baseName: 'žibrše',
+    displayName: 'Žibrše (20-20F, 20K, 27)',
+    okolisEM: 10,
+    okolisBio: 1,
+    description: 'Hišne številke 20, 20A-20F, 20K, 27'
+  },
+  {
+    baseName: 'žibrše',
+    displayName: 'Žibrše (ostale hišne številke)',
+    okolisEM: 7,
+    okolisBio: 2,
+    description: 'Hotedršica in okolica'
+  },
+  // Blekova vas
+  {
+    baseName: 'blekova vas',
+    displayName: 'Blekova vas (26, 28, 28A, 30, 32)',
+    okolisEM: 10,
+    okolisBio: 1,
+    description: 'Samo hišne številke 26, 28, 28A, 30, 32'
+  },
+  {
+    baseName: 'blekova vas',
+    displayName: 'Blekova vas (ostale hišne številke)',
+    okolisEM: 2,
+    okolisBio: 1,
+    description: 'Od križišča Blekova vas do avtobusne postaje Gorenji Logatec'
+  },
+  // Pod gozdom
+  {
+    baseName: 'pod gozdom',
+    displayName: 'Pod gozdom (6A)',
+    okolisEM: 10,
+    okolisBio: 1,
+    description: 'Samo hišna številka 6A'
+  },
+  {
+    baseName: 'pod gozdom',
+    displayName: 'Pod gozdom (ostale hišne številke)',
+    okolisEM: 1,
+    okolisBio: 1,
+    description: 'Od rondoja proti Lazam'
+  },
+  // Poljska pot
+  {
+    baseName: 'poljska pot',
+    displayName: 'Poljska pot (11, 26)',
+    okolisEM: 10,
+    okolisBio: 1,
+    description: 'Samo hišne številke 11 in 26'
+  },
+  {
+    baseName: 'poljska pot',
+    displayName: 'Poljska pot (ostale hišne številke)',
+    okolisEM: 1,
+    okolisBio: 1,
+    description: 'Od rondoja proti Lazam'
+  },
+  // Cankarjeva cesta
+  {
+    baseName: 'cankarjeva cesta',
+    displayName: 'Cankarjeva cesta (večstanovanjske stavbe, bloki)',
+    okolisEM: 11,
+    okolisBio: 1,
+    description: 'Tedenski odvoz - za bloke in večstanovanjske stavbe'
+  },
+  {
+    baseName: 'cankarjeva cesta',
+    displayName: 'Cankarjeva cesta (5, 5a)',
+    okolisEM: 10,
+    okolisBio: 1,
+    description: 'Samo hišne številke 5 in 5a'
+  },
+  // Petkovec
+  {
+    baseName: 'petkovec',
+    displayName: 'Petkovec (14, 15, 39-42, 52A-64)',
+    okolisEM: 10,
+    okolisBio: 2,
+    description: 'Specifične hišne številke v okolišu 10'
+  },
+  {
+    baseName: 'petkovec',
+    displayName: 'Petkovec (22-34)',
+    okolisEM: 12,
+    okolisBio: 2,
+    description: 'Hišne številke 22-34 (vključno z A, B)'
+  },
+  {
+    baseName: 'petkovec',
+    displayName: 'Petkovec (ostale hišne številke)',
+    okolisEM: 9,
+    okolisBio: 2,
+    description: 'Rovte - Gabrovce, Gale, Medvedje Brdo'
+  },
+  // Hleviše
+  {
+    baseName: 'hleviše',
+    displayName: 'Hleviše (1, 2, 4-8A)',
+    okolisEM: 12,
+    okolisBio: 2,
+    description: 'Hišne številke 1, 2, 4, 5, 6, 7, 7A, 8, 8A'
+  },
+  {
+    baseName: 'hleviše',
+    displayName: 'Hleviše (20)',
+    okolisEM: 9,
+    okolisBio: 2,
+    description: 'Samo hišna številka 20'
+  },
+  {
+    baseName: 'hleviše',
+    displayName: 'Hleviše (ostale hišne številke)',
+    okolisEM: 8,
+    okolisBio: 2,
+    description: 'Rovte - Kurja vas, Zajele'
+  },
+  // Hlevni Vrh
+  {
+    baseName: 'hlevni vrh',
+    displayName: 'Hlevni Vrh (2, 3)',
+    okolisEM: 12,
+    okolisBio: 2,
+    description: 'Samo hišne številke 2 in 3'
+  },
+  {
+    baseName: 'hlevni vrh',
+    displayName: 'Hlevni Vrh (ostale hišne številke)',
+    okolisEM: 8,
+    okolisBio: 2,
+    description: 'Rovte - Kurja vas, Zajele'
+  },
+  // Lavrovec
+  {
+    baseName: 'lavrovec',
+    displayName: 'Lavrovec (2, 5, 5D, 6, 7)',
+    okolisEM: 12,
+    okolisBio: 2,
+    description: 'Hišne številke 2, 5, 5D, 6, 7'
+  },
+  {
+    baseName: 'lavrovec',
+    displayName: 'Lavrovec (ostale hišne številke)',
+    okolisEM: 8,
+    okolisBio: 2,
+    description: 'Rovte - Kurja vas, Zajele'
+  },
+  // Medvedje Brdo
+  {
+    baseName: 'medvedje brdo',
+    displayName: 'Medvedje Brdo (29, 30, 48, 53, 56, 58, 59)',
+    okolisEM: 12,
+    okolisBio: 2,
+    description: 'Specifične hišne številke'
+  },
+  {
+    baseName: 'medvedje brdo',
+    displayName: 'Medvedje Brdo (ostale hišne številke)',
+    okolisEM: 9,
+    okolisBio: 2,
+    description: 'Rovte - Gabrovce, Gale'
+  },
+  // Rovtarske Žibrše
+  {
+    baseName: 'rovtarske žibrše',
+    displayName: 'Rovtarske Žibrše (16, 16A, 16B, 17, 17A)',
+    okolisEM: 8,
+    okolisBio: 2,
+    description: 'Hišne številke 16-17A'
+  },
+  {
+    baseName: 'rovtarske žibrše',
+    displayName: 'Rovtarske Žibrše (39)',
+    okolisEM: 7,
+    okolisBio: 2,
+    description: 'Samo hišna številka 39'
+  },
+  {
+    baseName: 'rovtarske žibrše',
+    displayName: 'Rovtarske Žibrše (ostale hišne številke)',
+    okolisEM: 9,
+    okolisBio: 2,
+    description: 'Rovte - Gabrovce, Gale'
+  },
+  // Brod
+  {
+    baseName: 'brod',
+    displayName: 'Brod (večstanovanjske stavbe, bloki)',
+    okolisEM: 11,
+    okolisBio: 1,
+    description: 'Tedenski odvoz - za bloke in večstanovanjske stavbe'
+  },
+  {
+    baseName: 'brod',
+    displayName: 'Brod (ostale hišne številke)',
+    okolisEM: 5,
+    okolisBio: 1,
+    description: 'Center Dolenjega Logatca'
+  },
+  // Gorenjska cesta
+  {
+    baseName: 'gorenjska cesta',
+    displayName: 'Gorenjska cesta (večstanovanjske stavbe, bloki)',
+    okolisEM: 11,
+    okolisBio: 1,
+    description: 'Tedenski odvoz - za bloke in večstanovanjske stavbe'
+  },
+  {
+    baseName: 'gorenjska cesta',
+    displayName: 'Gorenjska cesta (ostale hišne številke)',
+    okolisEM: 3,
+    okolisBio: 1,
+    description: 'Grčarevec, Kalce, okolica'
+  },
+  // Kalce
+  {
+    baseName: 'kalce',
+    displayName: 'Kalce (večstanovanjske stavbe, bloki)',
+    okolisEM: 11,
+    okolisBio: 1,
+    description: 'Tedenski odvoz - za bloke in večstanovanjske stavbe'
+  },
+  {
+    baseName: 'kalce',
+    displayName: 'Kalce (ostale hišne številke)',
+    okolisEM: 3,
+    okolisBio: 1,
+    description: 'Grčarevec, Kalce, okolica'
+  },
+  // Rovtarska cesta
+  {
+    baseName: 'rovtarska cesta',
+    displayName: 'Rovtarska cesta (večstanovanjske stavbe, bloki)',
+    okolisEM: 11,
+    okolisBio: 1,
+    description: 'Tedenski odvoz - za bloke in večstanovanjske stavbe'
+  },
+  {
+    baseName: 'rovtarska cesta',
+    displayName: 'Rovtarska cesta (ostale hišne številke)',
+    okolisEM: 6,
+    okolisBio: 1,
+    description: 'Center Logatca, Nova vas, Naklo'
+  },
+  // Prešernova ulica
+  {
+    baseName: 'prešernova ulica',
+    displayName: 'Prešernova ulica (večstanovanjske stavbe, bloki)',
+    okolisEM: 11,
+    okolisBio: 1,
+    description: 'Tedenski odvoz - za bloke in večstanovanjske stavbe'
+  },
+  {
+    baseName: 'prešernova ulica',
+    displayName: 'Prešernova ulica (ostale hišne številke)',
+    okolisEM: 6,
+    okolisBio: 1,
+    description: 'Center Logatca, Nova vas, Naklo'
+  },
+  // Za železnico
+  {
+    baseName: 'za železnico',
+    displayName: 'Za železnico (večstanovanjske stavbe, bloki)',
+    okolisEM: 11,
+    okolisBio: 1,
+    description: 'Tedenski odvoz - za bloke in večstanovanjske stavbe'
+  },
+  {
+    baseName: 'za železnico',
+    displayName: 'Za železnico (3, 4, 14)',
+    okolisEM: 10,
+    okolisBio: 1,
+    description: 'Samo hišne številke 3, 4, 14'
+  },
+  // Šolska pot
+  {
+    baseName: 'šolska pot',
+    displayName: 'Šolska pot (večstanovanjske stavbe, bloki)',
+    okolisEM: 11,
+    okolisBio: 1,
+    description: 'Tedenski odvoz - za bloke in večstanovanjske stavbe'
+  },
+  {
+    baseName: 'šolska pot',
+    displayName: 'Šolska pot (ostale hišne številke)',
+    okolisEM: 5,
+    okolisBio: 1,
+    description: 'Center Dolenjega Logatca'
+  },
+  // Vodovodna cesta
+  {
+    baseName: 'vodovodna cesta',
+    displayName: 'Vodovodna cesta (45)',
+    okolisEM: 10,
+    okolisBio: 1,
+    description: 'Samo hišna številka 45'
+  },
+  {
+    baseName: 'vodovodna cesta',
+    displayName: 'Vodovodna cesta (ostale hišne številke)',
+    okolisEM: 6,
+    okolisBio: 1,
+    description: 'Center Logatca, Nova vas, Naklo'
+  },
+];
+
+// Seznam baznih imen konsolidiranih ulic za hitro preverjanje
+const consolidatedBaseNames = new Set(consolidatedStreets.map(s => s.baseName));
+
 // Funkcija za iskanje ulic po query stringu
 export function searchStreets(query: string, maxResults: number = 8): StreetSearchResult[] {
   if (!query || query.length < 2) return [];
 
   const normalizedQuery = query.toLowerCase().trim();
   const results: StreetSearchResult[] = [];
-  const seen = new Set<string>(); // Unikaten ključ: street + okolisEM
+  const seen = new Set<string>();
 
-  // Išči po vseh E/M okoliših
+  // 1. Najprej preveri konsolidirane ulice
+  for (const consolidated of consolidatedStreets) {
+    if (consolidated.baseName.includes(normalizedQuery) || normalizedQuery.includes(consolidated.baseName)) {
+      const uniqueKey = `${consolidated.displayName.toLowerCase()}-${consolidated.okolisEM}`;
+      if (seen.has(uniqueKey)) continue;
+      seen.add(uniqueKey);
+
+      results.push({
+        street: consolidated.displayName,
+        okolisEM: consolidated.okolisEM,
+        okolisBio: consolidated.okolisBio,
+        okolisEMCode: okolisiEM[consolidated.okolisEM - 1].code,
+        okolisBioCode: `B${consolidated.okolisBio}`,
+        description: consolidated.description,
+        hasMultipleOkolisi: true, // Vedno označimo kot več okolišev
+      });
+    }
+  }
+
+  // Če smo našli konsolidirane rezultate za ta query, vrnemo samo te
+  if (results.length > 0) {
+    // Sortiraj: bloki (okoliš 11) najprej, nato po okolišu
+    results.sort((a, b) => {
+      // Bloki (E11) gredo na konec
+      if (a.okolisEM === 11 && b.okolisEM !== 11) return 1;
+      if (a.okolisEM !== 11 && b.okolisEM === 11) return -1;
+      // Sicer po okolišu
+      return a.okolisEM - b.okolisEM;
+    });
+    return results.slice(0, maxResults);
+  }
+
+  // 2. Če ni konsolidiranih rezultatov, išči po vseh okoliših (za ulice brez duplikatov)
   for (const okolis of okolisiEM) {
     for (const street of okolis.streets) {
       const streetLower = street.toLowerCase();
+      // Izvleči bazno ime (brez številk in oklepajev)
+      const baseName = streetLower.replace(/\s*[\d\(].*$/, '').trim();
+
+      // Preskoči če je to konsolidirana ulica
+      if (consolidatedBaseNames.has(baseName)) continue;
 
       // Preveri če se query ujema z ulico
       if (streetLower.includes(normalizedQuery) || normalizedQuery.includes(streetLower.split(' ')[0])) {
-        // Unikaten ključ vključuje okoliš, da prikažemo isto ulico iz različnih okolišev
         const uniqueKey = `${street.toLowerCase()}-${okolis.id}`;
         if (seen.has(uniqueKey)) continue;
         seen.add(uniqueKey);
 
         // Najdi pripadajoči Bio okoliš
         let bioOkolisId = 1; // default B1
-
-        // Posebna logika za B2 (Hotedršica, Rovte, Petkovec)
         const b2Keywords = ['hotedršica', 'novi svet', 'ograje', 'petkovec', 'ravnik pri hotedršici', 'rovte'];
         if (b2Keywords.some(kw => streetLower.includes(kw))) {
           bioOkolisId = 2;
@@ -416,22 +970,7 @@ export function searchStreets(query: string, maxResults: number = 8): StreetSear
     }
   }
 
-  // Označi rezultate kjer je ista ulica v več okoliših
-  const streetCounts = new Map<string, number>();
-  for (const r of results) {
-    // Izvleči osnovno ime ulice (brez številk)
-    const baseName = r.street.replace(/\s*\d+.*$/, '').toLowerCase();
-    streetCounts.set(baseName, (streetCounts.get(baseName) || 0) + 1);
-  }
-
-  for (const r of results) {
-    const baseName = r.street.replace(/\s*\d+.*$/, '').toLowerCase();
-    if (streetCounts.get(baseName)! > 1) {
-      r.hasMultipleOkolisi = true;
-    }
-  }
-
-  // Sortiraj: najprej po okolišu, nato po ulici
+  // Sortiraj po okolišu, nato po ulici
   results.sort((a, b) => {
     if (a.okolisEM !== b.okolisEM) return a.okolisEM - b.okolisEM;
     return a.street.localeCompare(b.street, 'sl');

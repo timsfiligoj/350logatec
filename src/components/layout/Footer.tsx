@@ -12,7 +12,7 @@ export function Footer() {
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                 <Leaf className="h-5 w-5" />
               </div>
-              <span className="font-display text-xl font-bold">350Logatec</span>
+              <span className="font-display text-xl font-bold">350logatec</span>
             </Link>
             <p className="text-sm text-muted-foreground max-w-xs">
               Aplikacija za sledenje odvozov odpadkov v občini Logatec.
@@ -74,7 +74,7 @@ export function Footer() {
 
         {/* Bottom bar */}
         <div className="mt-12 pt-8 border-t text-center text-sm text-muted-foreground">
-          <p>350Logatec © {new Date().getFullYear()}</p>
+          <p>© {new Date().getFullYear()} 350logatec · 350life</p>
           <p className="mt-1">
             Podatki: Komunalno podjetje Logatec d.o.o.
           </p>

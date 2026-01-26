@@ -113,7 +113,7 @@ function generateEmailHtml(date: string, wasteTypes: string[]): string {
           <tr>
             <td style="padding: 24px 32px; background-color: #f9fafb; border-radius: 0 0 12px 12px; text-align: center;">
               <p style="margin: 0; font-size: 14px; color: #6b7280;">
-                350Logatec - Aplikacija za sledenje odvozov
+                350logatec - Aplikacija za sledenje odvozov
               </p>
               <p style="margin: 8px 0 0 0; font-size: 12px; color: #9ca3af;">
                 Prejeli ste to sporočilo, ker ste omogočili email obvestila.
@@ -138,9 +138,9 @@ export async function sendCollectionReminder(
     const html = generateEmailHtml(date, wasteTypes)
 
     const { data, error } = await resend.emails.send({
-      from: '350Logatec <onboarding@resend.dev>',
+      from: '350logatec <onboarding@resend.dev>',
       to: [to],
-      subject: 'Jutri je odvoz odpadkov - 350Logatec',
+      subject: 'Jutri je odvoz odpadkov - 350logatec',
       html,
     })
 
