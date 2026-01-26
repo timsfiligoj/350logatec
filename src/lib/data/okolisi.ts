@@ -371,15 +371,17 @@ export interface StreetSearchResult {
   okolisBio: number;
   okolisEMCode: string;
   okolisBioCode: string;
+  description?: string;
+  hasMultipleOkolisi?: boolean;
 }
 
 // Funkcija za iskanje ulic po query stringu
-export function searchStreets(query: string, maxResults: number = 5): StreetSearchResult[] {
+export function searchStreets(query: string, maxResults: number = 8): StreetSearchResult[] {
   if (!query || query.length < 2) return [];
 
   const normalizedQuery = query.toLowerCase().trim();
   const results: StreetSearchResult[] = [];
-  const seen = new Set<string>();
+  const seen = new Set<string>(); // Unikaten ključ: street + okolisEM
 
   // Išči po vseh E/M okoliših
   for (const okolis of okolisiEM) {
@@ -388,10 +390,10 @@ export function searchStreets(query: string, maxResults: number = 5): StreetSear
 
       // Preveri če se query ujema z ulico
       if (streetLower.includes(normalizedQuery) || normalizedQuery.includes(streetLower.split(' ')[0])) {
-        // Ustvari unikaten ključ za ulico
-        const streetKey = street.toLowerCase();
-        if (seen.has(streetKey)) continue;
-        seen.add(streetKey);
+        // Unikaten ključ vključuje okoliš, da prikažemo isto ulico iz različnih okolišev
+        const uniqueKey = `${street.toLowerCase()}-${okolis.id}`;
+        if (seen.has(uniqueKey)) continue;
+        seen.add(uniqueKey);
 
         // Najdi pripadajoči Bio okoliš
         let bioOkolisId = 1; // default B1
@@ -408,14 +410,34 @@ export function searchStreets(query: string, maxResults: number = 5): StreetSear
           okolisBio: bioOkolisId,
           okolisEMCode: okolis.code,
           okolisBioCode: `B${bioOkolisId}`,
+          description: okolis.description,
         });
-
-        if (results.length >= maxResults) return results;
       }
     }
   }
 
-  return results;
+  // Označi rezultate kjer je ista ulica v več okoliših
+  const streetCounts = new Map<string, number>();
+  for (const r of results) {
+    // Izvleči osnovno ime ulice (brez številk)
+    const baseName = r.street.replace(/\s*\d+.*$/, '').toLowerCase();
+    streetCounts.set(baseName, (streetCounts.get(baseName) || 0) + 1);
+  }
+
+  for (const r of results) {
+    const baseName = r.street.replace(/\s*\d+.*$/, '').toLowerCase();
+    if (streetCounts.get(baseName)! > 1) {
+      r.hasMultipleOkolisi = true;
+    }
+  }
+
+  // Sortiraj: najprej po okolišu, nato po ulici
+  results.sort((a, b) => {
+    if (a.okolisEM !== b.okolisEM) return a.okolisEM - b.okolisEM;
+    return a.street.localeCompare(b.street, 'sl');
+  });
+
+  return results.slice(0, maxResults);
 }
 
 // Waste type info
