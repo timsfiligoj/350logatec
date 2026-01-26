@@ -123,14 +123,14 @@ export function OkolisiDialog() {
           <span>Okoliši</span>
         </button>
       </DialogTrigger>
-      <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="max-w-4xl max-h-[85vh] !flex !flex-col overflow-hidden p-0">
+        <DialogHeader className="flex-shrink-0 border-b p-6 pb-4">
           <DialogTitle className="text-xl font-display">
             Seznam okolišev
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6 mt-4">
+        <div className="space-y-6 overflow-y-auto flex-1 p-6 pt-4">
           {/* E/M Okoliši */}
           <div>
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
