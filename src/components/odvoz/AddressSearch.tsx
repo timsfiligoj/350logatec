@@ -69,7 +69,7 @@ export function AddressSearch({ onSelect }: AddressSearchProps) {
         <Input
           ref={inputRef}
           type="text"
-          placeholder="Vnesite svoj naslov (npr. Grčarevec 15)"
+          placeholder="Vnesite svojo ulico"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => {
