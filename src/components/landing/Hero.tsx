@@ -72,8 +72,8 @@ export function Hero() {
             </div>
           </div>
 
-          {/* Right side - Waste type cards */}
-          <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
+          {/* Right side - Waste type cards (hidden on mobile) */}
+          <div className="hidden sm:grid gap-4 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
             {wasteTypes.map((type) => (
               <Card
                 key={type.name}
