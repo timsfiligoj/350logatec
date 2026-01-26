@@ -82,10 +82,7 @@ export function Footer() {
 
         {/* Bottom bar */}
         <div className="mt-12 pt-8 border-t text-center text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} 350life</p>
-          <p className="mt-1">
-            Podatki: Komunalno podjetje Logatec d.o.o.
-          </p>
+          <p>© {new Date().getFullYear()} <a href="https://www.350life.com/" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">350life</a></p>
         </div>
       </div>
     </footer>
