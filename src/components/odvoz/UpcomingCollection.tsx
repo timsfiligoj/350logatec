@@ -19,7 +19,8 @@ interface UpcomingCollectionProps {
 
 function formatDateSlovene(dateStr: string): string {
   const date = parseISO(dateStr);
-  return format(date, "EEEE, d. MMMM", { locale: sl });
+  // Lowercase month and day names
+  return format(date, "EEEE, d. MMMM", { locale: sl }).toLowerCase();
 }
 
 function getRelativeDay(dateStr: string): "today" | "tomorrow" | null {
@@ -54,7 +55,7 @@ export function UpcomingCollection({
 
   return (
     <Card>
-      <CardHeader className="pb-4 pt-4 px-4">
+      <CardHeader className="pb-2 pt-4 px-4">
         <CardTitle className="flex items-center gap-2 text-base">
           <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
             <CalendarClock className="h-3.5 w-3.5 text-primary" />
@@ -118,6 +119,8 @@ function CollectionRow({ collection }: { collection: CollectionDay }) {
 
   // Get short day name in uppercase (e.g., PON, TOR, SRE)
   const dayName = format(date, "EEE", { locale: sl }).toUpperCase().replace(".", "");
+  // Full date with month name in lowercase (e.g., "2. februar")
+  const fullDate = format(date, "d. MMMM", { locale: sl }).toLowerCase();
 
   return (
     <div className="flex items-center justify-between py-2.5 first:pt-1 last:pb-0">
@@ -126,7 +129,7 @@ function CollectionRow({ collection }: { collection: CollectionDay }) {
           {dayName}
         </span>
         <span className="text-sm font-medium">
-          {format(date, "d.M.")}
+          {fullDate}
         </span>
         {relativeDay && (
           <Badge
