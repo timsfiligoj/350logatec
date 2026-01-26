@@ -202,13 +202,6 @@ export function Navbar() {
         )}
       </div>
 
-      {/* Backdrop overlay - fixed behind navbar, above page content */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 md:hidden z-40"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
     </nav>
   );
 }
