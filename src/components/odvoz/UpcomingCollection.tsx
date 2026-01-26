@@ -54,7 +54,7 @@ export function UpcomingCollection({
 
   return (
     <Card>
-      <CardHeader className="pb-2 pt-4 px-4">
+      <CardHeader className="pb-4 pt-4 px-4">
         <CardTitle className="flex items-center gap-2 text-base">
           <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
             <CalendarClock className="h-3.5 w-3.5 text-primary" />
@@ -62,7 +62,7 @@ export function UpcomingCollection({
           Naslednji odvoz
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-3 px-4 pb-4">
+      <CardContent className="space-y-5 px-4 pb-4">
         {/* Main next collection */}
         <div className="p-3 bg-primary/5 rounded-lg border border-primary/10">
           <div className="flex items-center justify-between gap-3">
@@ -94,10 +94,10 @@ export function UpcomingCollection({
         {/* Future collections */}
         {futureCollections.length > 0 && (
           <div>
-            <p className="text-xs font-medium text-muted-foreground mb-1.5">
+            <p className="text-xs font-medium text-muted-foreground mb-2">
               Prihajajoči odvozi
             </p>
-            <div className="divide-y divide-border">
+            <div className="divide-y divide-border/50">
               {futureCollections.map((collection, index) => (
                 <CollectionRow
                   key={collection.date + index}
@@ -116,20 +116,18 @@ function CollectionRow({ collection }: { collection: CollectionDay }) {
   const date = parseISO(collection.date);
   const relativeDay = getRelativeDay(collection.date);
 
+  // Get short day name in uppercase (e.g., PON, TOR, SRE)
+  const dayName = format(date, "EEE", { locale: sl }).toUpperCase().replace(".", "");
+
   return (
-    <div className="flex items-center justify-between py-1.5 first:pt-0 last:pb-0">
-      <div className="flex items-center gap-2">
-        <div className="text-center min-w-[2.5rem]">
-          <p className="text-[10px] text-muted-foreground uppercase leading-tight">
-            {format(date, "EEE", { locale: sl })}
-          </p>
-          <p className="text-sm font-semibold leading-tight">
-            {format(date, "d")}
-          </p>
-        </div>
-        <p className="text-sm capitalize">
-          {format(date, "MMM", { locale: sl })}
-        </p>
+    <div className="flex items-center justify-between py-2.5 first:pt-1 last:pb-0">
+      <div className="flex items-center gap-3">
+        <span className="text-xs font-medium text-muted-foreground w-8">
+          {dayName}
+        </span>
+        <span className="text-sm font-medium">
+          {format(date, "d.M.")}
+        </span>
         {relativeDay && (
           <Badge
             variant="outline"
