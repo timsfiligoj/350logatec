@@ -11,7 +11,7 @@ export function AboutProject() {
             {/* Logo */}
             <div className="flex-shrink-0">
               <img
-                src="https://cdn.prod.website-files.com/68ce6a31fc94cbf6f6244803/68cefe508b9cdc61323b45ad_350life_logo.svg"
+                src="/350life_logo.jpeg"
                 alt="350life logo"
                 className="w-32 md:w-36"
               />
@@ -39,6 +39,8 @@ export function AboutProject() {
               <div className="mt-6">
                 <a
                   href="mailto:tim@350life.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-medium transition-colors"
                 >
                   <Mail className="h-4 w-4" />
