@@ -50,11 +50,10 @@ export function AboutProject() {
                   href="mailto:tim@350life.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-medium transition-colors"
+                  className="inline-flex items-center justify-center md:justify-start gap-2 text-primary hover:text-primary/80 font-medium transition-colors"
                 >
-                  <Mail className="h-4 w-4" />
-                  <span>Opazili napako ali imate idejo? Pišite nam</span>
-                  <span aria-hidden="true">&rarr;</span>
+                  <Mail className="h-4 w-4 shrink-0" />
+                  <span>Opazili napako ali imate idejo? Pišite nam &rarr;</span>
                 </a>
               </div>
 
