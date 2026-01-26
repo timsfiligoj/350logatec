@@ -2,7 +2,7 @@ import { ImageResponse } from 'next/og'
 
 export const runtime = 'edge'
 
-export const alt = '350logatec - Nikoli več ne zamudite odvoza odpadkov'
+export const alt = '350logatec - Pametne rešitve za Logatec'
 export const size = {
   width: 1200,
   height: 630,
@@ -86,7 +86,7 @@ export default async function Image() {
             fontFamily: 'sans-serif',
           }}
         >
-          Nikoli več ne zamudite odvoza odpadkov
+          Pametne rešitve za Logatec
         </div>
 
         {/* Waste type badges */}
@@ -191,18 +191,6 @@ export default async function Image() {
           </div>
         </div>
 
-        {/* Footer */}
-        <div
-          style={{
-            position: 'absolute',
-            bottom: 40,
-            display: 'flex',
-            fontSize: 24,
-            color: '#6b7280',
-          }}
-        >
-          Občina Logatec
-        </div>
       </div>
     ),
     {
