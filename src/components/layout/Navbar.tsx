@@ -130,7 +130,7 @@ export function Navbar() {
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <div className="md:hidden border-t py-4 bg-background">
+          <div className="md:hidden border-t py-4 bg-background relative z-50">
             <div className="flex flex-col gap-2">
               {loading ? (
                 <div className="px-2 py-1">
