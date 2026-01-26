@@ -41,7 +41,7 @@ export function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 relative z-50">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
@@ -130,7 +130,7 @@ export function Navbar() {
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <div className="md:hidden border-t py-4 bg-background relative z-50">
+          <div className="md:hidden border-t py-4 bg-background">
             <div className="flex flex-col gap-2">
               {loading ? (
                 <div className="px-2 py-1">
