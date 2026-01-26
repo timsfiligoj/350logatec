@@ -358,11 +358,64 @@ export function findOkolisBio(address: string): Okolis | null {
 // Vrne vse ulice za autocomplete
 export function getAllStreets(): string[] {
   const streets = new Set<string>();
-  
+
   okolisiEM.forEach(o => o.streets.forEach(s => streets.add(s)));
   okolisiBio.forEach(o => o.streets.forEach(s => streets.add(s)));
-  
+
   return Array.from(streets).sort();
+}
+
+export interface StreetSearchResult {
+  street: string;
+  okolisEM: number;
+  okolisBio: number;
+  okolisEMCode: string;
+  okolisBioCode: string;
+}
+
+// Funkcija za iskanje ulic po query stringu
+export function searchStreets(query: string, maxResults: number = 5): StreetSearchResult[] {
+  if (!query || query.length < 2) return [];
+
+  const normalizedQuery = query.toLowerCase().trim();
+  const results: StreetSearchResult[] = [];
+  const seen = new Set<string>();
+
+  // Išči po vseh E/M okoliših
+  for (const okolis of okolisiEM) {
+    for (const street of okolis.streets) {
+      const streetLower = street.toLowerCase();
+
+      // Preveri če se query ujema z ulico
+      if (streetLower.includes(normalizedQuery) || normalizedQuery.includes(streetLower.split(' ')[0])) {
+        // Ustvari unikaten ključ za ulico
+        const streetKey = street.toLowerCase();
+        if (seen.has(streetKey)) continue;
+        seen.add(streetKey);
+
+        // Najdi pripadajoči Bio okoliš
+        let bioOkolisId = 1; // default B1
+
+        // Posebna logika za B2 (Hotedršica, Rovte, Petkovec)
+        const b2Keywords = ['hotedršica', 'novi svet', 'ograje', 'petkovec', 'ravnik pri hotedršici', 'rovte'];
+        if (b2Keywords.some(kw => streetLower.includes(kw))) {
+          bioOkolisId = 2;
+        }
+
+        results.push({
+          street,
+          okolisEM: okolis.id,
+          okolisBio: bioOkolisId,
+          okolisEMCode: okolis.code,
+          okolisBioCode: `B${bioOkolisId}`,
+        });
+
+        if (results.length >= maxResults) return results;
+      }
+    }
+  }
+
+  return results;
 }
 
 // Waste type info

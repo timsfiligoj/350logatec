@@ -10,8 +10,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { okolisiEM, okolisiBio } from "@/lib/data/okolisi";
+import { okolisiEM, okolisiBio, StreetSearchResult } from "@/lib/data/okolisi";
 import { OkolisiDialog } from "./OkolisiDialog";
+import { AddressSearch } from "./AddressSearch";
 
 interface OkolisSelectorProps {
   emOkolis: number | null;
@@ -26,6 +27,11 @@ export function OkolisSelector({
   onEmOkolisChange,
   onBioOkolisChange,
 }: OkolisSelectorProps) {
+  const handleAddressSelect = (result: StreetSearchResult) => {
+    onEmOkolisChange(result.okolisEM);
+    onBioOkolisChange(result.okolisBio);
+  };
+
   return (
     <Card>
       <CardHeader className="pb-4">
@@ -40,6 +46,26 @@ export function OkolisSelector({
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
+        {/* Iskanje po naslovu */}
+        <div className="space-y-2">
+          <Label className="text-sm font-medium">
+            Poiščite po naslovu
+          </Label>
+          <AddressSearch onSelect={handleAddressSelect} />
+        </div>
+
+        {/* Ločilnik */}
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t border-gray-200" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-white px-3 text-muted-foreground">
+              ali izberite ročno
+            </span>
+          </div>
+        </div>
+
         {/* E/M Okoliš */}
         <div className="space-y-2">
           <Label htmlFor="em-okolis" className="text-sm font-medium">
