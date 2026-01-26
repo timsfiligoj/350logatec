@@ -1,36 +1,86 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 350Logatec
 
-## Getting Started
+Spletna aplikacija za sledenje odvozov odpadkov v občini Logatec.
 
-First, run the development server:
+## Funkcionalnosti
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Izbira E/M okoliša (1-12) za embalažo in mešane odpadke
+- Izbira Bio okoliša (B1, B2) za biološke odpadke
+- Koledar odvozov za leto 2026
+- Prikaz naslednjega odvoza in prihajajočih odvozov
+- Popup s seznamom vseh okolišev in ulic
+- Shranjevanje izbire v localStorage
+
+## Tech Stack
+
+- **Framework:** Next.js 16 (App Router)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS v4
+- **UI Components:** shadcn/ui
+- **Fonts:** Plus Jakarta Sans (display), Inter (body)
+- **Icons:** Lucide React
+- **Date handling:** date-fns (Slovenian locale)
+
+## Struktura projekta
+
+```
+src/
+├── app/
+│   ├── page.tsx              # Landing page
+│   ├── odvoz/page.tsx        # Koledar odvozov
+│   ├── layout.tsx            # Root layout
+│   └── globals.css           # Global styles + color palette
+├── components/
+│   ├── layout/
+│   │   ├── Navbar.tsx
+│   │   └── Footer.tsx
+│   ├── landing/
+│   │   ├── Hero.tsx
+│   │   └── HowItWorks.tsx
+│   ├── odvoz/
+│   │   ├── OkolisSelector.tsx      # Dropdown izbira okoliša
+│   │   ├── OkolisiDialog.tsx       # Popup s seznamom okolišev
+│   │   ├── WasteCalendar.tsx       # Mesečni koledar
+│   │   ├── UpcomingCollection.tsx  # Naslednji odvozi
+│   │   └── WasteTypeBadge.tsx      # Badge komponenta za tip odpadka
+│   └── ui/                   # shadcn/ui components
+├── hooks/
+│   └── useLocalStorage.ts    # Hook za localStorage s sinhronizacijo
+└── lib/
+    ├── data/
+    │   ├── okolisi.ts        # Definicije okolišev in ulic
+    │   └── schedule-2026.ts  # Koledar odvozov za 2026
+    └── utils.ts              # cn() helper
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Barvno kodiranje odpadkov
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Tip | Barva | Opis |
+|-----|-------|------|
+| E (Embalaža) | Modra | Plastična in kovinska embalaža |
+| M (Mešani) | Črna/siva | Mešani komunalni odpadki |
+| B (Bio) | Zelena | Biološko razgradljivi odpadki |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Zagon
 
-## Learn More
+```bash
+# Namestitev
+npm install
 
-To learn more about Next.js, take a look at the following resources:
+# Development
+npm run dev
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Build
+npm run build
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Start production
+npm start
+```
 
-## Deploy on Vercel
+## Podatki
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Koledar odvozov je ekstrahiran iz uradnega dokumenta `koledar2026.pdf` Komunalnega podjetja Logatec d.o.o.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- 12 E/M okolišev za embalažo in mešane odpadke
+- 2 Bio okoliša za biološke odpadke
+- Okoliš 11 ima tedenski odvoz (bloki, podjetja)
