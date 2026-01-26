@@ -3,19 +3,19 @@ const steps = [
     number: "1",
     title: "Izberite okoliš",
     description:
-      "Poiščite svoj naslov ali izberite okoliš iz seznama. Logatec je razdeljen na 12 E/M okolišev in 2 Bio okoliša.",
+      "Vnesite naslov ulice ali samo izberite okoliš, če ga že poznate.",
   },
   {
     number: "2",
-    title: "Preglejte datume",
+    title: "Koledar",
     description:
-      "Na koledarju vidite vse datume odvozov za vaš okoliš. Embalaža, mešani in bio odpadki so označeni z različnimi barvami.",
+      "Videli boste datume in koledar za odvoz odpadkov v vašem okolišu.",
   },
   {
     number: "3",
-    title: "Nastavite opomnike",
+    title: "Prejmite obvestilo",
     description:
-      "Prijavite se in nastavite email obvestila. Dan pred vsakim odvozom boste prejeli opomnik.",
+      "Ustvarite brezplačen račun in prejmite obvestilo 1 dan pred odvozom.",
   },
 ];
 
@@ -27,9 +27,6 @@ export function HowItWorks() {
           <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
             Kako deluje?
           </h2>
-          <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-            V treh preprostih korakih do urejenega odvoza odpadkov
-          </p>
         </div>
 
         <div className="grid gap-8 md:grid-cols-3 max-w-5xl mx-auto">
