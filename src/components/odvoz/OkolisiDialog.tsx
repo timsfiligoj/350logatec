@@ -123,7 +123,7 @@ export function OkolisiDialog() {
           <span>Okoliši</span>
         </button>
       </DialogTrigger>
-      <DialogContent className="max-w-4xl max-h-[85vh] !flex !flex-col overflow-hidden p-0">
+      <DialogContent className="max-w-4xl max-h-[80vh] !flex !flex-col overflow-hidden p-0 w-[calc(100%-3rem)] sm:w-full rounded-xl">
         <DialogHeader className="flex-shrink-0 border-b p-6 pb-4">
           <DialogTitle className="text-xl font-display">
             Seznam okolišev
