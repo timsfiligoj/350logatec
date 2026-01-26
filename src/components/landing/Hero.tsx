@@ -59,15 +59,12 @@ export function Hero() {
               zabojnike.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+            <div className="flex justify-center lg:justify-start">
               <Button asChild size="lg" className="gap-2">
                 <Link href="/odvoz">
                   Koledar odvoza
                   <ArrowRight className="h-4 w-4" />
                 </Link>
-              </Button>
-              <Button asChild variant="outline" size="lg">
-                <Link href="#kako-deluje">Kako deluje?</Link>
               </Button>
             </div>
           </div>
