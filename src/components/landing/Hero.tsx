@@ -45,7 +45,7 @@ export function Hero() {
           <div className="flex flex-col gap-6 text-center lg:text-left">
             <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary w-fit mx-auto lg:mx-0">
               <Leaf className="h-4 w-4" />
-              Očistimo Logatec
+              Za boljši Logatec
             </div>
 
             <h1 className="font-display text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
