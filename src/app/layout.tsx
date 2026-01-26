@@ -14,8 +14,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "350logatec - Nikoli več ne zamudite odvoza odpadkov",
-  description: "Preprosta aplikacija za sledenje odvozov smeti v občini Logatec. Izberite svoj okoliš in vedno vedite, kdaj morate pripraviti zabojnike za embalažo, mešane in biološke odpadke.",
+  title: "350logatec - Pametne rešitve za Logatec",
+  description: "Pametne rešitve za boljše življenje v Logatcu. Koledar odvozov odpadkov in več.",
   keywords: ["odvoz odpadkov", "Logatec", "smeti", "embalaža", "biološki odpadki", "komunala", "okoliš"],
   authors: [{ name: "350life" }],
   metadataBase: new URL("https://350logatec.vercel.app"),

@@ -15,7 +15,7 @@ export function Footer() {
               <span className="font-display text-xl font-bold">350logatec</span>
             </Link>
             <p className="text-sm text-muted-foreground max-w-xs">
-              Aplikacija za sledenje odvozov odpadkov v občini Logatec.
+              Pametne rešitve za boljše življenje v Logatcu.
             </p>
           </div>
 
