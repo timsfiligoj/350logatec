@@ -128,9 +128,9 @@ export function Navbar() {
           </button>
         </div>
 
-        {/* Mobile Navigation */}
+        {/* Mobile Navigation - overlay */}
         {isOpen && (
-          <div className="md:hidden border-t py-4 bg-background">
+          <div className="md:hidden absolute left-0 right-0 top-16 border-t py-4 bg-background shadow-lg">
             <div className="flex flex-col gap-2">
               {loading ? (
                 <div className="px-2 py-1">
