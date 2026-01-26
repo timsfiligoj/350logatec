@@ -9,7 +9,7 @@ interface WasteTypeInfo {
 }
 
 const wasteTypeMap: Record<string, WasteTypeInfo> = {
-  'E': { type: 'E', name: 'Embalaža', color: '#f59e0b' },
+  'E': { type: 'E', name: 'Embalaža', color: '#3b82f6' },
   'M': { type: 'M', name: 'Mešani odpadki', color: '#6b7280' },
   'B': { type: 'B', name: 'Biološki odpadki', color: '#22c55e' },
 }
@@ -113,7 +113,7 @@ function generateEmailHtml(date: string, wasteTypes: string[]): string {
           <tr>
             <td style="padding: 24px 32px; background-color: #f9fafb; border-radius: 0 0 12px 12px; text-align: center;">
               <p style="margin: 0; font-size: 14px; color: #6b7280;">
-                350logatec - Aplikacija za sledenje odvozov
+                350logatec - Pametne rešitve za Logatec
               </p>
               <p style="margin: 8px 0 0 0; font-size: 12px; color: #9ca3af;">
                 Prejeli ste to sporočilo, ker ste omogočili email obvestila.
