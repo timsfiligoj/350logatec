@@ -14,8 +14,28 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "350logatec - Odvoz odpadkov",
-  description: "Aplikacija za sledenje odvozov odpadkov v občini Logatec",
+  title: "350logatec - Nikoli več ne zamudite odvoza odpadkov",
+  description: "Preprosta aplikacija za sledenje odvozov smeti v občini Logatec. Izberite svoj okoliš in vedno vedite, kdaj morate pripraviti zabojnike za embalažo, mešane in biološke odpadke.",
+  keywords: ["odvoz odpadkov", "Logatec", "smeti", "embalaža", "biološki odpadki", "komunala", "okoliš"],
+  authors: [{ name: "350life" }],
+  metadataBase: new URL("https://350logatec.vercel.app"),
+  openGraph: {
+    title: "350logatec - Nikoli več ne zamudite odvoza odpadkov",
+    description: "Preprosta aplikacija za sledenje odvozov smeti v občini Logatec. Izberite svoj okoliš in vedno vedite, kdaj pripraviti zabojnike.",
+    url: "https://350logatec.vercel.app",
+    siteName: "350logatec",
+    locale: "sl_SI",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "350logatec - Odvoz odpadkov",
+    description: "Nikoli več ne zamudite odvoza odpadkov v občini Logatec. Embalaža, mešani in biološki odpadki.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
