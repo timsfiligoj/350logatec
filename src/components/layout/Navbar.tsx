@@ -130,75 +130,82 @@ export function Navbar() {
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <div className="md:hidden border-t py-4">
-            <div className="flex flex-col gap-2">
-              {loading ? (
-                <div className="px-2 py-1">
-                  <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                </div>
-              ) : user ? (
-                <>
-                  <Link
-                    href="/odvoz"
-                    className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary px-2 py-2"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    Odvoz odpadkov
-                  </Link>
-                  {/* User info */}
-                  <div className="flex items-center gap-3 px-2 py-2 mb-2">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary font-medium">
-                      {initials}
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium">{displayName}</p>
-                      {user.email && displayName !== user.email && (
-                        <p className="text-xs text-muted-foreground">{user.email}</p>
-                      )}
-                    </div>
+          <>
+            {/* Backdrop overlay */}
+            <div
+              className="fixed inset-0 top-16 bg-black/50 md:hidden z-40"
+              onClick={() => setIsOpen(false)}
+            />
+            <div className="md:hidden border-t py-4 relative z-50 bg-background">
+              <div className="flex flex-col gap-2">
+                {loading ? (
+                  <div className="px-2 py-1">
+                    <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
                   </div>
-                  <Link
-                    href="/nastavitve"
-                    className="flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary px-2 py-2 rounded-md hover:bg-muted"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <Settings className="h-4 w-4" />
-                    Nastavitve
-                  </Link>
-                  <button
-                    onClick={() => {
-                      handleSignOut();
-                      setIsOpen(false);
-                    }}
-                    disabled={isLoggingOut}
-                    className="flex items-center gap-2 text-sm font-medium text-red-600 px-2 py-2 rounded-md hover:bg-red-50 transition-colors text-left"
-                  >
-                    {isLoggingOut ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <LogOut className="h-4 w-4" />
-                    )}
-                    Odjava
-                  </button>
-                </>
-              ) : (
-                <>
-                  <Link
-                    href="/auth/login"
-                    className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary px-2 py-2"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    Prijava
-                  </Link>
-                  <Button asChild className="mt-2 mx-2">
-                    <Link href="/odvoz" onClick={() => setIsOpen(false)}>
-                      Začni zdaj
+                ) : user ? (
+                  <>
+                    <Link
+                      href="/odvoz"
+                      className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary px-2 py-2"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      Odvoz odpadkov
                     </Link>
-                  </Button>
-                </>
-              )}
+                    {/* User info */}
+                    <div className="flex items-center gap-3 px-2 py-2 mb-2">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary font-medium">
+                        {initials}
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium">{displayName}</p>
+                        {user.email && displayName !== user.email && (
+                          <p className="text-xs text-muted-foreground">{user.email}</p>
+                        )}
+                      </div>
+                    </div>
+                    <Link
+                      href="/nastavitve"
+                      className="flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary px-2 py-2 rounded-md hover:bg-muted"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <Settings className="h-4 w-4" />
+                      Nastavitve
+                    </Link>
+                    <button
+                      onClick={() => {
+                        handleSignOut();
+                        setIsOpen(false);
+                      }}
+                      disabled={isLoggingOut}
+                      className="flex items-center gap-2 text-sm font-medium text-red-600 px-2 py-2 rounded-md hover:bg-red-50 transition-colors text-left"
+                    >
+                      {isLoggingOut ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <LogOut className="h-4 w-4" />
+                      )}
+                      Odjava
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href="/odvoz"
+                      className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary px-2 py-2"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      Koledar odvoza
+                    </Link>
+                    <Button asChild className="mt-2 mx-2">
+                      <Link href="/auth/login" onClick={() => setIsOpen(false)}>
+                        Prijava
+                      </Link>
+                    </Button>
+                  </>
+                )}
+              </div>
             </div>
-          </div>
+          </>
         )}
       </div>
     </nav>
