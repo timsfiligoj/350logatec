@@ -36,6 +36,7 @@ Spletna aplikacija za sledenje odvozov odpadkov v občini Logatec.
 - **Database:** Supabase (PostgreSQL)
 - **Email:** Resend
 - **Hosting:** Vercel
+- **Analytics:** Vercel Analytics + Speed Insights
 
 ## Struktura projekta
 
@@ -119,3 +120,14 @@ Koledar odvozov je ekstrahiran iz uradnega dokumenta `koledar2026.pdf` Komunalne
 - 12 E/M okolišev za embalažo in mešane odpadke
 - 2 Bio okoliša za biološke odpadke
 - Okoliš 11 ima tedenski odvoz (bloki, podjetja)
+
+## Monitoring
+
+### Vercel Analytics
+- Page views, visitors, referrers
+- Dashboard: https://vercel.com/timsfiligoj/350logatec/analytics
+
+### Vercel Speed Insights
+- Core Web Vitals (LCP, INP, CLS)
+- Dashboard: https://vercel.com/timsfiligoj/350logatec/speed-insights
+- Cilji: LCP < 2.5s, INP < 200ms, CLS < 0.1

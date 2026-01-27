@@ -89,3 +89,47 @@ Vsi podatki o okoliših in datumih odvozov so iz uradnega dokumenta:
 1. Uporabi slovensko ime brez šumnikov (č→c, š→s, ž→z)
 2. Uporabi male črke in vezaj za ločevanje besed
 3. Primeri: `/moj-profil`, `/zgodovina-odvozov`, `/pomoc`
+
+---
+
+## Analytics & Monitoring
+
+### Vercel Analytics
+- Vključeno v `src/app/layout.tsx`
+- Dashboard: https://vercel.com/timsfiligoj/350logatec/analytics
+- Metrike: page views, visitors, referrers, devices
+
+### Vercel Speed Insights
+- Vključeno v `src/app/layout.tsx`
+- Dashboard: https://vercel.com/timsfiligoj/350logatec/speed-insights
+- Core Web Vitals:
+  - **LCP** (Largest Contentful Paint) < 2.5s
+  - **INP** (Interaction to Next Paint) < 200ms
+  - **CLS** (Cumulative Layout Shift) < 0.1
+
+### Performance optimizacije implementirane
+- `next/image` za slike (auto lazy-loading, AVIF/WebP)
+- Fonti preko `next/font` (no FOUT/FOIT)
+- Moderne image formate v `next.config.ts`
+
+---
+
+## Periodic Tasks
+
+### Tedenska analiza (vsakih 7 dni)
+**OPOMNIK:** Na začetku vsake seje preveri ali je čas za tedensko analizo.
+
+Naloge:
+1. Preglej Vercel Analytics dashboard - trendi obiskov
+2. Preglej Speed Insights - Core Web Vitals scores
+3. Če so slabi rezultati (LCP > 2.5s, CLS > 0.1), predlagaj optimizacije
+4. Preveri Supabase za morebitne napake v auth ali database
+
+Ukazi za analizo:
+```bash
+# Lokalni lighthouse test
+npx lighthouse https://350logatec.si --view
+
+# Bundle size analiza
+npm run build && cat .next/analyze/client.html
+```
