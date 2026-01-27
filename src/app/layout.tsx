@@ -19,6 +19,13 @@ export const metadata: Metadata = {
   keywords: ["odvoz odpadkov", "Logatec", "smeti", "embalaža", "biološki odpadki", "komunala", "okoliš"],
   authors: [{ name: "350life" }],
   metadataBase: new URL("https://www.350logatec.si"),
+  icons: {
+    icon: [
+      { url: "/favicon_350logatec_32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon_350logatec_256x256.png", sizes: "256x256", type: "image/png" },
+    ],
+    apple: "/favicon_350logatec_256x256.png",
+  },
   openGraph: {
     title: "350logatec - Pametne rešitve za Logatec",
     description: "Pametne rešitve za boljše življenje v Logatcu. Koledar odvozov odpadkov in več.",

@@ -3,7 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Menu, X, Leaf, LogOut, Settings, Loader2, ChevronDown, User } from "lucide-react";
+import { Menu, X, LogOut, Settings, Loader2, ChevronDown } from "lucide-react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -44,11 +45,14 @@ export function Navbar() {
       <div className="container mx-auto px-4 relative z-50">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground transition-transform group-hover:scale-105">
-              <Leaf className="h-5 w-5" />
-            </div>
-            <span className="font-display text-xl font-bold">350logatec</span>
+          <Link href="/" className="flex items-center group transition-transform hover:scale-105">
+            <Image
+              src="/logo_350logatec.svg"
+              alt="350logatec"
+              width={160}
+              height={27}
+              priority
+            />
           </Link>
 
           {/* Desktop Navigation */}

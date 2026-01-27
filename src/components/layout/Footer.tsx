@@ -1,5 +1,6 @@
-import { Leaf, ExternalLink } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 export function Footer() {
   return (
@@ -8,11 +9,13 @@ export function Footer() {
         <div className="grid gap-8 md:grid-cols-3">
           {/* Logo & Description */}
           <div className="space-y-4">
-            <Link href="/" className="flex items-center gap-2 group">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                <Leaf className="h-5 w-5" />
-              </div>
-              <span className="font-display text-xl font-bold">350logatec</span>
+            <Link href="/" className="flex items-center">
+              <Image
+                src="/logo_350logatec.svg"
+                alt="350logatec"
+                width={140}
+                height={24}
+              />
             </Link>
             <p className="text-sm text-muted-foreground max-w-xs">
               Pametne rešitve za boljše življenje v Logatcu.
