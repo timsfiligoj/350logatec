@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
@@ -43,7 +42,6 @@ export function RegisterForm() {
   const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
-  const router = useRouter()
   const supabase = createClient()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -73,6 +71,7 @@ export function RegisterForm() {
         email,
         password,
         options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
           data: {
             full_name: fullName,
           },
