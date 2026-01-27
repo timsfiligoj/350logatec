@@ -2,6 +2,10 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import Link from "next/link";
 
+export const metadata = {
+  title: "Politika zasebnosti | 350logatec",
+};
+
 export default function ZasebnostPage() {
   return (
     <div className="min-h-screen flex flex-col">

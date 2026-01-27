@@ -3,8 +3,7 @@ import { LoginForm } from '@/components/auth/LoginForm'
 import { Navbar } from '@/components/layout/Navbar'
 
 export const metadata = {
-  title: 'Prijava | 350 Logatec',
-  description: 'Prijavite se v aplikacijo 350 Logatec',
+  title: 'Prijava | 350logatec',
 }
 
 export default function LoginPage() {

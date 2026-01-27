@@ -2,8 +2,7 @@ import { RegisterForm } from '@/components/auth/RegisterForm'
 import { Navbar } from '@/components/layout/Navbar'
 
 export const metadata = {
-  title: 'Registracija | 350 Logatec',
-  description: 'Ustvarite nov račun za aplikacijo 350 Logatec',
+  title: 'Registracija | 350logatec',
 }
 
 export default function RegisterPage() {

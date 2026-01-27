@@ -1,6 +1,10 @@
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 
+export const metadata = {
+  title: "Pogoji uporabe | 350logatec",
+};
+
 export default function PogojiPage() {
   return (
     <div className="min-h-screen flex flex-col">
