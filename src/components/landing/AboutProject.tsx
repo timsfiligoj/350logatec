@@ -53,7 +53,7 @@ export function AboutProject() {
                   className="inline-flex items-center justify-center md:justify-start gap-2 text-primary hover:text-primary/80 font-medium transition-colors"
                 >
                   <Mail className="h-4 w-4 shrink-0" />
-                  <span>Opazili napako ali imate idejo? Pišite nam &rarr;</span>
+                  <span>Javi napako ali pošlji idejo &rarr;</span>
                 </a>
               </div>
 
