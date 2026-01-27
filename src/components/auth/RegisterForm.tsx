@@ -40,6 +40,7 @@ export function RegisterForm() {
   const [fullName, setFullName] = useState('')
   const [acceptedTerms, setAcceptedTerms] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
   const router = useRouter()
@@ -87,9 +88,8 @@ export function RegisterForm() {
         return
       }
 
-      // Redirect na onboarding po uspešni registraciji
-      router.push('/dobrodosli')
-      router.refresh()
+      // Pokaži sporočilo za potrditev emaila
+      setSuccess(true)
     } catch {
       setError('Prišlo je do napake. Poskusite znova.')
     } finally {
@@ -117,6 +117,50 @@ export function RegisterForm() {
       setError('Prišlo je do napake. Poskusite znova.')
       setGoogleLoading(false)
     }
+  }
+
+  // Pokaži sporočilo za potrditev emaila
+  if (success) {
+    return (
+      <Card className="w-full max-w-[400px]">
+        <CardHeader className="space-y-1">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100">
+            <Mail className="h-6 w-6 text-emerald-600" />
+          </div>
+          <CardTitle className="text-2xl font-bold text-center">Preverite email</CardTitle>
+          <CardDescription className="text-center">
+            Na <span className="font-medium text-foreground">{email}</span> smo poslali potrditveno povezavo.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-md text-sm text-emerald-800">
+            <p className="font-medium mb-2">Naslednji koraki:</p>
+            <ol className="list-decimal list-inside space-y-1">
+              <li>Odprite svoj email</li>
+              <li>Kliknite na potrditveno povezavo</li>
+              <li>Nastavite svoj okoliš</li>
+            </ol>
+          </div>
+          <p className="text-sm text-center text-muted-foreground">
+            Niste prejeli emaila?{' '}
+            <button
+              type="button"
+              onClick={() => setSuccess(false)}
+              className="text-emerald-600 hover:underline font-medium"
+            >
+              Poskusite znova
+            </button>
+          </p>
+        </CardContent>
+        <CardFooter>
+          <Link href="/prijava" className="w-full">
+            <Button variant="outline" className="w-full">
+              Nazaj na prijavo
+            </Button>
+          </Link>
+        </CardFooter>
+      </Card>
+    )
   }
 
   return (
