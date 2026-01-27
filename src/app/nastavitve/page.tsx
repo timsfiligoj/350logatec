@@ -25,9 +25,10 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { okolisiEM, okolisiBio, StreetSearchResult } from '@/lib/data/okolisi'
-import { Settings, MapPin, Bell, Loader2, Check, User } from 'lucide-react'
+import { Settings, MapPin, Bell, Loader2, Check, User, AlertTriangle } from 'lucide-react'
 import { OkolisiDialog } from '@/components/odvoz/OkolisiDialog'
 import { AddressSearch } from '@/components/odvoz/AddressSearch'
+import { DeleteAccountDialog } from '@/components/settings/DeleteAccountDialog'
 
 interface UserSettings {
   em_okolis: number | null
@@ -396,6 +397,30 @@ export default function NastavitvePage() {
                   )}
                 </Button>
               </CardFooter>
+            </Card>
+
+            {/* Nevarno območje */}
+            <Card className="border-red-200">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-red-600">
+                  <AlertTriangle className="h-5 w-5" />
+                  Nevarno območje
+                </CardTitle>
+                <CardDescription>
+                  Trajne akcije, ki jih ni mogoče razveljaviti
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <p className="text-sm font-medium">Izbriši račun</p>
+                    <p className="text-sm text-muted-foreground">
+                      Trajno izbrišite svoj račun in vse podatke
+                    </p>
+                  </div>
+                  <DeleteAccountDialog />
+                </div>
+              </CardContent>
             </Card>
           </div>
         </div>
