@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Menu, X, LogOut, Settings, Loader2, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -45,10 +46,13 @@ export function Navbar() {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center group transition-transform hover:scale-105">
-            <img
+            <Image
               src="/logo_350logatec.svg"
               alt="350logatec"
+              width={120}
+              height={28}
               className="h-7 w-auto"
+              priority
             />
           </Link>
 
