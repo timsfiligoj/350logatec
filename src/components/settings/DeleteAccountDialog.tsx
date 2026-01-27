@@ -37,9 +37,8 @@ export function DeleteAccountDialog() {
         return
       }
 
-      // Redirect to home page after successful deletion
-      router.push('/')
-      router.refresh()
+      // Hard redirect to home page to fully clear auth state
+      window.location.href = '/?deleted=true'
     } catch {
       setError('Prišlo je do napake pri brisanju računa')
     } finally {
@@ -55,7 +54,7 @@ export function DeleteAccountDialog() {
           Izbriši račun
         </Button>
       </DialogTrigger>
-      <DialogContent showCloseButton={false}>
+      <DialogContent>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-red-600">
             <AlertTriangle className="h-5 w-5" />
@@ -83,7 +82,7 @@ export function DeleteAccountDialog() {
           </div>
         )}
 
-        <DialogFooter className="gap-2 sm:gap-0">
+        <DialogFooter className="gap-2 sm:gap-2">
           <DialogClose asChild>
             <Button variant="outline" disabled={isDeleting}>
               Prekliči
