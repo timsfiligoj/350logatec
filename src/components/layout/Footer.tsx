@@ -1,6 +1,5 @@
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 
 export function Footer() {
   return (
@@ -10,7 +9,7 @@ export function Footer() {
           {/* Logo & Description */}
           <div className="space-y-4">
             <Link href="/" className="flex items-center">
-              <Image
+              <img
                 src="/logo_350logatec.svg"
                 alt="350logatec"
                 width={140}
