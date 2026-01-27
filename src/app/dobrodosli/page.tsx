@@ -118,6 +118,7 @@ export default function OnboardingPage() {
         .from('user_settings')
         .upsert({
           user_id: user.id,
+          email: user.email,  // Store email for analytics
           em_okolis: emOkolis,
           bio_okolis: bioOkolis || 1, // Default to B1 if not set
           email_notifications: emailNotifications,

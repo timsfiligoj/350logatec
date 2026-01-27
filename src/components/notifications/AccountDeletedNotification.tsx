@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { CheckCircle, X } from 'lucide-react'
 
@@ -8,17 +8,24 @@ export function AccountDeletedNotification() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [show, setShow] = useState(false)
+  const hasShown = useRef(false)
 
   useEffect(() => {
-    if (searchParams.get('deleted') === 'true') {
+    if (searchParams.get('deleted') === 'true' && !hasShown.current) {
+      hasShown.current = true
       setShow(true)
       // Remove the query param from URL
       router.replace('/', { scroll: false })
-      // Auto-hide after 5 seconds
+    }
+  }, [searchParams, router])
+
+  // Separate effect for auto-hide timer
+  useEffect(() => {
+    if (show) {
       const timer = setTimeout(() => setShow(false), 5000)
       return () => clearTimeout(timer)
     }
-  }, [searchParams, router])
+  }, [show])
 
   if (!show) return null
 

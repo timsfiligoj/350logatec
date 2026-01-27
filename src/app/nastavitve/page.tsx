@@ -124,6 +124,7 @@ export default function NastavitvePage() {
         .from('user_settings')
         .upsert({
           user_id: user.id,
+          email: user.email,  // Store email for analytics
           em_okolis: settings.em_okolis,
           bio_okolis: settings.bio_okolis,
           email_notifications: settings.email_notifications,
