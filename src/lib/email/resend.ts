@@ -118,6 +118,11 @@ function generateEmailHtml(date: string, wasteTypes: string[]): string {
               <p style="margin: 8px 0 0 0; font-size: 12px; color: #9ca3af;">
                 Prejeli ste to sporočilo, ker ste omogočili email obvestila.
               </p>
+              <p style="margin: 12px 0 0 0;">
+                <a href="https://www.350logatec.si/nastavitve" style="font-size: 12px; color: #6b7280; text-decoration: underline;">
+                  Uredi nastavitve
+                </a>
+              </p>
             </td>
           </tr>
         </table>
