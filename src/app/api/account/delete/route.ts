@@ -31,6 +31,9 @@ export async function DELETE() {
       )
     }
 
+    // Sign out the current session first (clear cookies)
+    await supabase.auth.signOut()
+
     // Delete the auth user (this will prevent login)
     const { error: deleteError } = await adminClient.auth.admin.deleteUser(user.id)
 
@@ -42,7 +45,15 @@ export async function DELETE() {
       )
     }
 
-    return NextResponse.json({ success: true })
+    // Return success with cache-control to prevent caching
+    return NextResponse.json(
+      { success: true },
+      {
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate',
+        },
+      }
+    )
   } catch (error) {
     console.error('Account deletion error:', error)
     return NextResponse.json(
