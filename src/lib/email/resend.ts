@@ -54,7 +54,7 @@ function generateEmailHtml(date: string, wasteTypes: string[]): string {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spomin: Jutri je odvoz odpadkov</title>
+  <title>Odvoz odpadkov</title>
 </head>
 <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f3f4f6;">
   <table role="presentation" style="width: 100%; border-collapse: collapse;">
@@ -68,7 +68,7 @@ function generateEmailHtml(date: string, wasteTypes: string[]): string {
                 🗑️
               </div>
               <h1 style="margin: 16px 0 0 0; font-size: 24px; font-weight: 700; color: #111827;">
-                Spomin: Jutri je odvoz odpadkov
+                Odvoz odpadkov
               </h1>
             </td>
           </tr>
