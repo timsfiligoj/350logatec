@@ -42,7 +42,7 @@ export default function OnboardingPage() {
   // Redirect if not logged in
   useEffect(() => {
     if (!authLoading && !user) {
-      router.push('/auth/login')
+      router.push('/prijava')
     }
   }, [authLoading, user, router])
 

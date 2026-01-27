@@ -42,13 +42,13 @@ export async function updateSession(request: NextRequest) {
 
   if (isProtectedPath && !user) {
     const url = request.nextUrl.clone()
-    url.pathname = '/auth/login'
+    url.pathname = '/prijava'
     url.searchParams.set('redirectTo', request.nextUrl.pathname)
     return NextResponse.redirect(url)
   }
 
   // Če je uporabnik prijavljen in gre na auth strani, redirect na /odvoz
-  const authPaths = ['/auth/login', '/auth/register']
+  const authPaths = ['/prijava', '/registracija']
   const isAuthPath = authPaths.some(path =>
     request.nextUrl.pathname.startsWith(path)
   )

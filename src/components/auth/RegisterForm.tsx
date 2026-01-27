@@ -88,7 +88,7 @@ export function RegisterForm() {
       }
 
       // Redirect na onboarding po uspešni registraciji
-      router.push('/onboarding')
+      router.push('/dobrodosli')
       router.refresh()
     } catch {
       setError('Prišlo je do napake. Poskusite znova.')
@@ -264,7 +264,7 @@ export function RegisterForm() {
           </Button>
           <p className="text-sm text-center text-muted-foreground">
             Že imate račun?{' '}
-            <Link href="/auth/login" className="text-emerald-600 hover:underline font-medium">
+            <Link href="/prijava" className="text-emerald-600 hover:underline font-medium">
               Prijavite se
             </Link>
           </p>

@@ -19,7 +19,7 @@ export async function GET(request: Request) {
 
       // Determine redirect destination
       const needsOnboarding = !settings || settings.em_okolis === null
-      const redirectPath = needsOnboarding ? '/onboarding' : '/odvoz'
+      const redirectPath = needsOnboarding ? '/dobrodosli' : '/odvoz'
 
       const forwardedHost = request.headers.get('x-forwarded-host')
       const isLocalEnv = process.env.NODE_ENV === 'development'
@@ -35,5 +35,5 @@ export async function GET(request: Request) {
   }
 
   // Return the user to an error page with instructions
-  return NextResponse.redirect(`${origin}/auth/login?error=Could not authenticate`)
+  return NextResponse.redirect(`${origin}/prijava?error=Could not authenticate`)
 }

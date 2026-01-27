@@ -22,8 +22,8 @@ export function Navbar() {
 
   const handleSignOut = async () => {
     setIsLoggingOut(true);
-    await signOut();
     router.push("/");
+    await signOut();
     router.refresh();
     setIsLoggingOut(false);
   };
@@ -106,7 +106,7 @@ export function Navbar() {
             ) : (
               <>
                 <Link
-                  href="/auth/login"
+                  href="/prijava"
                   className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
                 >
                   Prijava
@@ -191,7 +191,7 @@ export function Navbar() {
                     Koledar odvoza
                   </Link>
                   <Button asChild className="mt-2 mx-2">
-                    <Link href="/auth/login" onClick={() => setIsOpen(false)}>
+                    <Link href="/prijava" onClick={() => setIsOpen(false)}>
                       Prijava
                     </Link>
                   </Button>

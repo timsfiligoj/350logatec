@@ -54,7 +54,7 @@ export default function NastavitvePage() {
   // Redirect če ni prijavljen
   useEffect(() => {
     if (!authLoading && !user) {
-      router.push('/auth/login?redirectTo=/nastavitve')
+      router.push('/prijava?redirectTo=/nastavitve')
     }
   }, [authLoading, user, router])
 

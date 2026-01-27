@@ -74,7 +74,7 @@ export function LoginForm() {
         const needsOnboarding = !settings || settings.em_okolis === null
 
         if (needsOnboarding) {
-          router.push('/onboarding')
+          router.push('/dobrodosli')
         } else {
           const redirectTo = searchParams.get('redirectTo') || '/odvoz'
           router.push(redirectTo)
@@ -205,7 +205,7 @@ export function LoginForm() {
 
           <p className="text-sm text-center text-muted-foreground">
             Še nimate računa?{' '}
-            <Link href="/auth/register" className="text-emerald-600 hover:underline font-medium">
+            <Link href="/registracija" className="text-emerald-600 hover:underline font-medium">
               Registrirajte se
             </Link>
           </p>
