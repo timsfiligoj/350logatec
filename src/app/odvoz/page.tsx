@@ -94,7 +94,7 @@ export default function OdvozPage() {
                 <Calendar className="h-5 w-5 text-primary" />
               </div>
               <h1 className="font-display text-2xl md:text-3xl font-bold">
-                Koledar odvozov odpadkov
+                Koledar odvoza odpadkov
               </h1>
             </div>
             <p className="text-muted-foreground">
