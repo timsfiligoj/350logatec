@@ -145,7 +145,7 @@ export async function sendCollectionReminder(
     const { data, error } = await resend.emails.send({
       from: '350logatec <noreply@350logatec.si>',
       to: [to],
-      subject: 'Jutri je odvoz odpadkov - 350logatec',
+      subject: 'Jutri je odvoz odpadkov',
       html,
     })
 
