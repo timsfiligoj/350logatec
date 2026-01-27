@@ -48,8 +48,7 @@ export function Navbar() {
             <img
               src="/logo_350logatec.svg"
               alt="350logatec"
-              width={160}
-              height={27}
+              className="h-7 w-auto"
             />
           </Link>
 

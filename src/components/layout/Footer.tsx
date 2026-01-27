@@ -12,8 +12,7 @@ export function Footer() {
               <img
                 src="/logo_350logatec.svg"
                 alt="350logatec"
-                width={140}
-                height={24}
+                className="h-6 w-auto"
               />
             </Link>
             <p className="text-sm text-muted-foreground max-w-xs">
