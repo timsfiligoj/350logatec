@@ -143,7 +143,7 @@ export async function sendCollectionReminder(
     const html = generateEmailHtml(date, wasteTypes)
 
     const { data, error } = await resend.emails.send({
-      from: '350logatec <onboarding@resend.dev>',
+      from: '350logatec <noreply@350logatec.si>',
       to: [to],
       subject: 'Jutri je odvoz odpadkov - 350logatec',
       html,
