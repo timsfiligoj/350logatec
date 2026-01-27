@@ -147,8 +147,7 @@ function EmptyState() {
         Izberite svoj okoliš
       </h3>
       <p className="text-muted-foreground text-center max-w-sm">
-        Izberite svoj E/M in Bio okoliš na levi strani, da vidite koledar
-        odvozov odpadkov.
+        Izberite svoj E/M in Bio okoliš, da vidite koledar odvozov odpadkov.
       </p>
     </div>
   );
