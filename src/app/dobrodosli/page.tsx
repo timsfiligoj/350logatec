@@ -147,7 +147,7 @@ export default function OnboardingPage() {
             <Leaf className="h-8 w-8 text-white" />
           </div>
           <CardTitle className="text-2xl font-bold">
-            Dobrodošli v 350logatec!
+            Dobrodošli{user.user_metadata?.full_name ? `, ${user.user_metadata.full_name.split(' ')[0]}` : ''}!
           </CardTitle>
           <CardDescription className="text-base">
             Nastavite vaš profil za prilagojen prikaz odvozov odpadkov
