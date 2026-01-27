@@ -23,7 +23,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { okolisiEM, okolisiBio, StreetSearchResult } from '@/lib/data/okolisi'
-import { Loader2, Check, User, MapPin, Leaf } from 'lucide-react'
+import { Loader2, Check, User, MapPin, Leaf, Bell } from 'lucide-react'
 import { AddressSearch } from '@/components/odvoz/AddressSearch'
 
 export default function OnboardingPage() {
@@ -34,6 +34,7 @@ export default function OnboardingPage() {
   const [fullName, setFullName] = useState('')
   const [emOkolis, setEmOkolis] = useState<number | null>(null)
   const [bioOkolis, setBioOkolis] = useState<number | null>(null)
+  const [emailNotifications, setEmailNotifications] = useState(false)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -112,14 +113,14 @@ export default function OnboardingPage() {
         return
       }
 
-      // Save settings with email_notifications = true by default
+      // Save settings
       const { error: settingsError } = await supabase
         .from('user_settings')
         .upsert({
           user_id: user.id,
           em_okolis: emOkolis,
           bio_okolis: bioOkolis || 1, // Default to B1 if not set
-          email_notifications: true,
+          email_notifications: emailNotifications,
           updated_at: new Date().toISOString(),
         }, {
           onConflict: 'user_id'
@@ -282,6 +283,40 @@ export default function OnboardingPage() {
                 </span>
               </div>
             )}
+          </div>
+
+          {/* Obvestila */}
+          <div className="space-y-3 pt-2 border-t">
+            <Label className="flex items-center gap-2">
+              <Bell className="h-4 w-4 text-primary" />
+              Obvestila
+            </Label>
+            <div className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+              <div className="space-y-0.5">
+                <p className="text-sm font-medium">Email obvestila</p>
+                <p className="text-xs text-muted-foreground">
+                  Prejemajte opomnike o odvozih na vaš email
+                </p>
+              </div>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={emailNotifications}
+                onClick={() => setEmailNotifications(!emailNotifications)}
+                disabled={saving}
+                className={`
+                  relative inline-flex h-6 w-11 items-center rounded-full transition-colors
+                  ${emailNotifications ? 'bg-primary' : 'bg-gray-300'}
+                `}
+              >
+                <span
+                  className={`
+                    inline-block h-4 w-4 transform rounded-full bg-white transition-transform shadow-sm
+                    ${emailNotifications ? 'translate-x-6' : 'translate-x-1'}
+                  `}
+                />
+              </button>
+            </div>
           </div>
         </CardContent>
 

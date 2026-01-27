@@ -44,7 +44,7 @@ export default function NastavitvePage() {
   const [settings, setSettings] = useState<UserSettings>({
     em_okolis: null,
     bio_okolis: null,
-    email_notifications: true, // Privzeto vklopljeno za nove uporabnike
+    email_notifications: false, // Privzeto izklopljeno
   })
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -352,12 +352,12 @@ export default function NastavitvePage() {
                     }
                     className={`
                       relative inline-flex h-6 w-11 items-center rounded-full transition-colors
-                      ${settings.email_notifications ? 'bg-primary' : 'bg-muted'}
+                      ${settings.email_notifications ? 'bg-primary' : 'bg-gray-300'}
                     `}
                   >
                     <span
                       className={`
-                        inline-block h-4 w-4 transform rounded-full bg-white transition-transform
+                        inline-block h-4 w-4 transform rounded-full bg-white transition-transform shadow-sm
                         ${settings.email_notifications ? 'translate-x-6' : 'translate-x-1'}
                       `}
                     />
