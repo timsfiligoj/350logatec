@@ -10,7 +10,7 @@ export default function ZasebnostPage() {
         <article className="prose prose-emerald max-w-none">
           <h1 className="font-display text-3xl font-bold mb-2">Politika zasebnosti</h1>
           <p className="text-muted-foreground mb-8">
-            Zadnja posodobitev: 26. januar 2026
+            Zadnja posodobitev: 27. januar 2026
           </p>
 
           <section className="mb-8">
@@ -93,12 +93,12 @@ export default function ZasebnostPage() {
             <p className="text-muted-foreground mb-2">Imate pravico do:</p>
             <ul className="list-disc list-inside text-muted-foreground space-y-1">
               <li>Dostopa do svojih podatkov</li>
-              <li>Popravka netočnih podatkov</li>
-              <li>Izbrisa vašega računa in vseh povezanih podatkov</li>
+              <li>Popravka netočnih podatkov (v nastavitvah)</li>
+              <li>Izbrisa vašega računa (v nastavitvah pod &quot;Nevarno območje&quot;)</li>
               <li>Izvoza vaših podatkov</li>
             </ul>
             <p className="text-muted-foreground mt-2">
-              Za uveljavljanje teh pravic nas kontaktirajte na:{" "}
+              Izbris računa lahko opravite sami v nastavitvah. Za druge zahteve nas kontaktirajte na:{" "}
               <a href="mailto:tim@350life.com" className="text-primary hover:underline">
                 tim@350life.com
               </a>
@@ -119,9 +119,14 @@ export default function ZasebnostPage() {
 
           <section className="mb-8">
             <h2 className="font-display text-xl font-semibold mb-3">8. Hramba podatkov</h2>
-            <p className="text-muted-foreground">
-              Vaše podatke hranimo dokler imate aktiven račun. Ob izbrisu računa se vsi vaši podatki trajno izbrišejo.
+            <p className="text-muted-foreground mb-2">
+              Vaše podatke hranimo dokler imate aktiven račun. Ob izbrisu računa:
             </p>
+            <ul className="list-disc list-inside text-muted-foreground space-y-1">
+              <li>Vaš prijavni račun (email, geslo) se trajno izbriše</li>
+              <li>Anonimizirani podatki o uporabi (okoliš, nastavitve) se lahko ohranijo za statistične namene</li>
+              <li>Ti podatki niso več povezani z vašo identiteto</li>
+            </ul>
           </section>
 
           <section className="mb-8">

@@ -9,7 +9,7 @@ export default function PogojiPage() {
         <article className="prose prose-emerald max-w-none">
           <h1 className="font-display text-3xl font-bold mb-2">Pogoji uporabe</h1>
           <p className="text-muted-foreground mb-8">
-            Zadnja posodobitev: 26. januar 2026
+            Zadnja posodobitev: 27. januar 2026
           </p>
 
           <section className="mb-8">
@@ -59,7 +59,22 @@ export default function PogojiPage() {
           </section>
 
           <section className="mb-8">
-            <h2 className="font-display text-xl font-semibold mb-3">6. Omejitev odgovornosti</h2>
+            <h2 className="font-display text-xl font-semibold mb-3">6. Izbris računa</h2>
+            <p className="text-muted-foreground mb-2">
+              Svoj račun lahko kadarkoli izbrišete v nastavitvah. Ob izbrisu:
+            </p>
+            <ul className="list-disc list-inside text-muted-foreground space-y-1">
+              <li>Vaš račun in prijavni podatki bodo trajno izbrisani</li>
+              <li>Ne boste več prejemali email obvestil</li>
+              <li>Anonimizirani podatki o uporabi se lahko ohranijo za statistične namene</li>
+            </ul>
+            <p className="text-muted-foreground mt-2">
+              Izbris računa je trajna akcija, ki je ni mogoče razveljaviti.
+            </p>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="font-display text-xl font-semibold mb-3">7. Omejitev odgovornosti</h2>
             <p className="text-muted-foreground mb-2">
               Aplikacija je zagotovljena &quot;takšna kot je&quot; brez kakršnihkoli garancij. Ne odgovarjamo za:
             </p>
@@ -71,14 +86,14 @@ export default function PogojiPage() {
           </section>
 
           <section className="mb-8">
-            <h2 className="font-display text-xl font-semibold mb-3">7. Spremembe pogojev</h2>
+            <h2 className="font-display text-xl font-semibold mb-3">8. Spremembe pogojev</h2>
             <p className="text-muted-foreground">
               Pogoje lahko kadarkoli spremenimo. O bistvenih spremembah vas bomo obvestili preko aplikacije.
             </p>
           </section>
 
           <section className="mb-8">
-            <h2 className="font-display text-xl font-semibold mb-3">8. Kontakt</h2>
+            <h2 className="font-display text-xl font-semibold mb-3">9. Kontakt</h2>
             <p className="text-muted-foreground">
               Za vprašanja glede pogojev uporabe nas kontaktirajte na:{" "}
               <a href="mailto:tim@350life.com" className="text-primary hover:underline">
