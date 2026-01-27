@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useAuth } from '@/components/auth/AuthProvider'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
   Select,
@@ -23,7 +22,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { okolisiEM, okolisiBio, StreetSearchResult } from '@/lib/data/okolisi'
-import { Loader2, Check, User, MapPin, Leaf, Bell } from 'lucide-react'
+import { Loader2, Check, MapPin, Leaf, Bell } from 'lucide-react'
 import { AddressSearch } from '@/components/odvoz/AddressSearch'
 
 export default function OnboardingPage() {
@@ -31,7 +30,6 @@ export default function OnboardingPage() {
   const router = useRouter()
   const supabase = createClient()
 
-  const [fullName, setFullName] = useState('')
   const [emOkolis, setEmOkolis] = useState<number | null>(null)
   const [bioOkolis, setBioOkolis] = useState<number | null>(null)
   const [emailNotifications, setEmailNotifications] = useState(false)
@@ -61,12 +59,7 @@ export default function OnboardingPage() {
         if (!error && data && data.em_okolis !== null) {
           // User already has settings, redirect to /odvoz
           router.push('/odvoz')
-          return
         }
-
-        // Load name from user metadata
-        const name = user.user_metadata?.full_name || user.user_metadata?.name || ''
-        setFullName(name)
       } catch (err) {
         console.error('Error checking settings:', err)
       } finally {
@@ -88,11 +81,6 @@ export default function OnboardingPage() {
     if (!user) return
 
     // Validation
-    if (!fullName.trim()) {
-      setError('Prosimo, vnesite vaše ime')
-      return
-    }
-
     if (emOkolis === null) {
       setError('Prosimo, izberite vaš okoliš')
       return
@@ -102,17 +90,6 @@ export default function OnboardingPage() {
     setError(null)
 
     try {
-      // Save name to user metadata
-      const { error: updateError } = await supabase.auth.updateUser({
-        data: { full_name: fullName }
-      })
-
-      if (updateError) {
-        console.error('Error updating user:', updateError)
-        setError('Napaka pri shranjevanju. Poskusite znova.')
-        return
-      }
-
       // Save settings
       const { error: settingsError } = await supabase
         .from('user_settings')
@@ -183,22 +160,6 @@ export default function OnboardingPage() {
               {error}
             </div>
           )}
-
-          {/* Ime */}
-          <div className="space-y-2">
-            <Label htmlFor="fullName" className="flex items-center gap-2">
-              <User className="h-4 w-4 text-primary" />
-              Ime in priimek
-            </Label>
-            <Input
-              id="fullName"
-              type="text"
-              placeholder="Janez Novak"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              disabled={saving}
-            />
-          </div>
 
           {/* Okoliš */}
           <div className="space-y-4">
@@ -324,7 +285,7 @@ export default function OnboardingPage() {
         <CardFooter className="pt-2">
           <Button
             onClick={handleSave}
-            disabled={saving || !fullName.trim() || emOkolis === null}
+            disabled={saving || emOkolis === null}
             className="w-full bg-emerald-600 hover:bg-emerald-700"
             size="lg"
           >
