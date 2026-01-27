@@ -65,3 +65,27 @@ Vsi podatki o okoliših in datumih odvozov so iz uradnega dokumenta:
 - Plus Jakarta Sans za naslove, Inter za body tekst
 - Zelena/emerald primarna barva
 - Slovenščina za vse tekste in datume (date-fns sl locale)
+
+## URL Konvencije
+
+**POMEMBNO:** Vse nove strani ustvarjaj s slovenskimi imeni v URL-jih.
+
+### Trenutni URL-ji
+| URL | Namen |
+|-----|-------|
+| `/prijava` | Prijava uporabnika |
+| `/registracija` | Registracija novega uporabnika |
+| `/dobrodosli` | Onboarding po registraciji |
+| `/nastavitve` | Uporabniške nastavitve |
+| `/odvoz` | Koledar odvozov |
+| `/pogoji` | Pogoji uporabe |
+| `/zasebnost` | Politika zasebnosti |
+
+### Izjeme (angleška imena)
+- `/auth/callback` - OAuth callback (zahteva Google)
+- `/api/*` - API endpoints (tehnična konvencija)
+
+### Pravila za nove strani
+1. Uporabi slovensko ime brez šumnikov (č→c, š→s, ž→z)
+2. Uporabi male črke in vezaj za ločevanje besed
+3. Primeri: `/moj-profil`, `/zgodovina-odvozov`, `/pomoc`
