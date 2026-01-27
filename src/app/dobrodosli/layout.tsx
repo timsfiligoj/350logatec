@@ -1,11 +1,13 @@
-export const metadata = {
-  title: "Dobrodošli | 350logatec",
-};
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Dobrodošli | 350logatec',
+}
 
 export default function DobrodosliLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
-  return children;
+  return children
 }

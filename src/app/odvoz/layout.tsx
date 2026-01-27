@@ -1,11 +1,13 @@
-export const metadata = {
-  title: "Koledar odvozov | 350logatec",
-};
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Odvoz odpadkov | 350logatec',
+}
 
 export default function OdvozLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
-  return children;
+  return children
 }

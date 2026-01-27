@@ -1,11 +1,13 @@
-export const metadata = {
-  title: "Nastavitve | 350logatec",
-};
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Nastavitve | 350logatec',
+}
 
 export default function NastavitveLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
-  return children;
+  return children
 }
