@@ -33,11 +33,20 @@ export const metadata: Metadata = {
     siteName: "350logatec",
     locale: "sl_SI",
     type: "website",
+    images: [
+      {
+        url: "/350life_Logatec_OG.png",
+        width: 1200,
+        height: 630,
+        alt: "350logatec - Pametne rešitve za Logatec",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "350logatec - Pametne rešitve za Logatec",
     description: "Pametne rešitve za boljše življenje v Logatcu. Koledar odvozov odpadkov in več.",
+    images: ["/350life_Logatec_OG.png"],
   },
   robots: {
     index: true,
