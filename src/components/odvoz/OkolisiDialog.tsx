@@ -144,8 +144,10 @@ export function OkolisiDialog() {
                 >
                   <div className="flex items-baseline gap-3 mb-2">
                     <h4 className="font-semibold">{okolis.name}</h4>
-                    <span className="text-sm font-medium text-blue-600">
-                      {okolis.code}
+                    <span className="text-sm font-medium">
+                      <span className="text-blue-600">{okolis.code.split(' ')[0]}</span>
+                      {' '}
+                      <span className="text-gray-700">{okolis.code.split(' ')[1]}</span>
                     </span>
                   </div>
                   <p className="text-sm text-muted-foreground leading-relaxed">
