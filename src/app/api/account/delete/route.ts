@@ -17,10 +17,14 @@ export async function DELETE() {
 
     const adminClient = createAdminClient()
 
-    // Soft delete: Mark user_settings as deleted (keep data for analytics)
+    // Soft delete: Mark user_settings as deleted AND unlink from user
+    // Setting user_id to NULL prevents CASCADE deletion when auth user is deleted
     const { error: updateError } = await adminClient
       .from('user_settings')
-      .update({ deleted_at: new Date().toISOString() })
+      .update({
+        deleted_at: new Date().toISOString(),
+        user_id: null  // Unlink before auth user deletion to preserve record
+      })
       .eq('user_id', user.id)
 
     if (updateError) {
