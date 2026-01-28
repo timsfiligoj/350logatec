@@ -3,7 +3,7 @@ import type { MetadataRoute } from 'next'
 export default function manifest(): MetadataRoute.Manifest {
   return {
     id: '/odvoz',
-    name: '350logatec - Koledar odvozov',
+    name: '350logatec',
     short_name: '350logatec',
     description: 'Pametne rešitve za Logatec - Koledar odvozov odpadkov',
     start_url: '/odvoz',
