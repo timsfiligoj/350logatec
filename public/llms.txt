@@ -1,0 +1,68 @@
+# 350logatec - Pametne rešitve za Logatec
+
+> Brezplačna aplikacija za pregled koledarja odvoza odpadkov v občini Logatec, Slovenija.
+
+## O projektu
+
+350logatec je del iniciative 350life, ki razvija digitalne rešitve za lokalne skupnosti. Aplikacija pomaga prebivalcem Logatca spremljati urnike odvoza komunalnih odpadkov.
+
+URL: https://www.350logatec.si
+
+## Odvoz odpadkov v Logatcu
+
+Aplikacija prikazuje koledar odvoza za:
+- **Mešani komunalni odpadki** - odvoz na 14 dni
+- **Embalaža** - odvoz na 14 dni
+- **Biološki odpadki** - tedensko poleti, na 14 dni pozimi
+
+### Kako deluje
+1. Uporabnik izbere svoj E/M okoliš (za embalažo in mešane odpadke)
+2. Uporabnik izbere svoj Bio okoliš (za biološke odpadke)
+3. Aplikacija prikaže prihajajoče datume odvoza
+4. Opcijsko: e-poštna obvestila dan pred odvozom
+
+### Okoliši v Logatcu
+Občina Logatec je razdeljena na več okolišev za odvoz odpadkov. Vsak naslov spada v določen E/M okoliš in Bio okoliš.
+
+## 350life
+
+350life je iniciativa za digitalizacijo slovenskih lokalnih skupnosti. Cilj je razvoj pametnih rešitev, ki izboljšujejo vsakdanje življenje prebivalcev.
+
+Projekti:
+- 350logatec - koledar odvoza odpadkov za Logatec
+
+## Digitalizacija Logatca
+
+350logatec predstavlja korak k digitalizaciji občine Logatec. Namesto papirnatih koledarjev lahko prebivalci dostopajo do informacij o odvozu odpadkov kadarkoli preko spleta ali mobilne naprave.
+
+Prednosti:
+- Vedno aktualne informacije
+- E-poštna opomniki
+- Dostopno na vseh napravah
+- Brezplačno za vse prebivalce
+
+## Kontakt
+
+Spletna stran: https://www.350logatec.si
+Projekt: 350life
+
+## Pogosta vprašanja
+
+### Kdaj je odvoz odpadkov v Logatcu?
+Odvoz odpadkov v Logatcu je odvisen od vašega okoliša. Obiščite 350logatec.si in izberite svoj okoliš za točne datume odvoza smeti, embalaže in bioloških odpadkov.
+
+### Kako izvem kateri okoliš odvoza imam?
+Na 350logatec.si lahko izberete svoj E/M okoliš (za embalažo in mešane odpadke) ter Bio okoliš (za biološke odpadke) glede na vašo lokacijo v Logatcu.
+
+### Kako pogosto odvažajo smeti v Logatcu?
+Mešani komunalni odpadki se odvažajo na 14 dni, embalaža na 14 dni, biološki odpadki pa tedensko v poletnih mesecih in na 14 dni v zimskih mesecih.
+
+### Ali lahko dobim obvestilo pred odvozom odpadkov?
+Da, na 350logatec.si se lahko registrirate in vklopite e-poštna obvestila, ki vas opozorijo dan pred odvozom odpadkov.
+
+### Ali je aplikacija brezplačna?
+Da, 350logatec je popolnoma brezplačna za vse prebivalce Logatca.
+
+## Ključne besede
+
+odvoz odpadkov logatec, koledar smeti logatec, kdaj je odvoz odpadkov, embalaža logatec, biološki odpadki logatec, komunala logatec, smeti logatec, 350life, digitalizacija logatec, pametne rešitve logatec
