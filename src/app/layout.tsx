@@ -4,6 +4,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { AuthProvider } from "@/components/auth/AuthProvider";
+import { JsonLd } from "@/components/seo/JsonLd";
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -18,7 +19,19 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "350logatec - Pametne rešitve za Logatec",
   description: "Pametne rešitve za boljše življenje v Logatcu. Koledar odvozov odpadkov in več.",
-  keywords: ["odvoz odpadkov", "Logatec", "smeti", "embalaža", "biološki odpadki", "komunala", "okoliš"],
+  keywords: [
+    "odvoz odpadkov logatec",
+    "koledar odvoza smeti logatec",
+    "kdaj je odvoz odpadkov",
+    "urnik odvoza embalaže",
+    "biološki odpadki logatec",
+    "komunala logatec",
+    "smeti logatec 2026",
+    "mešani odpadki logatec",
+    "odvoz smeti",
+    "embalaža",
+    "okoliš"
+  ],
   authors: [{ name: "350life" }],
   metadataBase: new URL("https://www.350logatec.si"),
   icons: {
@@ -63,6 +76,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="sl">
+      <head>
+        <JsonLd />
+      </head>
       <body
         className={`${plusJakarta.variable} ${inter.variable} font-sans antialiased`}
       >
