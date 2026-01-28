@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     id: '/odvoz',
     name: '350logatec',
     short_name: '350logatec',
-    description: 'Pametne rešitve za Logatec - Koledar odvozov odpadkov',
+    description: 'Pametne rešitve za boljše življenje v Logatcu',
     start_url: '/odvoz',
     display: 'standalone',
     background_color: '#ffffff',
