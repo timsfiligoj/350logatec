@@ -77,7 +77,7 @@ export function OkolisSelector({
               onEmOkolisChange(value ? parseInt(value) : null)
             }
           >
-            <SelectTrigger id="em-okolis" className="w-full">
+            <SelectTrigger id="em-okolis" className="w-full" aria-label="Izbira okoliša za embalažo in mešane odpadke">
               <SelectValue placeholder="Izberite E/M okoliš" />
             </SelectTrigger>
             <SelectContent>
@@ -101,7 +101,7 @@ export function OkolisSelector({
               onBioOkolisChange(value ? parseInt(value) : null)
             }
           >
-            <SelectTrigger id="bio-okolis" className="w-full">
+            <SelectTrigger id="bio-okolis" className="w-full" aria-label="Izbira okoliša za biološke odpadke">
               <SelectValue placeholder="Izberite Bio okoliš" />
             </SelectTrigger>
             <SelectContent>
