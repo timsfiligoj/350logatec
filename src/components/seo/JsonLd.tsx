@@ -6,6 +6,13 @@ export function JsonLd() {
     "description": "Koledar odvoza odpadkov za občino Logatec. Preverite kdaj je odvoz smeti, embalaže in bioloških odpadkov.",
     "url": "https://www.350logatec.si",
     "logo": "https://www.350logatec.si/logo_350logatec.png",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Logatec",
+      "addressRegion": "Osrednjeslovenska",
+      "postalCode": "1370",
+      "addressCountry": "SI"
+    },
     "areaServed": {
       "@type": "City",
       "name": "Logatec",
