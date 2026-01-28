@@ -6,6 +6,7 @@ import "./globals.css";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
+import { ServiceWorkerRegistration } from "@/components/pwa/ServiceWorkerRegistration";
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -101,6 +102,7 @@ export default function RootLayout({
         <AuthProvider>
           {children}
           <InstallPrompt />
+          <ServiceWorkerRegistration />
         </AuthProvider>
         <Analytics />
         <SpeedInsights />
