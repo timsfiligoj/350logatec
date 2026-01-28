@@ -49,6 +49,7 @@ export async function GET(request: NextRequest) {
       .select(
         `
         user_id,
+        email,
         em_okolis,
         bio_okolis,
         email_notifications,
@@ -74,9 +75,18 @@ export async function GET(request: NextRequest) {
 
     console.log(`[Cron] Found ${users.length} users with notifications enabled`)
 
+    // UUID regex za validacijo
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
     // Za vsakega uporabnika preveri če ima odvoz jutri
     for (const userSettings of users) {
-      const { user_id, em_okolis, bio_okolis, email_notifications, push_notifications } = userSettings
+      const { user_id, email: settingsEmail, em_okolis, bio_okolis, email_notifications, push_notifications } = userSettings
+
+      // Preskoči če user_id ni veljaven UUID
+      if (!user_id || !uuidRegex.test(user_id)) {
+        console.log(`[Cron] Skipping invalid user_id: ${user_id}`)
+        continue
+      }
 
       // Preskoči če nima nastavljenih okolišev
       if (!em_okolis || !bio_okolis) {
@@ -92,15 +102,20 @@ export async function GET(request: NextRequest) {
         continue
       }
 
-      // Pridobi email uporabnika iz auth.users (potrebujemo za email obvestila)
-      let userEmail: string | undefined
-      if (email_notifications) {
-        const { data: authUser, error: authError } = await supabase.auth.admin.getUserById(user_id)
-        if (authError || !authUser.user?.email) {
-          console.error(`[Cron] Error fetching user email for ${user_id}:`, authError)
-          errors.push(`Failed to get email for user ${user_id}`)
-        } else {
-          userEmail = authUser.user.email
+      // Pridobi email - najprej iz user_settings, potem iz auth.users
+      let userEmail: string | undefined = settingsEmail || undefined
+      if (email_notifications && !userEmail) {
+        try {
+          const { data: authUser, error: authError } = await supabase.auth.admin.getUserById(user_id)
+          if (authError || !authUser.user?.email) {
+            console.error(`[Cron] Error fetching user email for ${user_id}:`, authError)
+            errors.push(`Failed to get email for user ${user_id}`)
+          } else {
+            userEmail = authUser.user.email
+          }
+        } catch (authErr) {
+          console.error(`[Cron] Exception fetching user email for ${user_id}:`, authErr)
+          errors.push(`Exception getting email for user ${user_id}`)
         }
       }
 
