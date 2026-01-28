@@ -135,13 +135,17 @@ export async function GET(request: NextRequest) {
           const emailResult = await sendCollectionReminder(userEmail, collection.date, collection.types)
 
           if (emailResult.success) {
-            await supabase.from('notification_log').insert({
+            const { error: emailLogError } = await supabase.from('notification_log').insert({
               user_id,
               collection_date: tomorrowStr,
-              waste_types: collection.types,
+              waste_types: collection.types.join(','),
               notification_type: 'email',
               sent_at: new Date().toISOString(),
             })
+
+            if (emailLogError) {
+              console.error(`[Cron] Failed to log email notification for ${user_id}:`, emailLogError)
+            }
 
             results.push({
               userId: user_id,
@@ -228,7 +232,7 @@ export async function GET(request: NextRequest) {
               const { error: pushLogError } = await supabase.from('notification_log').insert({
                 user_id,
                 collection_date: tomorrowStr,
-                waste_types: collection.types,
+                waste_types: collection.types.join(','),
                 notification_type: 'push',
                 sent_at: new Date().toISOString(),
               })
