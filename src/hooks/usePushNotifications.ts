@@ -59,6 +59,7 @@ export function usePushNotifications() {
 
       if (perm !== 'granted') {
         setError('Dovoljenje za obvestila ni bilo podeljeno')
+        setLoading(false)
         return false
       }
 
@@ -69,8 +70,13 @@ export function usePushNotifications() {
       }
       const { publicKey } = await vapidRes.json()
 
-      // Subscribe
-      const registration = await navigator.serviceWorker.ready
+      // Wait for service worker with timeout
+      const swReady = navigator.serviceWorker.ready
+      const timeout = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('Service worker ni na voljo')), 10000)
+      )
+      const registration = await Promise.race([swReady, timeout])
+
       const sub = await registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(publicKey),
@@ -87,7 +93,8 @@ export function usePushNotifications() {
       })
 
       if (!res.ok) {
-        throw new Error('Napaka pri shranjevanju naročnine')
+        const errData = await res.json().catch(() => ({}))
+        throw new Error(errData.error || 'Napaka pri shranjevanju naročnine')
       }
 
       setSubscription(sub)
