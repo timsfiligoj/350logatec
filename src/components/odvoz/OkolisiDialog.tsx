@@ -4,6 +4,7 @@ import { HelpCircle } from "lucide-react";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -128,6 +129,9 @@ export function OkolisiDialog() {
           <DialogTitle className="text-xl font-display">
             Seznam okolišev
           </DialogTitle>
+          <DialogDescription>
+            Pregled vseh okolišev za odvoz odpadkov v občini Logatec
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6 overflow-y-auto flex-1 p-6 pt-4">
