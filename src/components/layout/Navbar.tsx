@@ -45,7 +45,7 @@ export function Navbar() {
       <div className="container mx-auto px-4 relative z-50">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center group transition-transform hover:scale-105">
+          <Link href="/" className="flex items-center">
             <Image
               src="/logo_350logatec.svg"
               alt="350logatec"
