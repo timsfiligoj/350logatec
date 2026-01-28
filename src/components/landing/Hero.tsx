@@ -9,7 +9,7 @@ const wasteTypes = [
     icon: Recycle,
     color: "bg-blue-500",
     bgColor: "bg-blue-50",
-    textColor: "text-blue-700",
+    textColor: "text-blue-900",
     description: "Plastika, kovine",
   },
   {
@@ -17,7 +17,7 @@ const wasteTypes = [
     icon: Trash2,
     color: "bg-gray-500",
     bgColor: "bg-gray-100",
-    textColor: "text-gray-700",
+    textColor: "text-gray-900",
     description: "Komunalni odpadki",
   },
   {
@@ -25,7 +25,7 @@ const wasteTypes = [
     icon: Leaf,
     color: "bg-green-500",
     bgColor: "bg-green-50",
-    textColor: "text-green-700",
+    textColor: "text-green-900",
     description: "Organski odpadki",
   },
 ];

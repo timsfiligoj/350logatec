@@ -143,7 +143,7 @@ export function OkolisiDialog() {
                   className="border-b border-border pb-4 last:border-0 last:pb-0"
                 >
                   <div className="flex items-baseline gap-3 mb-2">
-                    <h4 className="font-semibold">{okolis.name}</h4>
+                    <p className="font-semibold">{okolis.name}</p>
                     <span className="text-sm font-medium">
                       <span className="text-blue-600">{okolis.code.split(' ')[0]}</span>
                       {' '}
@@ -170,7 +170,7 @@ export function OkolisiDialog() {
                   className="border-b border-border pb-4 last:border-0 last:pb-0"
                 >
                   <div className="flex items-baseline gap-3 mb-2">
-                    <h4 className="font-semibold">{okolis.name}</h4>
+                    <p className="font-semibold">{okolis.name}</p>
                     <span className="text-sm font-medium text-green-600">
                       {okolis.code}
                     </span>

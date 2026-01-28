@@ -25,7 +25,7 @@ export function Footer() {
 
           {/* Links */}
           <div className="space-y-4">
-            <h4 className="font-display font-semibold">Povezave</h4>
+            <p className="font-display font-semibold">Povezave</p>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link
@@ -67,7 +67,7 @@ export function Footer() {
 
           {/* Data source */}
           <div className="space-y-4">
-            <h4 className="font-display font-semibold">Vir podatkov</h4>
+            <p className="font-display font-semibold">Vir podatkov</p>
             <p className="text-sm text-muted-foreground">
               Podatki o odvozih so pridobljeni iz uradnega koledarja Komunalnega
               podjetja Logatec d.o.o.
