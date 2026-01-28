@@ -179,7 +179,7 @@ export default function NastavitvePage() {
       <main className="container mx-auto px-4 py-12">
         <div className="max-w-[600px] mx-auto">
           <div className="flex items-center gap-3 mb-8">
-            <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
+            <div className="h-12 w-12 rounded-xl bg-primary/15 flex items-center justify-center">
               <Settings className="h-6 w-6 text-primary" />
             </div>
             <div>

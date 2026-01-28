@@ -37,7 +37,7 @@ export function OkolisSelector({
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-lg">
-            <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+            <div className="h-8 w-8 rounded-lg bg-primary/15 flex items-center justify-center">
               <MapPin className="h-4 w-4 text-primary" />
             </div>
             Izberite svoj okoliš

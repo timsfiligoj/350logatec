@@ -71,7 +71,7 @@ export function Navbar() {
                 <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center gap-2 rounded-full py-1.5 pl-1.5 pr-3 hover:bg-muted transition-colors">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary text-sm font-medium">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/15 text-primary text-sm font-medium">
                       {initials}
                     </div>
                     <span className="text-sm font-medium">{displayName}</span>
@@ -152,7 +152,7 @@ export function Navbar() {
                   </Link>
                   {/* User info */}
                   <div className="flex items-center gap-3 px-2 py-2 mb-2">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary font-medium">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/15 text-primary font-medium">
                       {initials}
                     </div>
                     <div>

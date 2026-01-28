@@ -57,7 +57,7 @@ export function UpcomingCollection({
     <Card>
       <CardHeader className="pb-0 pt-4 px-4">
         <CardTitle className="flex items-center gap-2 text-base">
-          <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
+          <div className="h-7 w-7 rounded-lg bg-primary/15 flex items-center justify-center">
             <CalendarClock className="h-3.5 w-3.5 text-primary" />
           </div>
           Naslednji odvoz

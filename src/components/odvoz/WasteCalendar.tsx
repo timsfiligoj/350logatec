@@ -141,7 +141,7 @@ export function WasteCalendar({ emOkolis, bioOkolis }: WasteCalendarProps) {
                   "relative aspect-square p-1 rounded-lg transition-all text-sm",
                   "hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary/50",
                   !isCurrentMonth && "text-muted-foreground/30 cursor-default hover:bg-transparent",
-                  isSelected && "bg-primary/10 ring-2 ring-primary",
+                  isSelected && "bg-primary/15 ring-2 ring-primary",
                   isDayToday && "font-bold"
                 )}
               >

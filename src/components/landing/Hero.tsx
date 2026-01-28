@@ -43,7 +43,7 @@ export function Hero() {
         <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 items-center">
           {/* Left side - Text content */}
           <div className="flex flex-col gap-6 text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary w-fit mx-auto lg:mx-0">
+            <div className="inline-flex items-center gap-2 rounded-full bg-primary/15 px-4 py-1.5 text-sm font-medium text-primary w-fit mx-auto lg:mx-0">
               <Leaf className="h-4 w-4" />
               Za boljši Logatec
             </div>
