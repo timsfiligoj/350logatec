@@ -225,13 +225,18 @@ export async function GET(request: NextRequest) {
 
             if (anyPushSuccess) {
               // Zapiši v notification_log
-              await supabase.from('notification_log').insert({
+              const { error: pushLogError } = await supabase.from('notification_log').insert({
                 user_id,
                 collection_date: tomorrowStr,
                 waste_types: collection.types,
                 notification_type: 'push',
                 sent_at: new Date().toISOString(),
               })
+
+              if (pushLogError) {
+                console.error(`[Cron] Failed to log push notification for ${user_id}:`, pushLogError)
+                errors.push(`Failed to log push for user ${user_id}: ${pushLogError.message}`)
+              }
 
               results.push({
                 userId: user_id,
