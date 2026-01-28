@@ -29,6 +29,7 @@ import { Settings, MapPin, Bell, Loader2, Check, User, AlertTriangle } from 'luc
 import { OkolisiDialog } from '@/components/odvoz/OkolisiDialog'
 import { AddressSearch } from '@/components/odvoz/AddressSearch'
 import { DeleteAccountDialog } from '@/components/settings/DeleteAccountDialog'
+import { PushNotificationToggle } from '@/components/pwa/PushNotificationToggle'
 
 interface UserSettings {
   em_okolis: number | null
@@ -334,7 +335,7 @@ export default function NastavitvePage() {
                   Prejemajte opomnike o prihajajočih odvozih
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
                     <Label htmlFor="email-notifications">Email obvestila</Label>
@@ -364,6 +365,11 @@ export default function NastavitvePage() {
                       `}
                     />
                   </button>
+                </div>
+
+                {/* Push obvestila */}
+                <div className="border-t border-gray-100 pt-4">
+                  <PushNotificationToggle />
                 </div>
               </CardContent>
             </Card>

@@ -1,10 +1,11 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -67,6 +68,21 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: '350logatec',
+  },
+  formatDetection: {
+    telephone: false,
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: '#10b981',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
 };
 
 export default function RootLayout({
@@ -84,6 +100,7 @@ export default function RootLayout({
       >
         <AuthProvider>
           {children}
+          <InstallPrompt />
         </AuthProvider>
         <Analytics />
         <SpeedInsights />

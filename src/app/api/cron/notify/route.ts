@@ -1,16 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendCollectionReminder } from '@/lib/email/resend'
+import { sendPushNotification } from '@/lib/push/web-push'
 import { isCollectionTomorrow, WasteType } from '@/lib/data/schedule-2026'
 
 export const dynamic = 'force-dynamic'
 
 interface NotificationResult {
   userId: string
-  email: string
+  email?: string
+  type: 'email' | 'push'
   success: boolean
   error?: string
   wasteTypes?: WasteType[]
+}
+
+const wasteTypeNames: Record<string, string> = {
+  E: 'embalaža',
+  M: 'mešani odpadki',
+  B: 'biološki odpadki',
 }
 
 export async function GET(request: NextRequest) {
@@ -19,10 +27,7 @@ export async function GET(request: NextRequest) {
   const expectedSecret = `Bearer ${process.env.CRON_SECRET}`
 
   if (authHeader !== expectedSecret) {
-    return NextResponse.json(
-      { error: 'Unauthorized' },
-      { status: 401 }
-    )
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
   const results: NotificationResult[] = []
@@ -38,30 +43,30 @@ export async function GET(request: NextRequest) {
 
     console.log(`[Cron] Checking collections for: ${tomorrowStr}`)
 
-    // Pridobi vse uporabnike z email_notifications = true
+    // Pridobi vse uporabnike z email_notifications ALI push_notifications
     const { data: users, error: usersError } = await supabase
       .from('user_settings')
-      .select(`
+      .select(
+        `
         user_id,
         em_okolis,
         bio_okolis,
-        email_notifications
-      `)
-      .eq('email_notifications', true)
+        email_notifications,
+        push_notifications
+      `
+      )
+      .or('email_notifications.eq.true,push_notifications.eq.true')
 
     if (usersError) {
       console.error('[Cron] Error fetching users:', usersError)
-      return NextResponse.json(
-        { error: 'Failed to fetch users', details: usersError.message },
-        { status: 500 }
-      )
+      return NextResponse.json({ error: 'Failed to fetch users', details: usersError.message }, { status: 500 })
     }
 
     if (!users || users.length === 0) {
-      console.log('[Cron] No users with email notifications enabled')
+      console.log('[Cron] No users with notifications enabled')
       return NextResponse.json({
         success: true,
-        message: 'No users with email notifications enabled',
+        message: 'No users with notifications enabled',
         sent: 0,
         date: tomorrowStr,
       })
@@ -71,7 +76,7 @@ export async function GET(request: NextRequest) {
 
     // Za vsakega uporabnika preveri če ima odvoz jutri
     for (const userSettings of users) {
-      const { user_id, em_okolis, bio_okolis } = userSettings
+      const { user_id, em_okolis, bio_okolis, email_notifications, push_notifications } = userSettings
 
       // Preskoči če nima nastavljenih okolišev
       if (!em_okolis || !bio_okolis) {
@@ -87,80 +92,162 @@ export async function GET(request: NextRequest) {
         continue
       }
 
-      // Pridobi email uporabnika iz auth.users
-      const { data: authUser, error: authError } = await supabase.auth.admin.getUserById(user_id)
-
-      if (authError || !authUser.user?.email) {
-        console.error(`[Cron] Error fetching user email for ${user_id}:`, authError)
-        errors.push(`Failed to get email for user ${user_id}`)
-        continue
-      }
-
-      const email = authUser.user.email
-
-      // Preveri če že ni bil poslan email za ta datum
-      const { data: existingLog } = await supabase
-        .from('notification_log')
-        .select('id')
-        .eq('user_id', user_id)
-        .eq('collection_date', tomorrowStr)
-        .single()
-
-      if (existingLog) {
-        console.log(`[Cron] Email already sent to ${email} for ${tomorrowStr}`)
-        continue
-      }
-
-      // Pošlji email
-      console.log(`[Cron] Sending email to ${email} for ${tomorrowStr}`)
-      const emailResult = await sendCollectionReminder(
-        email,
-        collection.date,
-        collection.types
-      )
-
-      if (emailResult.success) {
-        // Zapiši v notification_log
-        const { error: logError } = await supabase
-          .from('notification_log')
-          .insert({
-            user_id,
-            collection_date: tomorrowStr,
-            waste_types: collection.types,
-            sent_at: new Date().toISOString(),
-          })
-
-        if (logError) {
-          console.error(`[Cron] Error logging notification for ${user_id}:`, logError)
+      // Pridobi email uporabnika iz auth.users (potrebujemo za email obvestila)
+      let userEmail: string | undefined
+      if (email_notifications) {
+        const { data: authUser, error: authError } = await supabase.auth.admin.getUserById(user_id)
+        if (authError || !authUser.user?.email) {
+          console.error(`[Cron] Error fetching user email for ${user_id}:`, authError)
+          errors.push(`Failed to get email for user ${user_id}`)
+        } else {
+          userEmail = authUser.user.email
         }
+      }
 
-        results.push({
-          userId: user_id,
-          email,
-          success: true,
-          wasteTypes: collection.types,
-        })
-      } else {
-        results.push({
-          userId: user_id,
-          email,
-          success: false,
-          error: emailResult.error,
-        })
-        errors.push(`Failed to send email to ${email}: ${emailResult.error}`)
+      // Pošlji EMAIL obvestilo
+      if (email_notifications && userEmail) {
+        // Preveri če že ni bil poslan email za ta datum
+        const { data: existingEmailLog } = await supabase
+          .from('notification_log')
+          .select('id')
+          .eq('user_id', user_id)
+          .eq('collection_date', tomorrowStr)
+          .eq('notification_type', 'email')
+          .single()
+
+        if (!existingEmailLog) {
+          console.log(`[Cron] Sending email to ${userEmail} for ${tomorrowStr}`)
+          const emailResult = await sendCollectionReminder(userEmail, collection.date, collection.types)
+
+          if (emailResult.success) {
+            await supabase.from('notification_log').insert({
+              user_id,
+              collection_date: tomorrowStr,
+              waste_types: collection.types,
+              notification_type: 'email',
+              sent_at: new Date().toISOString(),
+            })
+
+            results.push({
+              userId: user_id,
+              email: userEmail,
+              type: 'email',
+              success: true,
+              wasteTypes: collection.types,
+            })
+          } else {
+            results.push({
+              userId: user_id,
+              email: userEmail,
+              type: 'email',
+              success: false,
+              error: emailResult.error,
+            })
+            errors.push(`Failed to send email to ${userEmail}: ${emailResult.error}`)
+          }
+        } else {
+          console.log(`[Cron] Email already sent to ${userEmail} for ${tomorrowStr}`)
+        }
+      }
+
+      // Pošlji PUSH obvestila
+      if (push_notifications) {
+        // Preveri če že ni bil poslan push za ta datum
+        const { data: existingPushLog } = await supabase
+          .from('notification_log')
+          .select('id')
+          .eq('user_id', user_id)
+          .eq('collection_date', tomorrowStr)
+          .eq('notification_type', 'push')
+          .single()
+
+        if (!existingPushLog) {
+          // Pridobi vse push subscription-e uporabnika
+          const { data: subscriptions, error: subError } = await supabase
+            .from('push_subscriptions')
+            .select('id, endpoint, p256dh, auth')
+            .eq('user_id', user_id)
+
+          if (subError) {
+            console.error(`[Cron] Error fetching push subscriptions for ${user_id}:`, subError)
+            continue
+          }
+
+          if (subscriptions && subscriptions.length > 0) {
+            const wasteTypesList = collection.types.map((t) => wasteTypeNames[t] || t).join(', ')
+
+            let anyPushSuccess = false
+
+            for (const sub of subscriptions) {
+              console.log(`[Cron] Sending push to user ${user_id} (endpoint: ${sub.endpoint.slice(0, 50)}...)`)
+
+              const pushResult = await sendPushNotification(
+                {
+                  endpoint: sub.endpoint,
+                  p256dh: sub.p256dh,
+                  auth: sub.auth,
+                },
+                {
+                  title: 'Jutri je odvoz odpadkov',
+                  body: `Ne pozabite pripraviti: ${wasteTypesList}`,
+                  tag: `collection-${tomorrowStr}`,
+                  url: '/odvoz',
+                }
+              )
+
+              if (pushResult.success) {
+                anyPushSuccess = true
+                // Posodobi last_used_at
+                await supabase.from('push_subscriptions').update({ last_used_at: new Date().toISOString() }).eq('id', sub.id)
+              } else if (pushResult.expired) {
+                // Izbriši potečeno subscription
+                console.log(`[Cron] Removing expired push subscription for user ${user_id}`)
+                await supabase.from('push_subscriptions').delete().eq('id', sub.id)
+              } else {
+                console.error(`[Cron] Push failed for user ${user_id}:`, pushResult.error)
+              }
+            }
+
+            if (anyPushSuccess) {
+              // Zapiši v notification_log
+              await supabase.from('notification_log').insert({
+                user_id,
+                collection_date: tomorrowStr,
+                waste_types: collection.types,
+                notification_type: 'push',
+                sent_at: new Date().toISOString(),
+              })
+
+              results.push({
+                userId: user_id,
+                type: 'push',
+                success: true,
+                wasteTypes: collection.types,
+              })
+            }
+          }
+        } else {
+          console.log(`[Cron] Push already sent to user ${user_id} for ${tomorrowStr}`)
+        }
       }
     }
 
-    const successCount = results.filter(r => r.success).length
-    const failCount = results.filter(r => !r.success).length
+    const emailsSent = results.filter((r) => r.type === 'email' && r.success).length
+    const emailsFailed = results.filter((r) => r.type === 'email' && !r.success).length
+    const pushSent = results.filter((r) => r.type === 'push' && r.success).length
 
-    console.log(`[Cron] Completed: ${successCount} sent, ${failCount} failed`)
+    console.log(`[Cron] Completed: ${emailsSent} emails sent, ${emailsFailed} failed, ${pushSent} push notifications sent`)
 
     return NextResponse.json({
       success: true,
       date: tomorrowStr,
-      sent: successCount,
-      failed: failCount,
+      emails: {
+        sent: emailsSent,
+        failed: emailsFailed,
+      },
+      push: {
+        sent: pushSent,
+      },
       results,
       errors: errors.length > 0 ? errors : undefined,
     })
@@ -169,7 +256,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         error: 'Internal server error',
-        details: err instanceof Error ? err.message : 'Unknown error'
+        details: err instanceof Error ? err.message : 'Unknown error',
       },
       { status: 500 }
     )
