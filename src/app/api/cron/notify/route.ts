@@ -203,8 +203,8 @@ export async function GET(request: NextRequest) {
                   auth: sub.auth,
                 },
                 {
-                  title: 'Jutri je odvoz odpadkov',
-                  body: `Ne pozabite pripraviti: ${wasteTypesList}`,
+                  title: '350logatec',
+                  body: `Jutri je odvoz odpadkov: ${wasteTypesList}`,
                   tag: `collection-${tomorrowStr}`,
                   url: '/odvoz',
                 }

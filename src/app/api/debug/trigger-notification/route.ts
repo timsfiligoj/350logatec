@@ -123,8 +123,8 @@ export async function POST(request: Request) {
               auth: sub.auth,
             },
             {
-              title: '🧪 Test: Jutri je odvoz odpadkov',
-              body: `Ne pozabite pripraviti: ${wasteTypesList}`,
+              title: '🧪 350logatec (test)',
+              body: `Jutri je odvoz odpadkov: ${wasteTypesList}`,
               tag: `test-${Date.now()}`,
               url: '/odvoz',
             }
