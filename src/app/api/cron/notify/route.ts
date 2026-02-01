@@ -21,6 +21,9 @@ const wasteTypeNames: Record<string, string> = {
   B: 'biološki odpadki',
 }
 
+// Helper za rate limiting (Resend dovoli 2 req/sec)
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
 export async function GET(request: NextRequest) {
   // Preveri CRON_SECRET
   const authHeader = request.headers.get('authorization')
@@ -134,11 +137,14 @@ export async function GET(request: NextRequest) {
           console.log(`[Cron] Sending email to ${userEmail} for ${tomorrowStr}`)
           const emailResult = await sendCollectionReminder(userEmail, collection.date, collection.types)
 
+          // Rate limiting: počakaj 500ms med emaili (Resend dovoli 2/sec)
+          await delay(500)
+
           if (emailResult.success) {
             const { error: emailLogError } = await supabase.from('notification_log').insert({
               user_id,
               collection_date: tomorrowStr,
-              waste_types: collection.types.join(','),
+              waste_types: collection.types, // Array namesto string
               notification_type: 'email',
               sent_at: new Date().toISOString(),
             })
@@ -232,7 +238,7 @@ export async function GET(request: NextRequest) {
               const { error: pushLogError } = await supabase.from('notification_log').insert({
                 user_id,
                 collection_date: tomorrowStr,
-                waste_types: collection.types.join(','),
+                waste_types: collection.types, // Array namesto string
                 notification_type: 'push',
                 sent_at: new Date().toISOString(),
               })
