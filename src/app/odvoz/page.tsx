@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Calendar, MapPinOff } from "lucide-react";
+import Link from "next/link";
+import { Calendar, MapPinOff, Leaf, Settings } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { OkolisSelector } from "@/components/odvoz/OkolisSelector";
@@ -16,6 +17,7 @@ export default function OdvozPage() {
 
   const [emOkolis, setEmOkolis] = useState<number | null>(null);
   const [bioOkolis, setBioOkolis] = useState<number | null>(null);
+  const [hasBioBin, setHasBioBin] = useState<boolean | null>(null);
   const [settingsLoaded, setSettingsLoaded] = useState(false);
 
   // Naloži nastavitve iz Supabase ali localStorage
@@ -26,13 +28,14 @@ export default function OdvozPage() {
         try {
           const { data, error } = await supabase
             .from('user_settings')
-            .select('em_okolis, bio_okolis')
+            .select('em_okolis, bio_okolis, has_bio_bin')
             .eq('user_id', user.id)
             .single();
 
           if (!error && data) {
             if (data.em_okolis !== null) setEmOkolis(data.em_okolis);
             if (data.bio_okolis !== null) setBioOkolis(data.bio_okolis);
+            setHasBioBin(data.has_bio_bin ?? true);
             setSettingsLoaded(true);
             return;
           }
@@ -102,6 +105,28 @@ export default function OdvozPage() {
             </p>
           </div>
 
+          {/* Banner za uporabnike brez BIO zabojnika */}
+          {user && hasBioBin === false && (
+            <div className="mb-6 p-4 bg-amber-50 border border-amber-300 rounded-xl flex items-start gap-3">
+              <div className="h-8 w-8 rounded-lg bg-amber-100 flex items-center justify-center shrink-0">
+                <Leaf className="h-4 w-4 text-amber-700" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-amber-900">
+                  <span className="font-medium">BIO odvozi so skriti.</span>{" "}
+                  Označili ste, da nimate BIO zabojnika, zato so odvozi za biološke odpadke skriti.
+                </p>
+                <Link
+                  href="/nastavitve"
+                  className="inline-flex items-center gap-1 mt-2 text-sm font-medium text-amber-800 hover:text-amber-950 underline underline-offset-2 transition-colors"
+                >
+                  <Settings className="h-3.5 w-3.5" />
+                  Spremeni v nastavitvah
+                </Link>
+              </div>
+            </div>
+          )}
+
           {/* Main content grid */}
           <div className="grid gap-6 lg:grid-cols-[350px_1fr]">
             {/* Left column - Selector */}
@@ -121,8 +146,13 @@ export default function OdvozPage() {
                   <UpcomingCollection
                     emOkolis={emOkolis}
                     bioOkolis={bioOkolis}
+                    hideBio={hasBioBin === false}
                   />
-                  <WasteCalendar emOkolis={emOkolis} bioOkolis={bioOkolis} />
+                  <WasteCalendar
+                    emOkolis={emOkolis}
+                    bioOkolis={bioOkolis}
+                    hideBio={hasBioBin === false}
+                  />
                 </>
               ) : (
                 <EmptyState />

@@ -35,6 +35,7 @@ interface UserSettings {
   em_okolis: number | null
   bio_okolis: number | null
   email_notifications: boolean
+  has_bio_bin: boolean
 }
 
 export default function NastavitvePage() {
@@ -47,6 +48,7 @@ export default function NastavitvePage() {
     em_okolis: null,
     bio_okolis: null,
     email_notifications: false, // Privzeto izklopljeno
+    has_bio_bin: true, // Privzeto vklopljeno (večina ima zabojnik)
   })
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -87,6 +89,7 @@ export default function NastavitvePage() {
             em_okolis: data.em_okolis,
             bio_okolis: data.bio_okolis,
             email_notifications: data.email_notifications ?? false,
+            has_bio_bin: data.has_bio_bin ?? true,
           })
         }
       } catch (err) {
@@ -129,6 +132,7 @@ export default function NastavitvePage() {
           em_okolis: settings.em_okolis,
           bio_okolis: settings.bio_okolis,
           email_notifications: settings.email_notifications,
+          has_bio_bin: settings.has_bio_bin,
           updated_at: new Date().toISOString(),
         }, {
           onConflict: 'user_id'
@@ -320,6 +324,38 @@ export default function NastavitvePage() {
                       ))}
                     </SelectContent>
                   </Select>
+                </div>
+
+                {/* BIO zabojnik toggle */}
+                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                  <div className="space-y-0.5">
+                    <Label htmlFor="has-bio-bin">Imam BIO zabojnik</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Izklopite, če imate domači kompost in ne potrebujete obvestil za BIO odvoz
+                    </p>
+                  </div>
+                  <button
+                    id="has-bio-bin"
+                    role="switch"
+                    aria-checked={settings.has_bio_bin}
+                    onClick={() =>
+                      setSettings((s) => ({
+                        ...s,
+                        has_bio_bin: !s.has_bio_bin,
+                      }))
+                    }
+                    className={`
+                      relative inline-flex h-6 w-11 items-center rounded-full transition-colors shrink-0
+                      ${settings.has_bio_bin ? 'bg-primary' : 'bg-gray-300'}
+                    `}
+                  >
+                    <span
+                      className={`
+                        inline-block h-4 w-4 transform rounded-full bg-white transition-transform shadow-sm
+                        ${settings.has_bio_bin ? 'translate-x-6' : 'translate-x-1'}
+                      `}
+                    />
+                  </button>
                 </div>
               </CardContent>
             </Card>

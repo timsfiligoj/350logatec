@@ -27,18 +27,27 @@ import { getCollectionDates, CollectionDay } from "@/lib/data/schedule-2026";
 interface WasteCalendarProps {
   emOkolis: number;
   bioOkolis: number;
+  hideBio?: boolean;
 }
 
 const WEEKDAYS = ["Pon", "Tor", "Sre", "Čet", "Pet", "Sob", "Ned"];
 
-export function WasteCalendar({ emOkolis, bioOkolis }: WasteCalendarProps) {
+export function WasteCalendar({ emOkolis, bioOkolis, hideBio = false }: WasteCalendarProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date(2026, 0, 1)); // Start at January 2026
   const [selectedDay, setSelectedDay] = useState<CollectionDay | null>(null);
 
   // Get all collection dates for the year
   const allCollections = useMemo(() => {
-    return getCollectionDates(emOkolis, bioOkolis);
-  }, [emOkolis, bioOkolis]);
+    const raw = getCollectionDates(emOkolis, bioOkolis);
+    if (!hideBio) return raw;
+    // Filter out BIO types and skip days with only BIO
+    return raw
+      .map((c) => ({
+        ...c,
+        types: c.types.filter((t) => t !== "B"),
+      }))
+      .filter((c) => c.types.length > 0);
+  }, [emOkolis, bioOkolis, hideBio]);
 
   // Create a map for quick lookup
   const collectionMap = useMemo(() => {
@@ -196,7 +205,7 @@ export function WasteCalendar({ emOkolis, bioOkolis }: WasteCalendarProps) {
             Legenda
           </p>
           <div className="flex flex-wrap gap-3">
-            {(["E", "M", "B"] as WasteType[]).map((type) => (
+            {(hideBio ? ["E", "M"] as WasteType[] : ["E", "M", "B"] as WasteType[]).map((type) => (
               <div key={type} className="flex items-center gap-1.5">
                 <WasteTypeDot type={type} />
                 <span className="text-xs text-muted-foreground">

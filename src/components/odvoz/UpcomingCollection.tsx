@@ -15,6 +15,7 @@ import {
 interface UpcomingCollectionProps {
   emOkolis: number;
   bioOkolis: number;
+  hideBio?: boolean;
 }
 
 function formatDateSlovene(dateStr: string): string {
@@ -33,12 +34,28 @@ function getRelativeDay(dateStr: string): "today" | "tomorrow" | null {
 export function UpcomingCollection({
   emOkolis,
   bioOkolis,
+  hideBio = false,
 }: UpcomingCollectionProps) {
-  const nextCollection = getNextCollection(emOkolis, bioOkolis);
-  const upcomingCollections = getUpcomingCollections(emOkolis, bioOkolis, 60);
+  const rawNextCollection = getNextCollection(emOkolis, bioOkolis);
+  const rawUpcomingCollections = getUpcomingCollections(emOkolis, bioOkolis, 60);
+
+  // Filter out BIO types if user doesn't have a BIO bin
+  const filterBio = (collection: CollectionDay): CollectionDay | null => {
+    if (!hideBio) return collection;
+    const filteredTypes = collection.types.filter((t) => t !== "B");
+    if (filteredTypes.length === 0) return null;
+    return { ...collection, types: filteredTypes };
+  };
+
+  // Filter collections
+  const filteredCollections = rawUpcomingCollections
+    .map(filterBio)
+    .filter((c): c is CollectionDay => c !== null);
+
+  const nextCollection = filteredCollections[0] || null;
 
   // Get next 5 collections after the first one
-  const futureCollections = upcomingCollections.slice(1, 6);
+  const futureCollections = filteredCollections.slice(1, 6);
 
   if (!nextCollection) {
     return (

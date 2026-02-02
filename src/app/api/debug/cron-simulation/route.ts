@@ -30,7 +30,8 @@ export async function GET() {
         em_okolis,
         bio_okolis,
         email_notifications,
-        push_notifications
+        push_notifications,
+        has_bio_bin
       `)
       .or('email_notifications.eq.true,push_notifications.eq.true')
 
@@ -53,7 +54,7 @@ export async function GET() {
     const simulation = []
 
     for (const userSettings of users || []) {
-      const { user_id, em_okolis, bio_okolis, email_notifications, push_notifications } = userSettings
+      const { user_id, em_okolis, bio_okolis, email_notifications, push_notifications, has_bio_bin } = userSettings
 
       const userSimulation: {
         userId: string
@@ -63,10 +64,12 @@ export async function GET() {
           bio_okolis: number | null
           email_notifications: boolean
           push_notifications: boolean
+          has_bio_bin: boolean | null
         }
         wouldSkip: boolean
         skipReason?: string
         collection?: ReturnType<typeof isCollectionTomorrow>
+        filteredTypes?: string[]
         wouldSendEmail: boolean
         wouldSendPush: boolean
       } = {
@@ -77,6 +80,7 @@ export async function GET() {
           bio_okolis,
           email_notifications,
           push_notifications,
+          has_bio_bin,
         },
         wouldSkip: false,
         wouldSendEmail: false,
@@ -102,6 +106,21 @@ export async function GET() {
       }
 
       userSimulation.collection = collection
+
+      // Filter BIO if user doesn't have a bin
+      let typesToNotify = collection.types
+      if (has_bio_bin === false) {
+        typesToNotify = typesToNotify.filter(t => t !== 'B')
+      }
+      userSimulation.filteredTypes = typesToNotify
+
+      // Skip if no types to notify (e.g., only BIO collection but user has no bin)
+      if (typesToNotify.length === 0) {
+        userSimulation.wouldSkip = true
+        userSimulation.skipReason = 'No relevant waste types (has_bio_bin=false, only BIO collection)'
+        simulation.push(userSimulation)
+        continue
+      }
 
       // Check notification log for duplicates
       const { data: existingEmailLog } = await adminClient

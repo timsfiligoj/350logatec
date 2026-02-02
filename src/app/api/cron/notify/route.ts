@@ -56,7 +56,8 @@ export async function GET(request: NextRequest) {
         em_okolis,
         bio_okolis,
         email_notifications,
-        push_notifications
+        push_notifications,
+        has_bio_bin
       `
       )
       .or('email_notifications.eq.true,push_notifications.eq.true')
@@ -83,7 +84,7 @@ export async function GET(request: NextRequest) {
 
     // Za vsakega uporabnika preveri če ima odvoz jutri
     for (const userSettings of users) {
-      const { user_id, email: settingsEmail, em_okolis, bio_okolis, email_notifications, push_notifications } = userSettings
+      const { user_id, email: settingsEmail, em_okolis, bio_okolis, email_notifications, push_notifications, has_bio_bin } = userSettings
 
       // Preskoči če user_id ni veljaven UUID
       if (!user_id || !uuidRegex.test(user_id)) {
@@ -102,6 +103,18 @@ export async function GET(request: NextRequest) {
 
       if (!collection) {
         console.log(`[Cron] User ${user_id} has no collection tomorrow`)
+        continue
+      }
+
+      // Filtriraj BIO če uporabnik nima zabojnika
+      let typesToNotify = collection.types
+      if (has_bio_bin === false) {
+        typesToNotify = typesToNotify.filter((t) => t !== 'B')
+      }
+
+      // Če ni tipov za obvestilo, preskoči
+      if (typesToNotify.length === 0) {
+        console.log(`[Cron] User ${user_id} skipped - no relevant waste types (has_bio_bin=false)`)
         continue
       }
 
@@ -135,7 +148,7 @@ export async function GET(request: NextRequest) {
 
         if (!existingEmailLog) {
           console.log(`[Cron] Sending email to ${userEmail} for ${tomorrowStr}`)
-          const emailResult = await sendCollectionReminder(userEmail, collection.date, collection.types)
+          const emailResult = await sendCollectionReminder(userEmail, collection.date, typesToNotify)
 
           // Rate limiting: počakaj 500ms med emaili (Resend dovoli 2/sec)
           await delay(500)
@@ -144,7 +157,7 @@ export async function GET(request: NextRequest) {
             const { error: emailLogError } = await supabase.from('notification_log').insert({
               user_id,
               collection_date: tomorrowStr,
-              waste_types: collection.types, // Array namesto string
+              waste_types: typesToNotify, // Filtrirani tipi (brez BIO če nima zabojnika)
               notification_type: 'email',
               sent_at: new Date().toISOString(),
             })
@@ -158,7 +171,7 @@ export async function GET(request: NextRequest) {
               email: userEmail,
               type: 'email',
               success: true,
-              wasteTypes: collection.types,
+              wasteTypes: typesToNotify,
             })
           } else {
             results.push({
@@ -199,7 +212,7 @@ export async function GET(request: NextRequest) {
           }
 
           if (subscriptions && subscriptions.length > 0) {
-            const wasteTypesList = collection.types.map((t) => wasteTypeNames[t] || t).join(', ')
+            const wasteTypesList = typesToNotify.map((t) => wasteTypeNames[t] || t).join(', ')
 
             let anyPushSuccess = false
 
@@ -238,7 +251,7 @@ export async function GET(request: NextRequest) {
               const { error: pushLogError } = await supabase.from('notification_log').insert({
                 user_id,
                 collection_date: tomorrowStr,
-                waste_types: collection.types, // Array namesto string
+                waste_types: typesToNotify, // Filtrirani tipi (brez BIO če nima zabojnika)
                 notification_type: 'push',
                 sent_at: new Date().toISOString(),
               })
@@ -252,7 +265,7 @@ export async function GET(request: NextRequest) {
                 userId: user_id,
                 type: 'push',
                 success: true,
-                wasteTypes: collection.types,
+                wasteTypes: typesToNotify,
               })
             }
           }
