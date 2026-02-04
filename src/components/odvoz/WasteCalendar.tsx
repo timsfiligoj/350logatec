@@ -32,8 +32,21 @@ interface WasteCalendarProps {
 
 const WEEKDAYS = ["Pon", "Tor", "Sre", "Čet", "Pet", "Sob", "Ned"];
 
+// Get initial month - current month if in 2026, otherwise January 2026
+function getInitialMonth(): Date {
+  const now = new Date();
+  const year = now.getFullYear();
+
+  if (year === 2026) {
+    return startOfMonth(now);
+  } else if (year > 2026) {
+    return new Date(2026, 11, 1); // December 2026
+  }
+  return new Date(2026, 0, 1); // January 2026
+}
+
 export function WasteCalendar({ emOkolis, bioOkolis, hideBio = false }: WasteCalendarProps) {
-  const [currentMonth, setCurrentMonth] = useState(new Date(2026, 0, 1)); // Start at January 2026
+  const [currentMonth, setCurrentMonth] = useState(getInitialMonth);
   const [selectedDay, setSelectedDay] = useState<CollectionDay | null>(null);
 
   // Get all collection dates for the year
