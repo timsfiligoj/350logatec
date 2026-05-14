@@ -28,13 +28,18 @@ import {
 } from './storage'
 import { createAdminClient } from '@/lib/supabase/admin'
 
-// Per-view cloud-cover tolerance. true_color is a hero visual so it stays
-// strict; the science views can mosaic across partial cloud cover because
-// (a) Sentinel Hub's leastCC mosaicker prefers cleaner pixels from the
-// 10-day window, and (b) Slovenian winters are routinely overcast, which
-// would otherwise produce huge gaps in the NDSI snow timeline.
+// Per-view cloud-cover tolerance. Higher thresholds let us cover months
+// the catalog would otherwise skip; the Process API's leastCC mosaicker
+// still composes the cleanest available pixels from the 10-day window
+// around the catalog match, so a 60 % "cloud cover" scene rarely looks
+// like 60 % cloud cover in the rendered output.
+//
+// true_color was tightened originally to keep the hero visual clean, but
+// the time-lapse view wants continuous month-by-month coverage and a
+// partly-cloudy month is more useful than a missing one, so it tracks
+// NDSI at 60 %.
 const MAX_CLOUD_COVER_PCT: Record<ViewKind, number> = {
-  true_color: 20,
+  true_color: 60,
   ndvi: 20,
   ndwi: 40,
   ndsi: 60,
