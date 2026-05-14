@@ -39,7 +39,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 // partly-cloudy month is more useful than a missing one, so it tracks
 // NDSI at 60 %.
 const MAX_CLOUD_COVER_PCT: Record<ViewKind, number> = {
-  true_color: 60,
+  true_color: 95,
   ndvi: 20,
   ndwi: 40,
   ndsi: 60,
