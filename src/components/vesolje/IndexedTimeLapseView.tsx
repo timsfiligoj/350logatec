@@ -2,14 +2,18 @@
 
 import Image from 'next/image'
 import {
+  ArrowDown,
+  ArrowUp,
   Leaf,
   Droplet,
   Snowflake,
   TrendingUp,
   Waves,
   Mountain,
+  Minus,
   type LucideIcon,
 } from 'lucide-react'
+import { cn } from '@/lib/utils'
 import { MetricCard, type MetricDelta } from './MetricCard'
 import { useTimeLapse, type TimeLapseFrame } from './useTimeLapse'
 import { ControlsOverlay, DateActionsOverlay } from './TimeLapseViewer'
@@ -60,9 +64,9 @@ function describeSnow(pct: number): string {
 type ViewKind = 'ndvi' | 'ndwi' | 'ndsi'
 
 type CurrentMetricSpec = {
-  label: string
+  /** Short label shown on the in-image overlay; max ~20 chars. */
+  shortLabel: string
   icon: LucideIcon
-  accent: 'emerald' | 'blue' | 'amber' | 'slate'
   /** The metric value used for the year-over-year delta, if any. */
   metricKey: 'mean' | 'polje_water_pct' | 'snow_pct'
   /** Number of decimal places shown in the delta. */
@@ -72,63 +76,61 @@ type CurrentMetricSpec = {
   format: (frame: TimeLapseFrame) => {
     value: string
     unit?: string
-    hint: string
+    /** Plain-language single phrase, e.g. "opazna poplava". */
+    phrase: string
   }
 }
 
 const CURRENT_METRIC: Record<ViewKind, CurrentMetricSpec> = {
   ndvi: {
-    label: 'Kako zelen je Logatec',
+    shortLabel: 'Gostota rastja',
     icon: Leaf,
-    accent: 'emerald',
     metricKey: 'mean',
     decimals: 2,
     format: (frame) => {
       const mean = frame.metrics?.mean
       if (typeof mean !== 'number') {
-        return { value: '—', hint: 'Brez podatka za ta mesec' }
+        return { value: '—', phrase: 'brez podatka' }
       }
       return {
         value: mean.toFixed(2),
-        hint: `Trenutno je ${describeNdvi(mean)}. Lestvica gre od 0 (gola tla) do 1 (gosti gozd).`,
+        phrase: describeNdvi(mean),
       }
     },
   },
   ndwi: {
-    label: 'Koliko polja je pod vodo',
+    shortLabel: 'Pod vodo',
     icon: Droplet,
-    accent: 'blue',
     metricKey: 'polje_water_pct',
     decimals: 1,
     unit: '%',
     format: (frame) => {
       const pct = frame.metrics?.polje_water_pct
       if (typeof pct !== 'number') {
-        return { value: '—', hint: 'Brez podatka za ta mesec' }
+        return { value: '—', phrase: 'brez podatka' }
       }
       return {
         value: pct.toFixed(1),
         unit: '%',
-        hint: `Tako veliko ravnine Planinskega polja je trenutno ${describeWater(pct)}.`,
+        phrase: describeWater(pct),
       }
     },
   },
   ndsi: {
-    label: 'Koliko občine je pod snegom',
+    shortLabel: 'Pod snegom',
     icon: Snowflake,
-    accent: 'slate',
     metricKey: 'snow_pct',
     decimals: 1,
     unit: '%',
     format: (frame) => {
       const pct = frame.metrics?.snow_pct
       if (typeof pct !== 'number') {
-        return { value: '—', hint: 'Brez podatka za ta mesec' }
+        return { value: '—', phrase: 'brez podatka' }
       }
       return {
         value: pct.toFixed(1),
         unit: '%',
-        hint: `Toliko delež površine občine, kjer satelit zazna snežno odejo (${describeSnow(pct)}).`,
+        phrase: describeSnow(pct),
       }
     },
   },
@@ -200,7 +202,12 @@ export function IndexedTimeLapseView({
   }
 
   return (
-    <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(280px,360px)] md:gap-6">
+    <div
+      className={cn(
+        'grid gap-4 md:gap-6',
+        peak && 'md:grid-cols-[minmax(0,1fr)_minmax(220px,300px)]',
+      )}
+    >
       <figure className="relative overflow-hidden rounded-2xl border bg-muted aspect-[1400/1780] max-h-[68vh] w-full">
         <Image
           key={tl.current.publicUrl}
@@ -216,30 +223,78 @@ export function IndexedTimeLapseView({
           capturedAt={tl.current.capturedAt}
           actions={actions}
         />
+        <MetricOverlay
+          label={metric.shortLabel}
+          value={cur.value}
+          unit={cur.unit}
+          phrase={cur.phrase}
+          delta={delta}
+        />
         <ControlsOverlay {...tl} />
       </figure>
 
-      <div className="flex flex-col gap-4">
-        <MetricCard
-          label={`${metric.label} · ${siMonthYear(tl.current.capturedAt)}`}
-          value={cur.value}
-          unit={cur.unit}
-          hint={cur.hint}
-          delta={delta}
-          icon={metric.icon}
-          accent={metric.accent}
-        />
-        {peak && PeakIcon ? (
+      {peak && PeakIcon ? (
+        <div className="md:self-start">
           <MetricCard
             label="Vrh v podatkih"
             value={peak.value}
             unit={peak.unit}
             hint={`${peak.hintPrefix} ${siMonthYear(peak.capturedAt)}`}
             icon={PeakIcon}
-            accent={metric.accent}
+            accent="emerald"
           />
-        ) : null}
-      </div>
+        </div>
+      ) : null}
     </div>
+  )
+}
+
+function MetricOverlay({
+  label,
+  value,
+  unit,
+  phrase,
+  delta,
+}: {
+  label: string
+  value: string
+  unit?: string
+  phrase: string
+  delta: MetricDelta | null
+}) {
+  return (
+    <div className="absolute top-14 left-3 z-10 max-w-[10rem] md:max-w-[12rem] rounded-xl bg-black/65 backdrop-blur-sm px-3 py-2 text-white pointer-events-none">
+      <p className="text-[10px] uppercase tracking-wider opacity-80 leading-tight font-semibold">
+        {label}
+      </p>
+      <p className="mt-0.5 font-display font-bold leading-none">
+        <span className="text-2xl tabular-nums">{value}</span>
+        {unit ? (
+          <span className="text-base font-semibold opacity-80 ml-0.5">
+            {unit}
+          </span>
+        ) : null}
+      </p>
+      {phrase ? (
+        <p className="mt-1 text-[11px] opacity-90 leading-tight">{phrase}</p>
+      ) : null}
+      {delta ? <CompactDelta {...delta} /> : null}
+    </div>
+  )
+}
+
+function CompactDelta({ value, label, unit, decimals }: MetricDelta) {
+  const Icon = value > 0 ? ArrowUp : value < 0 ? ArrowDown : Minus
+  const prefix = value > 0 ? '+' : value < 0 ? '−' : ''
+  return (
+    <span className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-white/15 px-1.5 py-0.5 text-[10px] font-medium tabular-nums">
+      <Icon className="h-2.5 w-2.5" />
+      <span>
+        {prefix}
+        {Math.abs(value).toFixed(decimals)}
+        {unit}
+      </span>
+      <span className="opacity-70">{label}</span>
+    </span>
   )
 }
