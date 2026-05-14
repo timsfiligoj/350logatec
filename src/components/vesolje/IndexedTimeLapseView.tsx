@@ -177,6 +177,7 @@ export function IndexedTimeLapseView({
     >
       <figure className="relative overflow-hidden rounded-2xl border bg-muted aspect-[1400/1780] max-h-[68vh] w-full">
         <Image
+          key={tl.current.publicUrl}
           src={tl.current.publicUrl}
           alt={`${viewKind.toUpperCase()} prikaz, ${tl.current.capturedAt.slice(0, 10)}`}
           fill

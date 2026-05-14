@@ -53,6 +53,7 @@ export function TimeLapseViewer({
   return (
     <figure className="relative mx-auto overflow-hidden rounded-2xl border bg-muted aspect-[1400/1780] max-h-[75vh] w-full max-w-full">
       <Image
+        key={tl.current.publicUrl}
         src={tl.current.publicUrl}
         alt={`Logatec, ${tl.current.capturedAt.slice(0, 10)}`}
         fill
