@@ -100,7 +100,8 @@ async function computeMetrics(
 
   if (viewKind === 'ndwi') {
     // Mean NDWI over full AOI, plus % water inside the Planinsko polje
-    // sub-bbox. NDWI > 0 = water (standard McFeeters threshold).
+    // sub-bbox. NDWI > 0 = water (standard McFeeters threshold), so a
+    // 2-bin histogram (-1 → 0 → 1) gives us land vs. water counts.
     const [aoiStats, poljeStats] = await Promise.all([
       fetchIndexStatistics({
         bbox: LOGATEC_AOI,
@@ -108,7 +109,6 @@ async function computeMetrics(
         indexId: 'ndwi',
         evalscript: config.statisticalEvalscript,
         maxCloudCoverPct: MAX_CLOUD_COVER_PCT,
-        histogramEdges: [-1, 0, 1],
       }),
       fetchIndexStatistics({
         bbox: PLANINSKO_POLJE_BBOX,
@@ -116,7 +116,7 @@ async function computeMetrics(
         indexId: 'ndwi',
         evalscript: config.statisticalEvalscript,
         maxCloudCoverPct: MAX_CLOUD_COVER_PCT,
-        histogramEdges: [-1, 0, 1],
+        histogram: { binWidth: 1, lowEdge: -1, highEdge: 1 },
       }),
     ])
 
@@ -132,13 +132,14 @@ async function computeMetrics(
   }
 
   if (viewKind === 'ndvi') {
+    // NDVI gets the mean only; peak-greening detection happens at
+    // view-time by sorting acquisitions by date.
     const stats = await fetchIndexStatistics({
       bbox: LOGATEC_AOI,
       month,
       indexId: 'ndvi',
       evalscript: config.statisticalEvalscript,
       maxCloudCoverPct: MAX_CLOUD_COVER_PCT,
-      histogramEdges: [-1, -0.5, 0, 0.3, 0.5, 0.7, 1],
     })
     if (!stats) return null
     return { mean: round(stats.mean, 3) }
@@ -146,15 +147,14 @@ async function computeMetrics(
 
   if (viewKind === 'ndsi') {
     // Mean NDSI plus % AOI under snow (NDSI > 0.4, NASA standard).
-    // Histogram bins are uniform width 0.2 across [-1, 1] so the 0.4
-    // boundary falls on an edge.
+    // 0.2-wide uniform bins put the 0.4 boundary exactly on an edge.
     const stats = await fetchIndexStatistics({
       bbox: LOGATEC_AOI,
       month,
       indexId: 'ndsi',
       evalscript: config.statisticalEvalscript,
       maxCloudCoverPct: MAX_CLOUD_COVER_PCT,
-      histogramEdges: [-1, -0.8, -0.6, -0.4, -0.2, 0, 0.2, 0.4, 0.6, 0.8, 1],
+      histogram: { binWidth: 0.2, lowEdge: -1, highEdge: 1 },
     })
     if (!stats) return null
     const { above, total } = pixelsAbove(stats, 0.4)

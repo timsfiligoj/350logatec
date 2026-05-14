@@ -1,5 +1,5 @@
 // Sentinel Hub Statistical API — server-side aggregation over an AOI.
-// Returns mean / stdev / percentiles / histograms in a single call, which
+// Returns mean / stdev plus an optional uniform-width histogram, which
 // lets us compute headline metrics (% under water, mean NDVI, etc.) without
 // having to download the raster ourselves.
 //
@@ -20,13 +20,24 @@ const STATISTICAL_RES_DEG = 0.001
 
 export type IndexId = 'ndwi' | 'ndvi' | 'ndsi'
 
+export type HistogramSpec = {
+  // Uniform-width bins are the only ones Sentinel Hub accepts for FLOAT32
+  // outputs; specify the width and the full edge range.
+  binWidth: number
+  lowEdge: number
+  highEdge: number
+}
+
 export type IndexStatistics = {
   mean: number
   stDev: number
   min: number
   max: number
-  // Pixel counts in the requested histogram bins, in bin-edge order.
+  // When a histogram was requested: pixel count per bin in ascending edge
+  // order. Empty array when no histogram was requested or the response
+  // omitted it.
   histogramCounts: number[]
+  // Bin edges aligned with histogramCounts (length = histogramCounts + 1).
   histogramEdges: number[]
 }
 
@@ -68,7 +79,8 @@ export async function fetchIndexStatistics(args: {
   indexId: IndexId
   evalscript: string
   maxCloudCoverPct: number
-  histogramEdges: readonly number[] // length N+1 for N bins
+  // Omit to request only mean/min/max/stDev without a histogram.
+  histogram?: HistogramSpec
 }): Promise<IndexStatistics | null> {
   const token = await getCdseAccessToken()
 
@@ -81,12 +93,23 @@ export async function fetchIndexStatistics(args: {
   // First day of given month (inclusive) to first day of next month (exclusive).
   const fromDate = new Date(Date.UTC(year, month - 1, 1))
   const toDate = new Date(Date.UTC(year, month, 1))
-  // Sentinel Hub Statistical API expects `to` to be strictly after `from`
-  // and applies the interval per-day; using next-month-start is fine.
 
-  const nBins = args.histogramEdges.length - 1
-  const lowEdge = args.histogramEdges[0]
-  const highEdge = args.histogramEdges[args.histogramEdges.length - 1]
+  const calculations: Record<string, unknown> = {
+    [args.indexId]: {
+      statistics: { default: {} },
+      ...(args.histogram
+        ? {
+            histograms: {
+              default: {
+                binWidth: args.histogram.binWidth,
+                lowEdge: args.histogram.lowEdge,
+                highEdge: args.histogram.highEdge,
+              },
+            },
+          }
+        : {}),
+    },
+  }
 
   const body = {
     input: {
@@ -114,18 +137,7 @@ export async function fetchIndexStatistics(args: {
       resx: STATISTICAL_RES_DEG,
       resy: STATISTICAL_RES_DEG,
     },
-    calculations: {
-      [args.indexId]: {
-        statistics: { default: {} },
-        histograms: {
-          default: {
-            nBins,
-            lowEdge,
-            highEdge,
-          },
-        },
-      },
-    },
+    calculations,
   }
 
   const response = await fetch(STATISTICS_ENDPOINT, {
@@ -160,7 +172,7 @@ export async function fetchIndexStatistics(args: {
   const histogramCounts = bins.map((b) => b.count)
   const histogramEdges = bins.length
     ? [...bins.map((b) => b.lowEdge), bins[bins.length - 1].highEdge]
-    : [...args.histogramEdges]
+    : []
 
   return {
     mean: stats.mean,
