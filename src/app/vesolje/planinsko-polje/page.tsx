@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     'Kdaj Planinsko polje poplavi? Skozi vodni indeks MNDWI vidimo, kako se karstno polje južno od Logatca čez leto polni in prazni.',
 }
 
-export const revalidate = 3600
+export const revalidate = 60
 
 export default async function PlaninskoPoljePage() {
   const history = await getMonthlyForView('ndwi')

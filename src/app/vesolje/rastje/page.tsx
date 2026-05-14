@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     'Kako gosto raste Logatec? Skozi vegetacijski indeks NDVI vidimo, kdaj se začnejo zeleneti gozdovi in polja in kdaj rast doseže vrhunec.',
 }
 
-export const revalidate = 3600
+export const revalidate = 60
 
 export default async function RastjePage() {
   const history = await getMonthlyForView('ndvi')

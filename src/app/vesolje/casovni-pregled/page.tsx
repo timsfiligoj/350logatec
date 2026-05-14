@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     'Logatec skozi leta v naravnih barvah. Premikaj se po časovni osi ali predvajaj animacijo in opazuj, kako se občina spreminja.',
 }
 
-export const revalidate = 3600
+export const revalidate = 60
 
 export default async function CasovniPregledPage() {
   const history = await getMonthlyForView('true_color')

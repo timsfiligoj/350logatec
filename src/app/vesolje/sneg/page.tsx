@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     'Kako dolga je snežna sezona nad Logatcem? Skozi snežni indeks NDSI vidimo, kdaj sneg prekrije občino in kako dolgo se obdrži.',
 }
 
-export const revalidate = 3600
+export const revalidate = 60
 
 export default async function SnegPage() {
   const history = await getMonthlyForView('ndsi')
