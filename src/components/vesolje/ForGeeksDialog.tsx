@@ -36,7 +36,7 @@ export function ForGeeksDialog({
         )}
       >
         <FlaskConical className="h-4 w-4" />
-        For Geeks
+        Za geeke
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>

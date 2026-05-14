@@ -50,15 +50,19 @@ function evaluatePixel(s) {
 }
 `
 
-// Statistical variant: same MNDWI formula but emits a single FLOAT32 band
-// so the Statistical API can compute mean / histogram / percentage-above-
-// threshold. Output id "ndwi" matches the key in the calculations object
-// and the view_kind in the database; the underlying formula is MNDWI.
+// Statistical variant: emits 1 for Sen2Cor "WATER" pixels (SCL == 6),
+// 0 otherwise. The band mean over an AOI is therefore directly the water
+// fraction, no histogram needed. This deliberately matches the gate used
+// by the visualisation evalscript (above) so the headline metric agrees
+// with what the user sees coloured blue on the map — without it, raw
+// MNDWI > 0 also catches snow/ice (MNDWI shares its band ratio with
+// NDSI), wet industrial roofs, and other false positives that the
+// Sen2Cor scene classifier correctly excludes from the WATER class.
 export const NDWI_STATISTICAL_EVALSCRIPT = /* javascript */ `
 //VERSION=3
 function setup() {
   return {
-    input: [{ bands: ["B03", "B11", "dataMask"] }],
+    input: [{ bands: ["SCL", "dataMask"] }],
     output: [
       { id: "ndwi", bands: 1, sampleType: "FLOAT32" },
       { id: "dataMask", bands: 1 },
@@ -67,9 +71,8 @@ function setup() {
 }
 
 function evaluatePixel(s) {
-  const mndwi = (s.B03 - s.B11) / (s.B03 + s.B11);
   return {
-    ndwi: [mndwi],
+    ndwi: [s.SCL === 6 ? 1 : 0],
     dataMask: [s.dataMask],
   };
 }

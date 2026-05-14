@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: '350space — Logatec iz vesolja | 350logatec',
+  title: '350space · Logatec iz vesolja | 350logatec',
   description:
     'Civilna iniciativa, ki domeno vesolja približuje Logatcu. Satelitski pogledi na občino z odprtimi podatki Copernicus Sentinel-2.',
   keywords: [
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     'cassini logatec',
   ],
   openGraph: {
-    title: '350space — Logatec iz vesolja',
+    title: '350space · Logatec iz vesolja',
     description:
       'Civilna iniciativa, ki domeno vesolja približuje Logatcu. Satelitski pogledi na občino z odprtimi podatki Copernicus Sentinel-2.',
   },

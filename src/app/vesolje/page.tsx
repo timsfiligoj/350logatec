@@ -9,7 +9,7 @@ import type { ViewKind } from '@/lib/space/storage'
 export const metadata: Metadata = {
   title: 'Logatec iz vesolja | 350logatec',
   description:
-    'Civilna iniciativa, ki Logatec gleda skozi odprte podatke evropskih satelitov Copernicus Sentinel-2. Pet pogledov na občino: rastje, voda, sneg in čas.',
+    'Logatec skozi odprte podatke evropskih satelitov Copernicus Sentinel-2. Štiri zgodbe o občini: rastje, voda, sneg in čas.',
 }
 
 export const revalidate = 3600
@@ -29,7 +29,8 @@ const VIEW_CARDS: ViewCard[] = [
     label: 'Časovni pregled',
     indexCode: 'RGB',
     icon: Clock,
-    teaser: 'Logatec v naravnih barvah skozi leta — kot animacija iz orbite.',
+    teaser:
+      'Logatec v naravnih barvah skozi leto. Tako približno bi občino videli iz vesolja, če bi jo opazovali z zelo zmogljivo kamero.',
     viewKind: 'true_color',
   },
   {
@@ -37,7 +38,8 @@ const VIEW_CARDS: ViewCard[] = [
     label: 'Rastje',
     indexCode: 'NDVI',
     icon: Leaf,
-    teaser: 'Kako gosto raste Logatec skozi leto in kdaj rast doseže vrhunec.',
+    teaser:
+      'Kje je narava najbolj živa? Ta pogled pokaže, kako močno rastejo gozdovi, travniki in polja. Bolj izrazita zelena običajno pomeni več aktivnega rastja.',
     viewKind: 'ndvi',
   },
   {
@@ -45,7 +47,8 @@ const VIEW_CARDS: ViewCard[] = [
     label: 'Planinsko polje',
     indexCode: 'NDWI',
     icon: Droplet,
-    teaser: 'Kdaj polje poplavlja in koliko vode se zadrži po obilnem dežju.',
+    teaser:
+      'Planinsko polje se po močnem dežju pogosto spremeni v začasno jezero. Satelitski podatki pomagajo pokazati, kdaj je polje poplavljeno in kako se voda sčasoma umika.',
     viewKind: 'ndwi',
   },
   {
@@ -53,10 +56,22 @@ const VIEW_CARDS: ViewCard[] = [
     label: 'Sneg',
     indexCode: 'NDSI',
     icon: Snowflake,
-    teaser: 'Kako dolga je snežna sezona in koliko občine je prekrite belo.',
+    teaser:
+      'Satelit lahko razloči sneg od zemlje, gozda in vode. Tako lahko spremljamo, koliko občine je bilo prekrite s snegom in kako dolgo je trajala snežna sezona.',
     viewKind: 'ndsi',
   },
 ]
+
+const FACTS = [
+  { label: 'Hitrost', value: '~ 27.000 km/h' },
+  { label: 'Višina', value: '~ 786 km nad Zemljo' },
+  { label: 'En obhod Zemlje', value: '~ 100 minut' },
+  { label: 'Obhodov na dan', value: '~ 14' },
+  { label: 'Ločljivost', value: 'do 10 m na piksel' },
+  { label: 'Spektralni pasovi', value: '13' },
+  { label: 'Širina zajema', value: '~ 290 km' },
+  { label: 'Dostop do podatkov', value: 'brezplačen, odprt' },
+] as const
 
 export default async function VesoljePage() {
   const latestByView = await Promise.all(
@@ -64,24 +79,32 @@ export default async function VesoljePage() {
   )
 
   return (
-    <VesoljeShell>
+    <VesoljeShell showNav={false}>
       <article className="container mx-auto px-4 py-8 md:py-12 max-w-6xl">
         <header className="max-w-3xl">
           <h1 className="font-display text-3xl md:text-5xl font-bold tracking-tight">
             Logatec <span className="text-gradient">iz vesolja</span>
           </h1>
-          <p className="mt-5 text-base md:text-lg text-muted-foreground leading-relaxed">
-            Vsakih 5 dni Evropa pošlje dva satelita 786 km nad Logatec. 350space
-            te slike prevede v štiri zgodbe o občini — gozdovih, poljih, vodi
-            in snegu — ter eno animacijo skozi leta v naravnih barvah.
-          </p>
+          <div className="mt-5 space-y-4 text-base md:text-lg text-muted-foreground leading-relaxed">
+            <p>
+              Vsakih nekaj dni evropski sateliti Sentinel-2 preletijo tudi
+              Logatec. Letijo približno 786 km nad Zemljo, s hitrostjo okoli
+              27.000 km/h, in v dobrih 100 minutah obkrožijo celoten planet.
+            </p>
+            <p>
+              Iz njihovih posnetkov lahko vidimo, kako se skozi leto
+              spreminjajo gozdovi, polja, voda in sneg v naši občini.
+              350logatec te satelitske podatke prevede v preproste zgodbe,
+              razumljive tudi brez znanja geografije ali vesoljske tehnologije.
+            </p>
+          </div>
         </header>
 
-        <section className="mt-10 md:mt-12">
+        <section className="mt-10 md:mt-14">
           <h2 className="font-display text-sm md:text-base uppercase tracking-widest text-muted-foreground font-semibold">
             Štirje pogledi na občino
           </h2>
-          <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+          <div className="mt-4 grid grid-cols-2 gap-3 md:gap-5">
             {VIEW_CARDS.map((card, i) => (
               <ViewCardLink
                 key={card.href}
@@ -97,57 +120,67 @@ export default async function VesoljePage() {
             <Satellite className="h-5 w-5 text-emerald-600" />
             Kaj je Copernicus Sentinel-2
           </h2>
-          <ul className="mt-4 grid gap-3 md:grid-cols-2 text-base text-muted-foreground leading-relaxed">
-            <li className="flex gap-3">
-              <span className="text-emerald-600 font-bold shrink-0">·</span>
-              <span>
-                Dva identična satelita (S2A, S2B) krožita <strong>786 km</strong>{' '}
-                nad Zemljo v razmaku 180°.
-              </span>
-            </li>
-            <li className="flex gap-3">
-              <span className="text-emerald-600 font-bold shrink-0">·</span>
-              <span>
-                Skupaj preletita isto točko <strong>vsakih 5 dni</strong>, kar
-                omogoča gosto časovno serijo.
-              </span>
-            </li>
-            <li className="flex gap-3">
-              <span className="text-emerald-600 font-bold shrink-0">·</span>
-              <span>
-                <strong>13 spektralnih pasov</strong> — vidijo, kar oči ne morejo:
-                klorofil, vlago, sneg, oblake.
-              </span>
-            </li>
-            <li className="flex gap-3">
-              <span className="text-emerald-600 font-bold shrink-0">·</span>
-              <span>
-                Nativna ločljivost <strong>10 m/piksel</strong>; vsak piksel
-                pokriva 10 × 10 m terena.
-              </span>
-            </li>
-            <li className="flex gap-3">
-              <span className="text-emerald-600 font-bold shrink-0">·</span>
-              <span>
-                Odprti podatki, financira EU preko programa{' '}
-                <strong>Copernicus</strong>. Dostopni vsakemu državljanu.
-              </span>
-            </li>
-            <li className="flex gap-3">
-              <span className="text-emerald-600 font-bold shrink-0">·</span>
-              <span>
-                Naša AOI pokriva <strong>~250 km²</strong>: Logatec, Hotedršica
-                in Planinsko polje.
-              </span>
-            </li>
-          </ul>
+          <div className="mt-4 space-y-4 text-base text-muted-foreground leading-relaxed">
+            <p>
+              Copernicus Sentinel-2 je evropska satelitska misija za
+              opazovanje Zemlje. Ne gre za vohunski satelit, ampak za javno
+              infrastrukturo, ki spremlja stanje površja: gozdove, polja,
+              vode, obalo, požare, sušo, poplave in druge spremembe v okolju.
+            </p>
+            <p>
+              Sentinel-2 leti v tako imenovani sončno-sinhroni orbiti. To
+              pomeni, da isto območje običajno opazuje ob podobni uri dneva.
+              Zaradi tega lahko posnetke med seboj bolje primerjamo, saj so
+              svetlobni pogoji bolj podobni.
+            </p>
+            <p>
+              Satelit ne vidi samo običajnih barv, ki jih vidimo ljudje. Meri
+              13 različnih delov svetlobe. Nekateri pokažejo klorofil v
+              rastlinah, drugi vlago, sneg, oblake ali stanje tal. Zato lahko
+              iz satelitskega posnetka izvemo precej več kot iz navadne
+              fotografije.
+            </p>
+            <p>
+              Najbolj podrobni posnetki imajo ločljivost 10 metrov na piksel.
+              En piksel predstavlja približno površino 10 × 10 metrov. To ni
+              dovolj, da bi prepoznali ljudi, avtomobile ali hišne podrobnosti.
+              Je pa dovolj, da vidimo gozdove, travnike, večje njive, naselja,
+              poplavljena območja in spremembe skozi letne čase.
+            </p>
+            <p>
+              Eden največjih dosežkov programa Copernicus je, da so ti podatki
+              prosto dostopni. Evropska unija je zgradila sistem, kjer se
+              satelitski podatki ne zapirajo v predale, ampak so na voljo
+              občinam, raziskovalcem, podjetjem, šolam in posameznikom. To je
+              ena najboljših evropskih digitalnih javnih infrastruktur.
+            </p>
+          </div>
+
+          <dl className="mt-6 md:mt-8 grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-4 border-t pt-6">
+            {FACTS.map((fact) => (
+              <div key={fact.label}>
+                <dt className="text-[10px] md:text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">
+                  {fact.label}
+                </dt>
+                <dd className="mt-0.5 text-sm md:text-base font-medium text-foreground">
+                  {fact.value}
+                </dd>
+              </div>
+            ))}
+          </dl>
         </section>
 
-        <footer className="mt-10 md:mt-12 text-xs text-muted-foreground leading-relaxed">
+        <footer className="mt-10 md:mt-12 space-y-3 text-xs text-muted-foreground leading-relaxed">
           <p>
-            Vsebuje spremenjene podatke Copernicus Sentinel 2025–2026. Vir:
-            Copernicus Data Space Ecosystem · Sentinel Hub Process +
-            Statistical API.
+            Vsebina uporablja obdelane podatke misije Copernicus Sentinel-2 za
+            območje Logatca, Hotedršice in Planinskega polja. Posnetki so
+            namenjeni splošnemu prikazu sprememb v prostoru in niso uradna
+            geodetska podlaga. Na kakovost posameznega posnetka lahko vplivajo
+            oblaki, megla, sneg in drugi vremenski pogoji.
+          </p>
+          <p>
+            Vir podatkov: Copernicus Data Space Ecosystem, Sentinel Hub Process
+            API, 350logatec obdelava podatkov.
           </p>
         </footer>
       </article>
@@ -175,7 +208,7 @@ function ViewCardLink({
             alt={`Najnovejša ${card.label.toLowerCase()} scena Logatca iz vesolja`}
             fill
             className="object-cover transition-transform group-hover:scale-105"
-            sizes="(min-width: 768px) 220px, 50vw"
+            sizes="(min-width: 768px) 480px, 50vw"
             unoptimized
           />
         ) : (
@@ -187,17 +220,17 @@ function ViewCardLink({
           {card.indexCode}
         </span>
       </div>
-      <div className="p-3 md:p-4">
+      <div className="p-3 md:p-5">
         <div className="flex items-center gap-2">
           <Icon className="h-4 w-4 text-emerald-600 shrink-0" />
-          <h3 className="font-display text-sm md:text-base font-semibold">
+          <h3 className="font-display text-sm md:text-lg font-semibold">
             {card.label}
           </h3>
         </div>
-        <p className="mt-1.5 hidden md:line-clamp-2 text-xs text-muted-foreground leading-snug">
+        <p className="mt-2 hidden md:block text-sm text-muted-foreground leading-relaxed">
           {card.teaser}
         </p>
-        <div className="mt-2 md:mt-3 flex items-center justify-end text-xs">
+        <div className="mt-2 md:mt-4 flex items-center justify-end text-xs md:text-sm">
           <span className="flex items-center gap-1 font-medium text-emerald-600 group-hover:gap-2 transition-all">
             Odpri
             <ArrowRight className="h-3.5 w-3.5" />

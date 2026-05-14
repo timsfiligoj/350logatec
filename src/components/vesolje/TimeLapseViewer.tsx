@@ -1,7 +1,14 @@
 'use client'
 
 import Image from 'next/image'
-import { CalendarDays, Pause, Play, SkipBack, SkipForward } from 'lucide-react'
+import {
+  CalendarDays,
+  Cloud,
+  Pause,
+  Play,
+  SkipBack,
+  SkipForward,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { useTimeLapse, type TimeLapseFrame } from './useTimeLapse'
@@ -46,7 +53,6 @@ export function TimeLapseViewer({
   return (
     <figure className="relative mx-auto overflow-hidden rounded-2xl border bg-muted aspect-[1400/1780] max-h-[75vh] w-full max-w-full">
       <Image
-        key={tl.current.publicUrl}
         src={tl.current.publicUrl}
         alt={`Logatec, ${tl.current.capturedAt.slice(0, 10)}`}
         fill
@@ -59,8 +65,32 @@ export function TimeLapseViewer({
         capturedAt={tl.current.capturedAt}
         actions={actions}
       />
+      <CloudWarningBanner cloudCoverPct={tl.current.cloudCoverPct} />
       <ControlsOverlay {...tl} />
     </figure>
+  )
+}
+
+/**
+ * Citizen-facing nudge that the current scene was captured under heavy
+ * cloud cover, so grey/soft patches in the image aren't a data bug —
+ * they're cloud occlusion that the leastCC mosaicker couldn't fully
+ * clean. Threshold (50 %) chosen so it only surfaces on noticeably
+ * cloudy scenes; NDVI/NDWI captures are filtered well below that.
+ */
+export function CloudWarningBanner({
+  cloudCoverPct,
+}: {
+  cloudCoverPct: number
+}) {
+  if (cloudCoverPct <= 50) return null
+  return (
+    <div className="absolute bottom-12 inset-x-0 z-10 bg-amber-600/90 text-white">
+      <div className="flex items-center gap-2 px-3 py-1.5 text-[11px] md:text-xs leading-tight">
+        <Cloud className="h-3.5 w-3.5 shrink-0" />
+        <span>Oblačno. Sivi predeli so oblaki, ne tla.</span>
+      </div>
+    </div>
   )
 }
 
@@ -99,17 +129,14 @@ export function ControlsOverlay({
         <Button
           onClick={togglePlay}
           disabled={!canStep}
-          size="sm"
-          className="gap-1.5 bg-white text-foreground hover:bg-white/90 shrink-0"
+          size="icon"
+          aria-label={playing ? 'Ustavi' : 'Predvajaj'}
+          className="bg-white text-foreground hover:bg-white/90 shrink-0 h-8 w-8"
         >
           {playing ? (
-            <>
-              <Pause className="h-3.5 w-3.5" /> Ustavi
-            </>
+            <Pause className="h-4 w-4" />
           ) : (
-            <>
-              <Play className="h-3.5 w-3.5" /> Predvajaj
-            </>
+            <Play className="h-4 w-4" />
           )}
         </Button>
         <Button

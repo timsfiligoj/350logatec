@@ -7,10 +7,10 @@ import { Home, Leaf, Droplet, Snowflake, Clock } from 'lucide-react'
 
 const TABS = [
   { href: '/vesolje', label: 'Domov', icon: Home },
+  { href: '/vesolje/casovni-pregled', label: 'Časovni pregled', icon: Clock },
   { href: '/vesolje/rastje', label: 'Rastje', icon: Leaf },
   { href: '/vesolje/planinsko-polje', label: 'Planinsko polje', icon: Droplet },
   { href: '/vesolje/sneg', label: 'Sneg', icon: Snowflake },
-  { href: '/vesolje/casovni-pregled', label: 'Časovni pregled', icon: Clock },
 ] as const
 
 export function VesoljeNav() {

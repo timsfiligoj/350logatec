@@ -7,12 +7,12 @@ import { ColorLegend } from '@/components/vesolje/ColorLegend'
 import { getMonthlyForView, peakBy } from '@/lib/space/db'
 
 export const metadata: Metadata = {
-  title: 'Sneg — Logatec iz vesolja | 350logatec',
+  title: 'Sneg · Logatec iz vesolja | 350logatec',
   description:
     'Kako dolga je snežna sezona nad Logatcem? Skozi snežni indeks NDSI vidimo, kdaj sneg prekrije občino in kako dolgo se obdrži.',
 }
 
-export const revalidate = 60
+export const revalidate = 3600
 
 export default async function SnegPage() {
   const history = await getMonthlyForView('ndsi')
@@ -42,6 +42,10 @@ export default async function SnegPage() {
   const peakRow = peakBy(history, 'snow_pct')
   const peakPct = peakRow?.metrics?.snow_pct ?? null
 
+  const firstYear = frames[0].capturedAt.slice(0, 4)
+  const lastYear = frames[frames.length - 1].capturedAt.slice(0, 4)
+  const yearRange = firstYear === lastYear ? firstYear : `${firstYear}–${lastYear}`
+
   const forGeeks = (
     <ForGeeksDialog
       variant="overlay"
@@ -59,18 +63,18 @@ export default async function SnegPage() {
       </p>
       <ul>
         <li>
-          <strong>B03 (Green, 560 nm)</strong> — sveži sneg je skoraj bel, močno
+          <strong>B03 (Green, 560 nm)</strong>: sveži sneg je skoraj bel, močno
           odbija vso vidno svetlobo.
         </li>
         <li>
-          <strong>B11 (SWIR, 1610 nm)</strong> — sneg in led to dolgovalovno
-          infrardečo absorbirata, oblaki (ki sicer odbijajo zeleno) pa ne — tako
+          <strong>B11 (SWIR, 1610 nm)</strong>: sneg in led to dolgovalovno
+          infrardečo absorbirata, oblaki (ki sicer odbijajo zeleno) pa ne, zato
           razločimo sneg od oblačnosti.
         </li>
       </ul>
       <p>
         Za snežne scene zviša prag dovoljene oblačnosti na 60 % (slovenske zime
-        so pogosto pod oblaki — z 20 % filtrom bi izgubili polovico zimske
+        so pogosto pod oblaki, z 20 % filtrom bi izgubili polovico zimske
         sezone). Sentinel Hub leastCC mozaikalnik kljub temu sestavi najčistejše
         piksle iz 10-dnevnega okna.
       </p>
@@ -84,19 +88,6 @@ export default async function SnegPage() {
   return (
     <VesoljeShell>
       <article className="container mx-auto px-4 py-5 md:py-6 max-w-6xl">
-        <header className="mb-4 md:mb-5">
-          <p className="text-xs uppercase tracking-widest text-slate-600 font-semibold">
-            350space · sneg
-          </p>
-          <h1 className="mt-1 font-display text-2xl md:text-3xl font-bold tracking-tight">
-            Kako dolga je{' '}
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-slate-700 to-sky-500">
-              snežna sezona
-            </span>
-            ?
-          </h1>
-        </header>
-
         <IndexedTimeLapseView
           viewKind="ndsi"
           frames={frames}
@@ -107,7 +98,7 @@ export default async function SnegPage() {
                   value: peakPct.toFixed(1),
                   unit: '%',
                   capturedAt: peakRow.captured_at,
-                  hintPrefix: 'Najgloblja zima:',
+                  title: 'Najmočnejša zima',
                   icon: 'Mountain',
                 }
               : null
@@ -126,41 +117,50 @@ export default async function SnegPage() {
         />
 
         <p className="mt-3 text-xs text-muted-foreground">
-          Drsnik prikazuje samo mesece z opazno snežno pokritostjo. Brez-snežne
-          mesece smo izpustili.
+          Drsnik prikazuje samo mesece z opazno snežno pokritostjo.
         </p>
 
         <section className="mt-8 md:mt-10 rounded-2xl border bg-card p-6 md:p-8">
           <h2 className="font-display text-xl md:text-2xl font-semibold flex items-center gap-2">
             <Mountain className="h-5 w-5 text-slate-600" />
-            Kaj gledaš
+            Kaj prikazuje sneg
           </h2>
           <div className="mt-3 space-y-3 text-base text-muted-foreground leading-relaxed">
             <p>
-              Slika kaže, kako »snežen« je vsak piksel občine. Snežne površine
-              so označene <strong>svetlomodro-bele</strong>, sredina kontinua
-              (<strong>siva</strong>) pomeni rob taljenja ali mokra tla,
-              najtemnejši odtenki so vegetacija in mesto.
+              Ta pogled pokaže, kateri deli občine so bili v izbranem mesecu
+              pokriti s snegom. Satelit Sentinel-2 sneg prepozna drugače kot
+              navadna kamera: meri odboj različnih vrst svetlobe in tako
+              lažje loči sneg od gozdov, mokrih tal, oblakov in naselij.
             </p>
             <p>
-              V <strong>poletnih mesecih</strong> je slika večinoma temno siva —
-              brez snega na nizki nadmorski višini Logatca. Pozimi se pojavijo
-              modro-beli pasovi: najprej hribi okrog občine, v hladnejših
-              mesecih pa pogosto cela dolina.
+              Svetlomodro-bele površine označujejo območja, kjer je bil
+              zaznan sneg. Sivi toni prikazujejo predele brez jasne snežne
+              odeje, temnejši deli pa so večinoma gozdovi, naselja, sence
+              ali mokra tla. Pri robovih snega je prikaz lahko mehkejši, ker
+              se tam pogosto mešajo sneg, vlaga, vegetacija in senca.
             </p>
             <p>
-              S kombinacijo mesečnih posnetkov vidiš, kako se snežna sezona
-              razteza skozi čas — neposredni vesoljski signal lokalne klime.
+              V toplejših mesecih je prikaz večinoma siv, ker snega ni.
+              Pozimi se najprej pobelijo višje lege in okoliški hribi, ob
+              močnejšem sneženju pa tudi dolina. S predvajanjem lahko
+              spremljaš, kdaj se snežna sezona začne, kako dolgo traja in
+              kako hitro se sneg umika.
             </p>
           </div>
         </section>
 
-        <p className="mt-6 text-xs text-muted-foreground leading-relaxed">
-          Vsebuje spremenjene podatke Copernicus Sentinel{' '}
-          {frames[0].capturedAt.slice(0, 4)}–
-          {frames[frames.length - 1].capturedAt.slice(0, 4)}. Vir: Copernicus
-          Data Space Ecosystem · Sentinel Hub Process API.
-        </p>
+        <div className="mt-6 space-y-2 text-xs text-muted-foreground leading-relaxed">
+          <p>
+            Vsebuje obdelane podatke misije Copernicus Sentinel-2 za obdobje{' '}
+            {yearRange}. Vizualizacije so samodejno ustvarjene za območje
+            Logatca, Hotedršice in Planinskega polja. Na prikaz lahko vplivajo
+            oblaki, megla, sence in razpoložljivost satelitskih posnetkov.
+          </p>
+          <p>
+            Vir: Copernicus Data Space Ecosystem, Sentinel Hub Process API,
+            350logatec obdelava podatkov.
+          </p>
+        </div>
       </article>
     </VesoljeShell>
   )

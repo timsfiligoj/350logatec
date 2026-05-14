@@ -5,18 +5,21 @@ import {
   ArrowDown,
   ArrowUp,
   Leaf,
-  Droplet,
   Snowflake,
   TrendingUp,
-  Waves,
   Mountain,
   Minus,
   type LucideIcon,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { describeNdvi, describeSnow } from '@/lib/space/describe'
 import { MetricCard, type MetricDelta } from './MetricCard'
 import { useTimeLapse, type TimeLapseFrame } from './useTimeLapse'
-import { ControlsOverlay, DateActionsOverlay } from './TimeLapseViewer'
+import {
+  CloudWarningBanner,
+  ControlsOverlay,
+  DateActionsOverlay,
+} from './TimeLapseViewer'
 
 const SI_MONTH_NAMES = [
   'januar',
@@ -37,44 +40,24 @@ function siMonthYear(iso: string): string {
   return `${SI_MONTH_NAMES[Number(iso.slice(5, 7)) - 1]} ${iso.slice(0, 4)}`
 }
 
-function describeNdvi(mean: number): string {
-  if (mean >= 0.75) return 'zelo gosto rastje'
-  if (mean >= 0.6) return 'gosto rastje'
-  if (mean >= 0.4) return 'zmerno rastje'
-  if (mean >= 0.2) return 'redko rastje'
-  return 'pretežno gola tla'
-}
-
-function describeWater(pct: number): string {
-  if (pct >= 30) return 'velika poplava'
-  if (pct >= 10) return 'opazna poplava'
-  if (pct >= 3) return 'rob polja namočen'
-  if (pct >= 0.5) return 'rečice nad bregovi'
-  return 'polje suho'
-}
-
-function describeSnow(pct: number): string {
-  if (pct >= 50) return 'snežna odeja čez večino občine'
-  if (pct >= 20) return 'obsežen sneg, večinoma višine'
-  if (pct >= 5) return 'sneg ostaja na hribih'
-  if (pct >= 0.5) return 'samo posamezne sledi'
-  return 'brez snega'
-}
-
-type ViewKind = 'ndvi' | 'ndwi' | 'ndsi'
+type ViewKind = 'ndvi' | 'ndsi'
 
 type CurrentMetricSpec = {
   /** Short label shown on the in-image overlay; max ~20 chars. */
   shortLabel: string
   icon: LucideIcon
-  /** The metric value used for the year-over-year delta, if any. */
-  metricKey: 'mean' | 'polje_water_pct' | 'snow_pct'
+  /** The metric value used for the year-over-year delta. Omit for
+   *  phrase-only views where a number would mislead. */
+  metricKey?: 'mean' | 'polje_water_pct' | 'snow_pct'
   /** Number of decimal places shown in the delta. */
-  decimals: number
+  decimals?: number
   /** Optional unit appended to the delta. */
   unit?: string
   format: (frame: TimeLapseFrame) => {
-    value: string
+    /** Numeric value rendered as the big headline. Omit to render the
+     *  phrase alone — used for polje where the % denominator is hidden
+     *  and a number would mislead. */
+    value?: string
     unit?: string
     /** Plain-language single phrase, e.g. "opazna poplava". */
     phrase: string
@@ -95,24 +78,6 @@ const CURRENT_METRIC: Record<ViewKind, CurrentMetricSpec> = {
       return {
         value: mean.toFixed(2),
         phrase: describeNdvi(mean),
-      }
-    },
-  },
-  ndwi: {
-    shortLabel: 'Pod vodo',
-    icon: Droplet,
-    metricKey: 'polje_water_pct',
-    decimals: 1,
-    unit: '%',
-    format: (frame) => {
-      const pct = frame.metrics?.polje_water_pct
-      if (typeof pct !== 'number') {
-        return { value: '—', phrase: 'brez podatka' }
-      }
-      return {
-        value: pct.toFixed(1),
-        unit: '%',
-        phrase: describeWater(pct),
       }
     },
   },
@@ -141,17 +106,16 @@ type PeakDescriptor = {
   value: string
   /** Optional unit appended to value (e.g. "%") */
   unit?: string
-  /** Captured-at ISO string of the peak month (for the hint). */
+  /** Captured-at ISO string of the peak month (shown as the hint). */
   capturedAt: string
-  /** Hint prefix; "{month}" gets replaced with siMonthYear(capturedAt). */
-  hintPrefix: string
+  /** Card title, e.g. "Največji nivo poplavnjenosti". */
+  title: string
   /** Override icon for the peak card. */
-  icon: 'TrendingUp' | 'Waves' | 'Mountain'
+  icon: 'TrendingUp' | 'Mountain'
 }
 
 const PEAK_ICONS = {
   TrendingUp,
-  Waves,
   Mountain,
 } as const
 
@@ -181,23 +145,26 @@ export function IndexedTimeLapseView({
   const cur = metric.format(tl.current)
   const PeakIcon = peak ? PEAK_ICONS[peak.icon] : null
 
-  // Year-over-year delta: same calendar month, one year earlier.
-  const currentMonth = tl.current.capturedAt.slice(5, 7)
-  const currentYear = Number(tl.current.capturedAt.slice(0, 4))
-  const yoyFrame = frames.find(
-    (f) =>
-      f.capturedAt.slice(5, 7) === currentMonth &&
-      Number(f.capturedAt.slice(0, 4)) === currentYear - 1,
-  )
+  // Year-over-year delta: same calendar month, one year earlier. Skipped
+  // for views without a numeric headline (ndwi).
   let delta: MetricDelta | null = null
-  const cv = tl.current.metrics?.[metric.metricKey]
-  const yv = yoyFrame?.metrics?.[metric.metricKey]
-  if (typeof cv === 'number' && typeof yv === 'number' && yoyFrame) {
-    delta = {
-      value: cv - yv,
-      label: `vs ${siMonthYear(yoyFrame.capturedAt)}`,
-      unit: metric.unit,
-      decimals: metric.decimals,
+  if (metric.metricKey && typeof metric.decimals === 'number') {
+    const currentMonth = tl.current.capturedAt.slice(5, 7)
+    const currentYear = Number(tl.current.capturedAt.slice(0, 4))
+    const yoyFrame = frames.find(
+      (f) =>
+        f.capturedAt.slice(5, 7) === currentMonth &&
+        Number(f.capturedAt.slice(0, 4)) === currentYear - 1,
+    )
+    const cv = tl.current.metrics?.[metric.metricKey]
+    const yv = yoyFrame?.metrics?.[metric.metricKey]
+    if (typeof cv === 'number' && typeof yv === 'number' && yoyFrame) {
+      delta = {
+        value: cv - yv,
+        label: `vs ${siMonthYear(yoyFrame.capturedAt)}`,
+        unit: metric.unit,
+        decimals: metric.decimals,
+      }
     }
   }
 
@@ -210,7 +177,6 @@ export function IndexedTimeLapseView({
     >
       <figure className="relative overflow-hidden rounded-2xl border bg-muted aspect-[1400/1780] max-h-[68vh] w-full">
         <Image
-          key={tl.current.publicUrl}
           src={tl.current.publicUrl}
           alt={`${viewKind.toUpperCase()} prikaz, ${tl.current.capturedAt.slice(0, 10)}`}
           fill
@@ -230,16 +196,17 @@ export function IndexedTimeLapseView({
           phrase={cur.phrase}
           delta={delta}
         />
+        <CloudWarningBanner cloudCoverPct={tl.current.cloudCoverPct} />
         <ControlsOverlay {...tl} />
       </figure>
 
       {peak && PeakIcon ? (
         <div className="md:self-start">
           <MetricCard
-            label="Vrh v podatkih"
+            label={peak.title}
             value={peak.value}
             unit={peak.unit}
-            hint={`${peak.hintPrefix} ${siMonthYear(peak.capturedAt)}`}
+            hint={siMonthYear(peak.capturedAt)}
             icon={PeakIcon}
             accent="emerald"
           />
@@ -257,11 +224,26 @@ function MetricOverlay({
   delta,
 }: {
   label: string
-  value: string
+  value?: string
   unit?: string
   phrase: string
   delta: MetricDelta | null
 }) {
+  // Phrase-only mode (ndwi): just label + phrase, no number, no delta —
+  // the % denominator on this view is hidden so a number would mislead.
+  if (!value) {
+    return (
+      <div className="absolute top-14 left-3 z-10 max-w-[10rem] md:max-w-[12rem] rounded-xl bg-black/65 backdrop-blur-sm px-3 py-2 text-white pointer-events-none">
+        <p className="text-[10px] uppercase tracking-wider opacity-80 leading-tight font-semibold">
+          {label}
+        </p>
+        <p className="mt-1 font-display text-base font-semibold leading-tight">
+          {phrase}
+        </p>
+      </div>
+    )
+  }
+
   return (
     <div className="absolute top-14 left-3 z-10 max-w-[10rem] md:max-w-[12rem] rounded-xl bg-black/65 backdrop-blur-sm px-3 py-2 text-white pointer-events-none">
       <p className="text-[10px] uppercase tracking-wider opacity-80 leading-tight font-semibold">

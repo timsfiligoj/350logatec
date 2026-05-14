@@ -6,7 +6,7 @@
 import { LOGATEC_AOI, PLANINSKO_POLJE_BBOX } from './aoi'
 import { findCloudFreeScene } from './catalog'
 import { fetchSceneAsPng } from './process'
-import { fetchIndexStatistics, type IndexStatistics } from './statistics'
+import { fetchIndexStatistics } from './statistics'
 import { TRUE_COLOR_EVALSCRIPT } from './evalscripts/true-color'
 import {
   NDWI_EVALSCRIPT,
@@ -92,20 +92,6 @@ const VIEW_CONFIG: Record<
   },
 }
 
-function pixelsAbove(
-  stats: IndexStatistics,
-  threshold: number,
-): { above: number; total: number } {
-  let above = 0
-  let total = 0
-  for (let i = 0; i < stats.histogramCounts.length; i++) {
-    const count = stats.histogramCounts[i]
-    total += count
-    if (stats.histogramEdges[i] >= threshold) above += count
-  }
-  return { above, total }
-}
-
 async function computeMetrics(
   viewKind: ViewKind,
   month: string,
@@ -116,36 +102,23 @@ async function computeMetrics(
   const cloudPct = MAX_CLOUD_COVER_PCT[viewKind]
 
   if (viewKind === 'ndwi') {
-    // Mean MNDWI over full AOI, plus % water inside the Planinsko polje
-    // sub-bbox. MNDWI > 0 = water, so a 2-bin histogram (-1 → 0 → 1)
-    // gives us land vs. water counts.
-    const [aoiStats, poljeStats] = await Promise.all([
-      fetchIndexStatistics({
-        bbox: LOGATEC_AOI,
-        month,
-        indexId: 'ndwi',
-        evalscript: config.statisticalEvalscript,
-        maxCloudCoverPct: cloudPct,
-      }),
-      fetchIndexStatistics({
-        bbox: PLANINSKO_POLJE_BBOX,
-        month,
-        indexId: 'ndwi',
-        evalscript: config.statisticalEvalscript,
-        maxCloudCoverPct: cloudPct,
-        histogram: { binWidth: 1, lowEdge: -1, highEdge: 1 },
-      }),
-    ])
-
-    const metrics: AcquireMetrics = {}
-    if (aoiStats) metrics.mean = round(aoiStats.mean, 3)
-    if (poljeStats) {
-      const { above, total } = pixelsAbove(poljeStats, 0)
-      metrics.polje_water_pct = total
-        ? round((above / total) * 100, 1)
-        : 0
+    // The NDWI statistical evalscript emits 1 for Sen2Cor SCL == 6
+    // (water) pixels and 0 otherwise, so the band mean over the polje
+    // sub-bbox is directly the water fraction. Same SCL-gated criterion
+    // as the visualisation, so the metric agrees with what's coloured
+    // blue on the map — and snow/ice/wet roofs (which all share MNDWI's
+    // band ratio) are excluded.
+    const poljeStats = await fetchIndexStatistics({
+      bbox: PLANINSKO_POLJE_BBOX,
+      month,
+      indexId: 'ndwi',
+      evalscript: config.statisticalEvalscript,
+      maxCloudCoverPct: cloudPct,
+    })
+    if (!poljeStats) return null
+    return {
+      polje_water_pct: round(poljeStats.mean * 100, 1),
     }
-    return metrics
   }
 
   if (viewKind === 'ndvi') {

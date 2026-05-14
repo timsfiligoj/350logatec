@@ -2,17 +2,17 @@ import type { Metadata } from 'next'
 import { Waves, Sparkles } from 'lucide-react'
 import { VesoljeShell } from '@/components/vesolje/VesoljeShell'
 import { ForGeeksDialog } from '@/components/vesolje/ForGeeksDialog'
-import { IndexedTimeLapseView } from '@/components/vesolje/IndexedTimeLapseView'
+import { TimeLapseViewer } from '@/components/vesolje/TimeLapseViewer'
 import { ColorLegend } from '@/components/vesolje/ColorLegend'
-import { getMonthlyForView, peakBy } from '@/lib/space/db'
+import { getMonthlyForView } from '@/lib/space/db'
 
 export const metadata: Metadata = {
-  title: 'Planinsko polje — Logatec iz vesolja | 350logatec',
+  title: 'Planinsko polje · Logatec iz vesolja | 350logatec',
   description:
     'Kdaj Planinsko polje poplavi? Skozi vodni indeks MNDWI vidimo, kako se karstno polje južno od Logatca čez leto polni in prazni.',
 }
 
-export const revalidate = 60
+export const revalidate = 3600
 
 export default async function PlaninskoPoljePage() {
   const history = await getMonthlyForView('ndwi')
@@ -36,10 +36,9 @@ export default async function PlaninskoPoljePage() {
     )
   }
 
-  // Peak is always taken from the full history, so the "vrh" label is
-  // honest even when the slider is filtered.
-  const peakRow = peakBy(history, 'polje_water_pct')
-  const peakPct = peakRow?.metrics?.polje_water_pct ?? null
+  const firstYear = frames[0].capturedAt.slice(0, 4)
+  const lastYear = frames[frames.length - 1].capturedAt.slice(0, 4)
+  const yearRange = firstYear === lastYear ? firstYear : `${firstYear}–${lastYear}`
 
   const forGeeks = (
     <ForGeeksDialog
@@ -56,15 +55,15 @@ export default async function PlaninskoPoljePage() {
         »cool roof« strehami, ki klasični NDWI = (B03 − B08) lažno klasificira
         kot vodo (visok green + visok NIR pri kovinskih prevlekah). MNDWI
         zamenja NIR z SWIR (B11): voda absorbira SWIR skoraj popolnoma,
-        kovinske strehe pa ne — tako se odpravi večina urbanih lažnih
+        kovinske strehe pa ne, tako se odpravi večina urbanih lažnih
         pozitivov.
       </p>
       <ul>
         <li>
-          <strong>B03 (Green, 560 nm)</strong> — voda zmerno odbija zeleno.
+          <strong>B03 (Green, 560 nm)</strong>: voda zmerno odbija zeleno.
         </li>
         <li>
-          <strong>B11 (SWIR, 1610 nm)</strong> — voda absorbira to bližnjo
+          <strong>B11 (SWIR, 1610 nm)</strong>: voda absorbira to bližnjo
           kratkovalovno infrardečo skoraj v celoti.
         </li>
       </ul>
@@ -87,35 +86,7 @@ export default async function PlaninskoPoljePage() {
   return (
     <VesoljeShell>
       <article className="container mx-auto px-4 py-5 md:py-6 max-w-6xl">
-        <header className="mb-4 md:mb-5">
-          <p className="text-xs uppercase tracking-widest text-blue-600 font-semibold">
-            350space · planinsko polje
-          </p>
-          <h1 className="mt-1 font-display text-2xl md:text-3xl font-bold tracking-tight">
-            Kdaj{' '}
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-teal-500">
-              Planinsko polje
-            </span>{' '}
-            poplavi?
-          </h1>
-        </header>
-
-        <IndexedTimeLapseView
-          viewKind="ndwi"
-          frames={frames}
-          actions={forGeeks}
-          peak={
-            peakRow && peakPct !== null
-              ? {
-                  value: peakPct.toFixed(1),
-                  unit: '%',
-                  capturedAt: peakRow.captured_at,
-                  hintPrefix: 'Najvišji vodostaj:',
-                  icon: 'Waves',
-                }
-              : null
-          }
-        />
+        <TimeLapseViewer frames={frames} actions={forGeeks} />
 
         <ColorLegend
           className="mt-4"
@@ -130,40 +101,50 @@ export default async function PlaninskoPoljePage() {
 
         <p className="mt-3 text-xs text-muted-foreground">
           Drsnik prikazuje samo mesece, ko je polje imelo opazno vodno
-          površino. Mesece brez poplavljanja smo izpustili.
+          površino.
         </p>
 
         <section className="mt-8 md:mt-10 rounded-2xl border bg-card p-6 md:p-8">
           <h2 className="font-display text-xl md:text-2xl font-semibold flex items-center gap-2">
             <Waves className="h-5 w-5 text-blue-600" />
-            Kaj gledaš
+            Kaj prikazuje Planinsko polje
           </h2>
           <div className="mt-3 space-y-3 text-base text-muted-foreground leading-relaxed">
             <p>
-              Planinsko polje je <strong>karstno polje</strong> — velika
-              ravnina, ki nima površinskega odtoka. Voda priteče iz ponikalnic
-              in podzemnih izvirov in ponovno izgine v kraška požiralnika. Nivo
-              je odvisen od podtalnice.
+              Planinsko polje je kraško polje, velika ravnica brez stalnega
+              površinskega odtoka. Voda priteče iz izvirov in podzemnih
+              kraških poti, nato pa počasi izginja skozi požiralnike. Ko je
+              vode več, kot je požiralniki lahko sproti odvedejo, se polje
+              začne polniti.
             </p>
             <p>
-              <strong>Pozimi in zgodaj spomladi</strong> se nivo dvigne, polje
-              se napolni in postane plitvo jezero, ki traja tedne ali mesece.{' '}
-              <strong>Poleti</strong> je polje suho, raste trava in se kosi.
+              Pozimi in zgodaj spomladi se Planinsko polje pogosto spremeni v
+              plitvo jezero. Voda lahko tam ostane več tednov ali mesecev,
+              odvisno od padavin, snega, podtalnice in hitrosti odtekanja v
+              podzemlje. Poleti je polje običajno suho in ponovno postane
+              travnata ravnica.
             </p>
             <p>
-              Predvajaj časovno os in opazuj, kako se modra površina iz mesta v
-              mesec spreminja — to je sezonski ritem kraške hidrologije, neposredno
-              z neba.
+              Ta pogled pokaže, kateri deli polja so bili v izbranem mesecu
+              pod vodo. Modra barva označuje vodno površino, svetlejši toni
+              pa bolj mokra ali močvirna območja. S predvajanjem lahko
+              spremljaš, kako se voda širi, zadržuje in nato postopoma umika.
             </p>
           </div>
         </section>
 
-        <p className="mt-6 text-xs text-muted-foreground leading-relaxed">
-          Vsebuje spremenjene podatke Copernicus Sentinel{' '}
-          {frames[0].capturedAt.slice(0, 4)}–
-          {frames[frames.length - 1].capturedAt.slice(0, 4)}. Vir: Copernicus
-          Data Space Ecosystem · Sentinel Hub Process API.
-        </p>
+        <div className="mt-6 space-y-2 text-xs text-muted-foreground leading-relaxed">
+          <p>
+            Vsebuje obdelane podatke misije Copernicus Sentinel-2 za obdobje{' '}
+            {yearRange}. Vizualizacije so samodejno ustvarjene za območje
+            Logatca, Hotedršice in Planinskega polja. Na prikaz lahko vplivajo
+            oblaki, megla, sence in razpoložljivost satelitskih posnetkov.
+          </p>
+          <p>
+            Vir: Copernicus Data Space Ecosystem, Sentinel Hub Process API,
+            350logatec obdelava podatkov.
+          </p>
+        </div>
       </article>
     </VesoljeShell>
   )
