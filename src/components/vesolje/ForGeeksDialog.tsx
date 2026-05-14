@@ -43,7 +43,18 @@ export function ForGeeksDialog({
           <DialogTitle className="font-display text-2xl">{title}</DialogTitle>
           {description ? <DialogDescription>{description}</DialogDescription> : null}
         </DialogHeader>
-        <div className="prose prose-sm prose-slate max-w-none">{children}</div>
+        <div
+          className="
+            text-sm text-foreground leading-relaxed
+            [&_p]:mb-3 [&_p:last-child]:mb-0
+            [&_ul]:my-3 [&_ul]:pl-5 [&_ul]:list-disc [&_ul]:space-y-1.5
+            [&_li]:leading-relaxed
+            [&_strong]:font-semibold [&_strong]:text-foreground
+            [&_em]:italic
+          "
+        >
+          {children}
+        </div>
       </DialogContent>
     </Dialog>
   )
