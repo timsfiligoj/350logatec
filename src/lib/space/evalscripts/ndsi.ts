@@ -10,15 +10,14 @@ export const NDSI_EVALSCRIPT = /* javascript */ `
 //VERSION=3
 function setup() {
   return {
-    input: [{ bands: ["B03", "B11", "dataMask"] }],
-    output: { bands: 4 },
+    input: [{ bands: ["B03", "B11"] }],
+    output: { bands: 3, sampleType: "AUTO" },
   };
 }
 
 function evaluatePixel(s) {
-  if (s.dataMask === 0) return [0, 0, 0, 0];
   const ndsi = (s.B03 - s.B11) / (s.B03 + s.B11);
-  const rgb = colorBlend(
+  return colorBlend(
     ndsi,
     [-1.0, 0.0, 0.4, 0.7, 1.0],
     [
@@ -29,7 +28,6 @@ function evaluatePixel(s) {
       [1.00, 1.00, 1.00],
     ]
   );
-  return [rgb[0], rgb[1], rgb[2], 1];
 }
 `
 

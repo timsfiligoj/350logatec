@@ -7,15 +7,14 @@ export const NDWI_EVALSCRIPT = /* javascript */ `
 //VERSION=3
 function setup() {
   return {
-    input: [{ bands: ["B03", "B08", "dataMask"] }],
-    output: { bands: 4 },
+    input: [{ bands: ["B03", "B08"] }],
+    output: { bands: 3, sampleType: "AUTO" },
   };
 }
 
 function evaluatePixel(s) {
-  if (s.dataMask === 0) return [0, 0, 0, 0];
   const ndwi = (s.B03 - s.B08) / (s.B03 + s.B08);
-  const rgb = colorBlend(
+  return colorBlend(
     ndwi,
     [-1.0, 0.0, 0.3, 1.0],
     [
@@ -25,7 +24,6 @@ function evaluatePixel(s) {
       [0.05, 0.20, 0.55],
     ]
   );
-  return [rgb[0], rgb[1], rgb[2], 1];
 }
 `
 

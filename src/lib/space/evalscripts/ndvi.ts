@@ -6,15 +6,14 @@ export const NDVI_EVALSCRIPT = /* javascript */ `
 //VERSION=3
 function setup() {
   return {
-    input: [{ bands: ["B04", "B08", "dataMask"] }],
-    output: { bands: 4 },
+    input: [{ bands: ["B04", "B08"] }],
+    output: { bands: 3, sampleType: "AUTO" },
   };
 }
 
 function evaluatePixel(s) {
-  if (s.dataMask === 0) return [0, 0, 0, 0];
   const ndvi = (s.B08 - s.B04) / (s.B08 + s.B04);
-  const rgb = colorBlend(
+  return colorBlend(
     ndvi,
     [-0.2, 0.0, 0.2, 0.5, 0.8],
     [
@@ -25,7 +24,6 @@ function evaluatePixel(s) {
       [0.05, 0.40, 0.08],
     ]
   );
-  return [rgb[0], rgb[1], rgb[2], 1];
 }
 `
 
