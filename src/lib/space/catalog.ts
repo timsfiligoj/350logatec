@@ -41,17 +41,18 @@ export async function findLatestCloudFreeScene(
   const to = new Date()
   const from = new Date(to.getTime() - SEARCH_WINDOW_DAYS * 24 * 60 * 60 * 1000)
 
+  // Sentinel Hub Catalog v1.0.0 does not implement the STAC sortby extension,
+  // so we over-fetch a handful and pick the most recent client-side.
   const body = {
     bbox,
     datetime: `${formatIsoDay(from)}/${formatIsoDay(to)}`,
     collections: ['sentinel-2-l2a'],
-    limit: 1,
+    limit: 20,
     'filter-lang': 'cql2-json',
     filter: {
       op: '<=',
       args: [{ property: 'eo:cloud_cover' }, maxCloudCoverPct],
     },
-    sortby: [{ field: 'properties.datetime', direction: 'desc' }],
   }
 
   const response = await fetch(CATALOG_ENDPOINT, {
@@ -73,12 +74,15 @@ export async function findLatestCloudFreeScene(
   }
 
   const data = (await response.json()) as StacFeatureCollection
-  const feature = data.features[0]
-  if (!feature) return null
+  if (data.features.length === 0) return null
+
+  const latest = data.features.reduce((best, candidate) =>
+    candidate.properties.datetime > best.properties.datetime ? candidate : best,
+  )
 
   return {
-    sceneId: feature.id,
-    capturedAt: feature.properties.datetime,
-    cloudCoverPct: feature.properties['eo:cloud_cover'] ?? 0,
+    sceneId: latest.id,
+    capturedAt: latest.properties.datetime,
+    cloudCoverPct: latest.properties['eo:cloud_cover'] ?? 0,
   }
 }
