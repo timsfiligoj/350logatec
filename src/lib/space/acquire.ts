@@ -227,7 +227,12 @@ export async function acquire(opts: AcquireOptions): Promise<AcquireResult> {
     evalscript: config.pngEvalscript,
   })
 
-  await uploadPng(storagePath, png, { upsert: opts.force })
+  // Always upsert: the dedupe check above already short-circuits successful
+  // prior runs, so if we reach this point we either (a) want to overwrite
+  // (force=true) or (b) are recovering from a partial earlier run where the
+  // Storage upload landed but the downstream Statistical API / DB insert
+  // failed, leaving an orphan object. In both cases overwrite is correct.
+  await uploadPng(storagePath, png, { upsert: true })
 
   // Metrics need a month context. If the caller didn't pass one, derive it
   // from the matched scene's captured_at so the Statistical API has a
