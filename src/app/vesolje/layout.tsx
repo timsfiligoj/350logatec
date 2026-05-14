@@ -1,9 +1,11 @@
 import { Metadata } from 'next'
 
+const VESOLJE_DESCRIPTION =
+  'Logatec skozi odprte podatke evropskih satelitov Copernicus Sentinel-2. Štiri zgodbe o občini: rastje, voda, sneg in čas.'
+
 export const metadata: Metadata = {
   title: '350space · Logatec iz vesolja | 350logatec',
-  description:
-    'Civilna iniciativa, ki domeno vesolja približuje Logatcu. Satelitski pogledi na občino z odprtimi podatki Copernicus Sentinel-2.',
+  description: VESOLJE_DESCRIPTION,
   keywords: [
     '350space',
     'logatec iz vesolja',
@@ -14,9 +16,16 @@ export const metadata: Metadata = {
     'cassini logatec',
   ],
   openGraph: {
-    title: '350space · Logatec iz vesolja',
-    description:
-      'Civilna iniciativa, ki domeno vesolja približuje Logatcu. Satelitski pogledi na občino z odprtimi podatki Copernicus Sentinel-2.',
+    title: 'Logatec iz vesolja',
+    description: VESOLJE_DESCRIPTION,
+    type: 'website',
+    locale: 'sl_SI',
+    siteName: '350logatec',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Logatec iz vesolja',
+    description: VESOLJE_DESCRIPTION,
   },
 }
 
