@@ -1,6 +1,6 @@
 // Sentinel Hub Process API — renders pixels for the AOI using a given
-// evalscript. Returns raw PNG bytes. The caller is responsible for storing or
-// further processing them.
+// evalscript. Returns raw PNG bytes. The caller chooses the evalscript
+// (true color, NDWI viz, NDVI viz, NDSI viz, etc.).
 
 import { type Bbox, LOGATEC_AOI_PIXELS } from './aoi'
 import { getCdseAccessToken } from './cdse-auth'
@@ -8,32 +8,51 @@ import { getCdseAccessToken } from './cdse-auth'
 const PROCESS_ENDPOINT = 'https://sh.dataspace.copernicus.eu/api/v1/process'
 const WGS84_CRS = 'http://www.opengis.net/def/crs/EPSG/0/4326'
 
-// A Sentinel-2 scene covers a single ~100x100 km UTM tile, which often only
-// partially overlaps a small AOI like Logatec's. Asking the Process API for
-// just the catalog match's day usually yields black no-data fill across the
-// missing tiles. Widening to a multi-day window lets the leastCC mosaicker
-// stitch coverage from adjacent passes. Sentinel-2 revisit at this latitude
-// is 3–5 days, so a 10-day window reliably covers the AOI.
+// Sentinel-2 covers each location every ~3-5 days at our latitude, so a
+// 10-day window is wide enough to mosaic across a small AOI that spans
+// multiple UTM tiles. Used only when we don't already have a calendar
+// month constraint from the caller.
 const MOSAIC_WINDOW_DAYS = 10
 
-function toMosaicWindow(isoTimestamp: string): { from: string; to: string } {
+function mosaicWindowAroundScene(isoTimestamp: string): {
+  from: string
+  to: string
+} {
   const to = new Date(isoTimestamp)
   const from = new Date(to.getTime() - MOSAIC_WINDOW_DAYS * 24 * 60 * 60 * 1000)
-  const day = to.toISOString().slice(0, 10)
   return {
-    from: `${from.toISOString().slice(0, 10)}T00:00:00Z`,
-    to: `${day}T23:59:59Z`,
+    from: from.toISOString(),
+    to: to.toISOString(),
+  }
+}
+
+function monthWindow(month: string): { from: string; to: string } {
+  const [yearStr, monthStr] = month.split('-')
+  const year = Number(yearStr)
+  const monthNum = Number(monthStr)
+  if (!Number.isFinite(year) || !Number.isFinite(monthNum)) {
+    throw new Error(`Invalid month: ${month} (expected YYYY-MM)`)
+  }
+  return {
+    from: new Date(Date.UTC(year, monthNum - 1, 1, 0, 0, 0)).toISOString(),
+    to: new Date(Date.UTC(year, monthNum, 0, 23, 59, 59)).toISOString(),
   }
 }
 
 export async function fetchSceneAsPng(args: {
   bbox: Bbox
+  // If `month` is provided (YYYY-MM), the Process API mosaics across the
+  // whole month with leastCC ordering. Otherwise we use a ±N-day window
+  // around `capturedAt` to fill tile gaps.
   capturedAt: string
+  month?: string
   maxCloudCoverPct: number
   evalscript: string
 }): Promise<Buffer> {
   const token = await getCdseAccessToken()
-  const timeRange = toMosaicWindow(args.capturedAt)
+  const timeRange = args.month
+    ? monthWindow(args.month)
+    : mosaicWindowAroundScene(args.capturedAt)
 
   const body = {
     input: {

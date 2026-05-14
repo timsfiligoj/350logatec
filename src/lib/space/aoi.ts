@@ -20,3 +20,9 @@ export const LOGATEC_AOI_PIXELS = {
   width: 1400,
   height: 1780,
 } as const
+
+// Tighter sub-region used only for the "% Planinskega polja pod vodo"
+// metric. Visualisations still cover the full LOGATEC_AOI; only the NDWI
+// water-percentage statistic is computed over this rectangle to avoid
+// confounding from non-polje water bodies (rivers, ponds) inside the AOI.
+export const PLANINSKO_POLJE_BBOX: Bbox = [14.21, 45.8, 14.3, 45.84] as const
