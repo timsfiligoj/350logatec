@@ -63,8 +63,8 @@ export function TimeLapseViewer({
             fill
             sizes="(max-width: 768px) 100vw, 700px"
             className={cn(
-              'object-contain bg-black/5 transition-opacity duration-200',
-              isActive ? 'opacity-100' : 'opacity-0',
+              'object-contain bg-black/5',
+              isActive ? 'opacity-100 z-[1]' : 'opacity-0 z-0',
             )}
             {...(isActive ? { priority: true } : { loading: 'eager' })}
             onLoad={(e) => {
