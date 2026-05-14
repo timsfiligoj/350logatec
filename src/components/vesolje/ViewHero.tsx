@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import { Cloud, CalendarDays } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { cn } from '@/lib/utils'
 import type { AcquisitionWithUrl } from '@/lib/space/db'
 
 const SI_MONTHS = [
@@ -27,30 +28,43 @@ function formatSlovenianMonth(isoTimestamp: string): string {
 export function ViewHero({
   acquisition,
   alt,
+  actions,
+  className,
 }: {
   acquisition: AcquisitionWithUrl
   alt: string
+  /** Optional element rendered absolutely in the image's top-right corner. */
+  actions?: React.ReactNode
+  className?: string
 }) {
   return (
-    <figure className="overflow-hidden rounded-2xl border bg-muted">
-      <div className="relative aspect-[1400/1780] w-full">
+    <figure
+      className={cn(
+        'relative overflow-hidden rounded-2xl border bg-muted flex flex-col',
+        className,
+      )}
+    >
+      <div className="relative w-full bg-black/5 flex-1 min-h-0">
         <Image
           src={acquisition.public_url}
           alt={alt}
           fill
-          sizes="(max-width: 768px) 100vw, 800px"
-          className="object-cover"
+          sizes="(max-width: 768px) 100vw, 60vw"
+          className="object-contain"
           priority
           unoptimized
         />
+        {actions ? (
+          <div className="absolute top-3 right-3 z-10">{actions}</div>
+        ) : null}
       </div>
-      <figcaption className="flex flex-wrap items-center justify-between gap-3 border-t bg-background px-4 py-3">
+      <figcaption className="flex flex-wrap items-center justify-between gap-3 border-t bg-background px-4 py-2.5">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <CalendarDays className="h-4 w-4" />
           <span className="font-medium text-foreground">
             {formatSlovenianMonth(acquisition.captured_at)}
           </span>
-          <span className="text-xs">
+          <span className="text-xs hidden sm:inline">
             ({new Date(acquisition.captured_at).toISOString().slice(0, 10)})
           </span>
         </div>
