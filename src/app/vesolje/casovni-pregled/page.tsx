@@ -52,13 +52,6 @@ export default async function CasovniPregledPage() {
         okna okoli izbrane scene (»leastCC« strategija), tako da
         tile-boundaries med prehodi izginejo.
       </p>
-      <p>
-        Po renderiranju shranimo PNG (2100 × 1780 px pri 10 m/piksel) v
-        Supabase Storage in vpišemo vrstico v tabelo <code>
-          space_acquisitions
-        </code>. Časovni pregled bere iz te tabele in animira sliko po
-        sličici.
-      </p>
       <ul>
         <li>
           <strong>Hitrost animacije</strong>: 1 sličica vsakih 0.9 sekunde.
