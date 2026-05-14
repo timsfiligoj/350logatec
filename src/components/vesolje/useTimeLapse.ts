@@ -13,12 +13,13 @@ export type TimeLapseFrame = {
 
 /**
  * Shared autoplay + slider state for the various timelapse viewers.
- * Preloads frames in parallel and decodes the initial (latest) one
- * first so Play unlocks as soon as that single frame is ready —
- * waiting on all ~24 PNGs would otherwise take 20+ seconds on mobile.
- * During playback, the tick advances only to already-decoded frames
- * and pauses at the current one (with `buffering=true`) until the
- * next is ready, so the user never sees a half-rendered PNG.
+ * Readiness is driven by the viewer calling `markDecoded(url)` from
+ * each `<Image>`'s onLoad, so we track the same optimized AVIF that
+ * the browser actually displays — preloading the raw Supabase PNG
+ * via `new Image()` would just waste bandwidth on a different URL.
+ * Play unlocks as soon as the visible frame is decoded; during
+ * playback the timer holds the current frame (with `buffering=true`)
+ * until the next is ready, so users never see a half-rendered PNG.
  */
 export function useTimeLapse(frames: TimeLapseFrame[]) {
   const [index, setIndex] = useState(Math.max(0, frames.length - 1))
@@ -31,32 +32,6 @@ export function useTimeLapse(frames: TimeLapseFrame[]) {
   useEffect(() => {
     decodedRef.current = new Set()
     forceTick((t) => t + 1)
-    if (frames.length === 0) return
-    let cancelled = false
-    const preloaded: HTMLImageElement[] = []
-    const initial = frames.length - 1
-    const order = [
-      initial,
-      ...frames.map((_, i) => i).filter((i) => i !== initial),
-    ]
-    for (const i of order) {
-      const frame = frames[i]
-      const img = new window.Image()
-      img.src = frame.publicUrl
-      preloaded.push(img)
-      img
-        .decode()
-        .catch(() => undefined)
-        .then(() => {
-          if (cancelled) return
-          decodedRef.current.add(frame.publicUrl)
-          forceTick((t) => t + 1)
-        })
-    }
-    return () => {
-      cancelled = true
-      preloaded.length = 0
-    }
   }, [frames])
 
   useEffect(() => {
@@ -86,6 +61,12 @@ export function useTimeLapse(frames: TimeLapseFrame[]) {
   const ready = current ? decodedRef.current.has(current.publicUrl) : false
   const canStep = frames.length > 1 && ready
 
+  function markDecoded(url: string) {
+    if (decodedRef.current.has(url)) return
+    decodedRef.current.add(url)
+    forceTick((t) => t + 1)
+  }
+
   return {
     frames,
     index,
@@ -94,6 +75,7 @@ export function useTimeLapse(frames: TimeLapseFrame[]) {
     ready,
     buffering,
     canStep,
+    markDecoded,
     setIndex,
     togglePlay: () => setPlaying((p) => !p),
     stop: () => setPlaying(false),

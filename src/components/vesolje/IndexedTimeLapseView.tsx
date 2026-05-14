@@ -176,20 +176,30 @@ export function IndexedTimeLapseView({
       )}
     >
       <figure className="relative overflow-hidden rounded-2xl border bg-muted aspect-[1400/1780] max-h-[68vh] w-full">
-        {tl.frames.map((frame, i) => (
-          <Image
-            key={frame.publicUrl}
-            src={frame.publicUrl}
-            alt={`${viewKind.toUpperCase()} prikaz, ${frame.capturedAt.slice(0, 10)}`}
-            fill
-            sizes="(max-width: 768px) 100vw, 60vw"
-            className={cn(
-              'object-contain bg-black/5 transition-opacity duration-200',
-              i === tl.index ? 'opacity-100' : 'opacity-0',
-            )}
-            priority={i === tl.index}
-          />
-        ))}
+        {tl.frames.map((frame, i) => {
+          const isActive = i === tl.index
+          return (
+            <Image
+              key={frame.publicUrl}
+              src={frame.publicUrl}
+              alt={`${viewKind.toUpperCase()} prikaz, ${frame.capturedAt.slice(0, 10)}`}
+              fill
+              sizes="(max-width: 768px) 100vw, 60vw"
+              className={cn(
+                'object-contain bg-black/5 transition-opacity duration-200',
+                isActive ? 'opacity-100' : 'opacity-0',
+              )}
+              {...(isActive ? { priority: true } : { loading: 'eager' })}
+              onLoad={(e) => {
+                const img = e.currentTarget as HTMLImageElement
+                img
+                  .decode()
+                  .catch(() => undefined)
+                  .then(() => tl.markDecoded(frame.publicUrl))
+              }}
+            />
+          )
+        })}
         <DateActionsOverlay
           capturedAt={tl.current.capturedAt}
           actions={actions}
