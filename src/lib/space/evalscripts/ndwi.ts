@@ -14,25 +14,37 @@ export const NDWI_EVALSCRIPT = /* javascript */ `
 //VERSION=3
 function setup() {
   return {
-    input: [{ bands: ["B03", "B11"] }],
+    input: [{ bands: ["B03", "B11", "SCL"] }],
     output: { bands: 3, sampleType: "AUTO" },
   };
 }
 
 function evaluatePixel(s) {
+  // SCL (Sen2Cor Scene Classification Layer) is ESA's pixel-level
+  // classification: 6 = water. Anchoring "blue" to SCL == 6 keeps cool
+  // industrial roofs out of the water class — they spectrally mimic
+  // water on MNDWI alone but SCL labels them as built-up / bare.
+  if (s.SCL === 6) {
+    const mndwi = (s.B03 - s.B11) / (s.B03 + s.B11);
+    return colorBlend(
+      mndwi,
+      [0.0, 0.4, 1.0],
+      [
+        [0.40, 0.70, 0.90],
+        [0.20, 0.50, 0.80],
+        [0.05, 0.20, 0.55],
+      ]
+    );
+  }
   const mndwi = (s.B03 - s.B11) / (s.B03 + s.B11);
-  // Threshold for water is 0; two stops close together at -0.05 and 0.0
-  // give a sharp visual jump so even sub-pixel rivers show as blue.
   return colorBlend(
     mndwi,
-    [-1.0, -0.4, -0.05, 0.0, 0.3, 1.0],
+    [-1.0, -0.4, 0.0, 0.5],
     [
       [0.55, 0.45, 0.30],
       [0.75, 0.68, 0.50],
       [0.88, 0.85, 0.75],
-      [0.40, 0.70, 0.90],
-      [0.20, 0.50, 0.80],
-      [0.05, 0.20, 0.55],
+      [0.85, 0.78, 0.65],
     ]
   );
 }
