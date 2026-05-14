@@ -10,7 +10,7 @@ import {
   Mountain,
   type LucideIcon,
 } from 'lucide-react'
-import { MetricCard } from './MetricCard'
+import { MetricCard, type MetricDelta } from './MetricCard'
 import { useTimeLapse, type TimeLapseFrame } from './useTimeLapse'
 import { ControlsOverlay, DateActionsOverlay } from './TimeLapseViewer'
 
@@ -63,6 +63,12 @@ type CurrentMetricSpec = {
   label: string
   icon: LucideIcon
   accent: 'emerald' | 'blue' | 'amber' | 'slate'
+  /** The metric value used for the year-over-year delta, if any. */
+  metricKey: 'mean' | 'polje_water_pct' | 'snow_pct'
+  /** Number of decimal places shown in the delta. */
+  decimals: number
+  /** Optional unit appended to the delta. */
+  unit?: string
   format: (frame: TimeLapseFrame) => {
     value: string
     unit?: string
@@ -72,49 +78,57 @@ type CurrentMetricSpec = {
 
 const CURRENT_METRIC: Record<ViewKind, CurrentMetricSpec> = {
   ndvi: {
-    label: 'Mesečno povprečje',
+    label: 'Kako zelen je Logatec',
     icon: Leaf,
     accent: 'emerald',
+    metricKey: 'mean',
+    decimals: 2,
     format: (frame) => {
       const mean = frame.metrics?.mean
       if (typeof mean !== 'number') {
-        return { value: '—', hint: 'Brez metrike za to sceno' }
+        return { value: '—', hint: 'Brez podatka za ta mesec' }
       }
       return {
         value: mean.toFixed(2),
-        hint: `Povprečni NDVI — ${describeNdvi(mean)}`,
+        hint: `Trenutno je ${describeNdvi(mean)}. Lestvica gre od 0 (gola tla) do 1 (gosti gozd).`,
       }
     },
   },
   ndwi: {
-    label: 'Polje pod vodo',
+    label: 'Koliko polja je pod vodo',
     icon: Droplet,
     accent: 'blue',
+    metricKey: 'polje_water_pct',
+    decimals: 1,
+    unit: '%',
     format: (frame) => {
       const pct = frame.metrics?.polje_water_pct
       if (typeof pct !== 'number') {
-        return { value: '—', hint: 'Brez metrike za to sceno' }
+        return { value: '—', hint: 'Brez podatka za ta mesec' }
       }
       return {
         value: pct.toFixed(1),
         unit: '%',
-        hint: describeWater(pct),
+        hint: `Tako veliko ravnine Planinskega polja je trenutno ${describeWater(pct)}.`,
       }
     },
   },
   ndsi: {
-    label: 'Občina pod snegom',
+    label: 'Koliko občine je pod snegom',
     icon: Snowflake,
     accent: 'slate',
+    metricKey: 'snow_pct',
+    decimals: 1,
+    unit: '%',
     format: (frame) => {
       const pct = frame.metrics?.snow_pct
       if (typeof pct !== 'number') {
-        return { value: '—', hint: 'Brez metrike za to sceno' }
+        return { value: '—', hint: 'Brez podatka za ta mesec' }
       }
       return {
         value: pct.toFixed(1),
         unit: '%',
-        hint: describeSnow(pct),
+        hint: `Toliko delež površine občine, kjer satelit zazna snežno odejo (${describeSnow(pct)}).`,
       }
     },
   },
@@ -165,6 +179,26 @@ export function IndexedTimeLapseView({
   const cur = metric.format(tl.current)
   const PeakIcon = peak ? PEAK_ICONS[peak.icon] : null
 
+  // Year-over-year delta: same calendar month, one year earlier.
+  const currentMonth = tl.current.capturedAt.slice(5, 7)
+  const currentYear = Number(tl.current.capturedAt.slice(0, 4))
+  const yoyFrame = frames.find(
+    (f) =>
+      f.capturedAt.slice(5, 7) === currentMonth &&
+      Number(f.capturedAt.slice(0, 4)) === currentYear - 1,
+  )
+  let delta: MetricDelta | null = null
+  const cv = tl.current.metrics?.[metric.metricKey]
+  const yv = yoyFrame?.metrics?.[metric.metricKey]
+  if (typeof cv === 'number' && typeof yv === 'number' && yoyFrame) {
+    delta = {
+      value: cv - yv,
+      label: `vs ${siMonthYear(yoyFrame.capturedAt)}`,
+      unit: metric.unit,
+      decimals: metric.decimals,
+    }
+  }
+
   return (
     <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(280px,360px)] md:gap-6">
       <figure className="relative overflow-hidden rounded-2xl border bg-muted aspect-[1400/1780] max-h-[68vh] w-full">
@@ -191,6 +225,7 @@ export function IndexedTimeLapseView({
           value={cur.value}
           unit={cur.unit}
           hint={cur.hint}
+          delta={delta}
           icon={metric.icon}
           accent={metric.accent}
         />

@@ -1,12 +1,23 @@
+import { ArrowDown, ArrowUp, Minus } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import type { LucideIcon } from 'lucide-react'
+
+export type MetricDelta = {
+  /** Signed delta (current − reference). */
+  value: number
+  /** Pre-formatted label for the reference, e.g. "vs maj 2025". */
+  label: string
+  unit?: string
+  decimals: number
+}
 
 export function MetricCard({
   label,
   value,
   unit,
   hint,
+  delta,
   icon: Icon,
   accent = 'emerald',
 }: {
@@ -14,6 +25,7 @@ export function MetricCard({
   value: string | number
   unit?: string
   hint?: string
+  delta?: MetricDelta | null
   icon?: LucideIcon
   accent?: 'emerald' | 'blue' | 'amber' | 'slate'
 }) {
@@ -56,8 +68,36 @@ export function MetricCard({
             </span>
           ) : null}
         </p>
+        {delta ? <DeltaBadge {...delta} /> : null}
         {hint ? <p className="text-sm text-current/70">{hint}</p> : null}
       </CardContent>
     </Card>
+  )
+}
+
+function DeltaBadge({ value, label, unit, decimals }: MetricDelta) {
+  const sign = value > 0 ? 'up' : value < 0 ? 'down' : 'flat'
+  const Icon = sign === 'up' ? ArrowUp : sign === 'down' ? ArrowDown : Minus
+  const prefix = value > 0 ? '+' : value < 0 ? '−' : ''
+  const tone = {
+    up: 'bg-current/10 text-current',
+    down: 'bg-current/10 text-current',
+    flat: 'bg-current/10 text-current/70',
+  }[sign]
+  return (
+    <span
+      className={cn(
+        'inline-flex items-center gap-1 self-start rounded-full px-2 py-0.5 text-xs font-medium',
+        tone,
+      )}
+    >
+      <Icon className="h-3 w-3" />
+      <span>
+        {prefix}
+        {Math.abs(value).toFixed(decimals)}
+        {unit}
+      </span>
+      <span className="text-current/70">{label}</span>
+    </span>
   )
 }

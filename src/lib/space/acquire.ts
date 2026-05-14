@@ -163,21 +163,20 @@ async function computeMetrics(
   }
 
   if (viewKind === 'ndsi') {
-    // Mean NDSI plus % AOI under snow (NDSI > 0.4, NASA standard).
-    // 0.2-wide uniform bins put the 0.4 boundary exactly on an edge.
+    // The NDSI statistical evalscript emits 1 for Sen2Cor SCL == 11
+    // (snow) pixels and 0 otherwise, so the band mean is directly the
+    // snow fraction and we don't need a histogram pass. Multiplying by
+    // 100 turns it into the % snow_pct metric.
     const stats = await fetchIndexStatistics({
       bbox: LOGATEC_AOI,
       month,
       indexId: 'ndsi',
       evalscript: config.statisticalEvalscript,
       maxCloudCoverPct: cloudPct,
-      histogram: { binWidth: 0.2, lowEdge: -1, highEdge: 1 },
     })
     if (!stats) return null
-    const { above, total } = pixelsAbove(stats, 0.4)
     return {
-      mean: round(stats.mean, 3),
-      snow_pct: total ? round((above / total) * 100, 1) : 0,
+      snow_pct: round(stats.mean * 100, 1),
     }
   }
 
