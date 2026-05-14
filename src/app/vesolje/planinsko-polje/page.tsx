@@ -3,6 +3,7 @@ import { Waves, Sparkles } from 'lucide-react'
 import { VesoljeShell } from '@/components/vesolje/VesoljeShell'
 import { ForGeeksDialog } from '@/components/vesolje/ForGeeksDialog'
 import { IndexedTimeLapseView } from '@/components/vesolje/IndexedTimeLapseView'
+import { ColorLegend } from '@/components/vesolje/ColorLegend'
 import { getMonthlyForView, peakBy } from '@/lib/space/db'
 
 export const metadata: Metadata = {
@@ -15,7 +16,12 @@ export const revalidate = 3600
 
 export default async function PlaninskoPoljePage() {
   const history = await getMonthlyForView('ndwi')
-  const frames = history.map((row) => ({
+  // Only show months where Planinsko polje actually had water — months
+  // with 0 % polje surface flooded are visually redundant on the slider.
+  const floodMonths = history.filter(
+    (row) => (row.metrics?.polje_water_pct ?? 0) > 0,
+  )
+  const frames = floodMonths.map((row) => ({
     publicUrl: row.public_url,
     capturedAt: row.captured_at,
     cloudCoverPct: row.cloud_cover_pct,
@@ -30,6 +36,8 @@ export default async function PlaninskoPoljePage() {
     )
   }
 
+  // Peak is always taken from the full history, so the "vrh" label is
+  // honest even when the slider is filtered.
   const peakRow = peakBy(history, 'polje_water_pct')
   const peakPct = peakRow?.metrics?.polje_water_pct ?? null
 
@@ -108,6 +116,22 @@ export default async function PlaninskoPoljePage() {
               : null
           }
         />
+
+        <ColorLegend
+          className="mt-4"
+          caption="Kako brati barve"
+          stops={[
+            { color: '#a3683f', label: 'suho' },
+            { color: '#d8b48c', label: 'močvirno' },
+            { color: '#a3c1d6', label: 'plitva voda' },
+            { color: '#1e4d8c', label: 'globlja voda' },
+          ]}
+        />
+
+        <p className="mt-3 text-xs text-muted-foreground">
+          Drsnik prikazuje samo mesece, ko je polje imelo opazno vodno
+          površino. Mesece brez poplavljanja smo izpustili.
+        </p>
 
         <section className="mt-8 md:mt-10 rounded-2xl border bg-card p-6 md:p-8">
           <h2 className="font-display text-xl md:text-2xl font-semibold flex items-center gap-2">

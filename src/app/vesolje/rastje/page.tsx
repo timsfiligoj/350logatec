@@ -3,6 +3,7 @@ import { Sprout, Sparkles } from 'lucide-react'
 import { VesoljeShell } from '@/components/vesolje/VesoljeShell'
 import { ForGeeksDialog } from '@/components/vesolje/ForGeeksDialog'
 import { IndexedTimeLapseView } from '@/components/vesolje/IndexedTimeLapseView'
+import { ColorLegend } from '@/components/vesolje/ColorLegend'
 import { getMonthlyForView, peakBy } from '@/lib/space/db'
 
 export const metadata: Metadata = {
@@ -93,6 +94,18 @@ export default async function RastjePage() {
                 }
               : null
           }
+        />
+
+        <ColorLegend
+          className="mt-4"
+          caption="Kako brati barve"
+          stops={[
+            { color: '#33312e', label: 'voda / oblak' },
+            { color: '#8a715a', label: 'gola tla' },
+            { color: '#d9cc73', label: 'travniki' },
+            { color: '#73bf4d', label: 'polja' },
+            { color: '#0d6614', label: 'gozdovi' },
+          ]}
         />
 
         <section className="mt-8 md:mt-10 rounded-2xl border bg-card p-6 md:p-8">

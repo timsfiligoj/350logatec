@@ -3,6 +3,7 @@ import { Mountain, Sparkles } from 'lucide-react'
 import { VesoljeShell } from '@/components/vesolje/VesoljeShell'
 import { ForGeeksDialog } from '@/components/vesolje/ForGeeksDialog'
 import { IndexedTimeLapseView } from '@/components/vesolje/IndexedTimeLapseView'
+import { ColorLegend } from '@/components/vesolje/ColorLegend'
 import { getMonthlyForView, peakBy } from '@/lib/space/db'
 
 export const metadata: Metadata = {
@@ -15,7 +16,13 @@ export const revalidate = 3600
 
 export default async function SnegPage() {
   const history = await getMonthlyForView('ndsi')
-  const frames = history.map((row) => ({
+  // Only show months where there was measurable snow on the ground.
+  // Snow-free months are visually identical and bury the actual seasonal
+  // story.
+  const snowyMonths = history.filter(
+    (row) => (row.metrics?.snow_pct ?? 0) > 0,
+  )
+  const frames = snowyMonths.map((row) => ({
     publicUrl: row.public_url,
     capturedAt: row.captured_at,
     cloudCoverPct: row.cloud_cover_pct,
@@ -30,6 +37,8 @@ export default async function SnegPage() {
     )
   }
 
+  // Peak is always taken from the full history (which includes 0 % snow
+  // months) so the "vrh" label is the absolute deepest winter.
   const peakRow = peakBy(history, 'snow_pct')
   const peakPct = peakRow?.metrics?.snow_pct ?? null
 
@@ -104,6 +113,22 @@ export default async function SnegPage() {
               : null
           }
         />
+
+        <ColorLegend
+          className="mt-4"
+          caption="Kako brati barve"
+          stops={[
+            { color: '#2e2e2e', label: 'vegetacija' },
+            { color: '#8c8c8c', label: 'gola tla' },
+            { color: '#80bff2', label: 'rob taljenja' },
+            { color: '#ffffff', label: 'sneg' },
+          ]}
+        />
+
+        <p className="mt-3 text-xs text-muted-foreground">
+          Drsnik prikazuje samo mesece z opazno snežno pokritostjo. Brez-snežne
+          mesece smo izpustili.
+        </p>
 
         <section className="mt-8 md:mt-10 rounded-2xl border bg-card p-6 md:p-8">
           <h2 className="font-display text-xl md:text-2xl font-semibold flex items-center gap-2">
