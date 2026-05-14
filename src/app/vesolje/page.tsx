@@ -67,10 +67,7 @@ export default async function VesoljePage() {
     <VesoljeShell>
       <article className="container mx-auto px-4 py-8 md:py-12 max-w-6xl">
         <header className="max-w-3xl">
-          <p className="text-xs uppercase tracking-widest text-emerald-600 font-semibold">
-            350space · civilna iniciativa
-          </p>
-          <h1 className="mt-2 font-display text-3xl md:text-5xl font-bold tracking-tight">
+          <h1 className="font-display text-3xl md:text-5xl font-bold tracking-tight">
             Logatec <span className="text-gradient">iz vesolja</span>
           </h1>
           <p className="mt-5 text-base md:text-lg text-muted-foreground leading-relaxed">
@@ -146,15 +143,11 @@ export default async function VesoljePage() {
           </ul>
         </section>
 
-        <footer className="mt-10 md:mt-12 space-y-3 text-xs text-muted-foreground leading-relaxed">
+        <footer className="mt-10 md:mt-12 text-xs text-muted-foreground leading-relaxed">
           <p>
-            Contains modified Copernicus Sentinel data 2025–2026. Vir:
+            Vsebuje spremenjene podatke Copernicus Sentinel 2025–2026. Vir:
             Copernicus Data Space Ecosystem · Sentinel Hub Process +
             Statistical API.
-          </p>
-          <p>
-            350space je neprofitna civilna iniciativa brez uradnega
-            partnerstva z Občino Logatec.
           </p>
         </footer>
       </article>

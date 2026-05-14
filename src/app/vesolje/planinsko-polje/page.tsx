@@ -159,7 +159,7 @@ export default async function PlaninskoPoljePage() {
         </section>
 
         <p className="mt-6 text-xs text-muted-foreground leading-relaxed">
-          Contains modified Copernicus Sentinel data{' '}
+          Vsebuje spremenjene podatke Copernicus Sentinel{' '}
           {frames[0].capturedAt.slice(0, 4)}–
           {frames[frames.length - 1].capturedAt.slice(0, 4)}. Vir: Copernicus
           Data Space Ecosystem · Sentinel Hub Process API.

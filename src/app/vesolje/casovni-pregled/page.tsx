@@ -131,7 +131,7 @@ export default async function CasovniPregledPage() {
         </section>
 
         <p className="mt-6 text-xs text-muted-foreground leading-relaxed">
-          Contains modified Copernicus Sentinel data {firstYear}
+          Vsebuje spremenjene podatke Copernicus Sentinel {firstYear}
           {firstYear !== lastYear ? `–${lastYear}` : ''}. Vir: Copernicus
           Data Space Ecosystem · Sentinel Hub Process API. Vse vizualizacije
           so generirane samodejno mesečno za območje Logatec + Hotedršica +
