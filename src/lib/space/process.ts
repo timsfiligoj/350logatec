@@ -8,10 +8,20 @@ import { getCdseAccessToken } from './cdse-auth'
 const PROCESS_ENDPOINT = 'https://sh.dataspace.copernicus.eu/api/v1/process'
 const WGS84_CRS = 'http://www.opengis.net/def/crs/EPSG/0/4326'
 
-function toDayWindow(isoTimestamp: string): { from: string; to: string } {
-  const day = isoTimestamp.slice(0, 10) // YYYY-MM-DD
+// A Sentinel-2 scene covers a single ~100x100 km UTM tile, which often only
+// partially overlaps a small AOI like Logatec's. Asking the Process API for
+// just the catalog match's day usually yields black no-data fill across the
+// missing tiles. Widening to a multi-day window lets the leastCC mosaicker
+// stitch coverage from adjacent passes. Sentinel-2 revisit at this latitude
+// is 3–5 days, so a 10-day window reliably covers the AOI.
+const MOSAIC_WINDOW_DAYS = 10
+
+function toMosaicWindow(isoTimestamp: string): { from: string; to: string } {
+  const to = new Date(isoTimestamp)
+  const from = new Date(to.getTime() - MOSAIC_WINDOW_DAYS * 24 * 60 * 60 * 1000)
+  const day = to.toISOString().slice(0, 10)
   return {
-    from: `${day}T00:00:00Z`,
+    from: `${from.toISOString().slice(0, 10)}T00:00:00Z`,
     to: `${day}T23:59:59Z`,
   }
 }
@@ -23,7 +33,7 @@ export async function fetchSceneAsPng(args: {
   evalscript: string
 }): Promise<Buffer> {
   const token = await getCdseAccessToken()
-  const timeRange = toDayWindow(args.capturedAt)
+  const timeRange = toMosaicWindow(args.capturedAt)
 
   const body = {
     input: {
