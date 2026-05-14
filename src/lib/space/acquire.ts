@@ -28,7 +28,17 @@ import {
 } from './storage'
 import { createAdminClient } from '@/lib/supabase/admin'
 
-const MAX_CLOUD_COVER_PCT = 20
+// Per-view cloud-cover tolerance. true_color is a hero visual so it stays
+// strict; the science views can mosaic across partial cloud cover because
+// (a) Sentinel Hub's leastCC mosaicker prefers cleaner pixels from the
+// 10-day window, and (b) Slovenian winters are routinely overcast, which
+// would otherwise produce huge gaps in the NDSI snow timeline.
+const MAX_CLOUD_COVER_PCT: Record<ViewKind, number> = {
+  true_color: 20,
+  ndvi: 20,
+  ndwi: 40,
+  ndsi: 60,
+}
 
 export type AcquireOptions = {
   viewKind: ViewKind
@@ -98,24 +108,26 @@ async function computeMetrics(
   const config = VIEW_CONFIG[viewKind]
   if (!config.statisticalEvalscript) return null
 
+  const cloudPct = MAX_CLOUD_COVER_PCT[viewKind]
+
   if (viewKind === 'ndwi') {
-    // Mean NDWI over full AOI, plus % water inside the Planinsko polje
-    // sub-bbox. NDWI > 0 = water (standard McFeeters threshold), so a
-    // 2-bin histogram (-1 → 0 → 1) gives us land vs. water counts.
+    // Mean MNDWI over full AOI, plus % water inside the Planinsko polje
+    // sub-bbox. MNDWI > 0 = water, so a 2-bin histogram (-1 → 0 → 1)
+    // gives us land vs. water counts.
     const [aoiStats, poljeStats] = await Promise.all([
       fetchIndexStatistics({
         bbox: LOGATEC_AOI,
         month,
         indexId: 'ndwi',
         evalscript: config.statisticalEvalscript,
-        maxCloudCoverPct: MAX_CLOUD_COVER_PCT,
+        maxCloudCoverPct: cloudPct,
       }),
       fetchIndexStatistics({
         bbox: PLANINSKO_POLJE_BBOX,
         month,
         indexId: 'ndwi',
         evalscript: config.statisticalEvalscript,
-        maxCloudCoverPct: MAX_CLOUD_COVER_PCT,
+        maxCloudCoverPct: cloudPct,
         histogram: { binWidth: 1, lowEdge: -1, highEdge: 1 },
       }),
     ])
@@ -139,7 +151,7 @@ async function computeMetrics(
       month,
       indexId: 'ndvi',
       evalscript: config.statisticalEvalscript,
-      maxCloudCoverPct: MAX_CLOUD_COVER_PCT,
+      maxCloudCoverPct: cloudPct,
     })
     if (!stats) return null
     return { mean: round(stats.mean, 3) }
@@ -153,7 +165,7 @@ async function computeMetrics(
       month,
       indexId: 'ndsi',
       evalscript: config.statisticalEvalscript,
-      maxCloudCoverPct: MAX_CLOUD_COVER_PCT,
+      maxCloudCoverPct: cloudPct,
       histogram: { binWidth: 0.2, lowEdge: -1, highEdge: 1 },
     })
     if (!stats) return null
@@ -175,17 +187,18 @@ function round(value: number, digits: number): number {
 export async function acquire(opts: AcquireOptions): Promise<AcquireResult> {
   const supabase = createAdminClient()
   const config = VIEW_CONFIG[opts.viewKind]
+  const cloudPct = MAX_CLOUD_COVER_PCT[opts.viewKind]
 
   const scene = await findCloudFreeScene({
     bbox: LOGATEC_AOI,
-    maxCloudCoverPct: MAX_CLOUD_COVER_PCT,
+    maxCloudCoverPct: cloudPct,
     month: opts.month,
   })
 
   if (!scene) {
     const where = opts.month ? `for ${opts.month}` : 'in the last 30 days'
     throw new Error(
-      `No Sentinel-2 scene with cloud cover <= ${MAX_CLOUD_COVER_PCT}% ${where} over the configured AOI.`,
+      `No Sentinel-2 scene with cloud cover <= ${cloudPct}% ${where} over the configured AOI.`,
     )
   }
 
@@ -223,7 +236,7 @@ export async function acquire(opts: AcquireOptions): Promise<AcquireResult> {
     bbox: LOGATEC_AOI,
     capturedAt: scene.capturedAt,
     month: opts.month,
-    maxCloudCoverPct: MAX_CLOUD_COVER_PCT,
+    maxCloudCoverPct: cloudPct,
     evalscript: config.pngEvalscript,
   })
 
