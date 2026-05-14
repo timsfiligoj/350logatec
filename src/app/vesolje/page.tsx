@@ -209,7 +209,6 @@ function ViewCardLink({
             fill
             className="object-cover transition-transform group-hover:scale-105"
             sizes="(min-width: 768px) 480px, 50vw"
-            unoptimized
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center bg-emerald-50 text-emerald-700/60 text-xs px-3 text-center">

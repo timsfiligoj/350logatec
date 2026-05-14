@@ -52,7 +52,6 @@ export function ViewHero({
           sizes="(max-width: 768px) 100vw, 60vw"
           className="object-contain"
           priority
-          unoptimized
         />
         {actions ? (
           <div className="absolute top-3 right-3 z-10">{actions}</div>

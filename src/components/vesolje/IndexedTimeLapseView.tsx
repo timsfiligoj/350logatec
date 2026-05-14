@@ -176,16 +176,20 @@ export function IndexedTimeLapseView({
       )}
     >
       <figure className="relative overflow-hidden rounded-2xl border bg-muted aspect-[1400/1780] max-h-[68vh] w-full">
-        <Image
-          key={tl.current.publicUrl}
-          src={tl.current.publicUrl}
-          alt={`${viewKind.toUpperCase()} prikaz, ${tl.current.capturedAt.slice(0, 10)}`}
-          fill
-          sizes="(max-width: 768px) 100vw, 60vw"
-          className="object-contain bg-black/5"
-          priority
-          unoptimized
-        />
+        {tl.frames.map((frame, i) => (
+          <Image
+            key={frame.publicUrl}
+            src={frame.publicUrl}
+            alt={`${viewKind.toUpperCase()} prikaz, ${frame.capturedAt.slice(0, 10)}`}
+            fill
+            sizes="(max-width: 768px) 100vw, 60vw"
+            className={cn(
+              'object-contain bg-black/5 transition-opacity duration-200',
+              i === tl.index ? 'opacity-100' : 'opacity-0',
+            )}
+            priority={i === tl.index}
+          />
+        ))}
         <DateActionsOverlay
           capturedAt={tl.current.capturedAt}
           actions={actions}

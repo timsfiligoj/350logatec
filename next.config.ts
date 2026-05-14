@@ -11,6 +11,13 @@ const withSerwist = withSerwistInit({
 const nextConfig: NextConfig = {
   images: {
     formats: ['image/avif', 'image/webp'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'terxkglsiydjshicgekg.supabase.co',
+        pathname: '/storage/v1/object/public/space-imagery/**',
+      },
+    ],
   },
   turbopack: {},
   // Ensure sw.js is served correctly

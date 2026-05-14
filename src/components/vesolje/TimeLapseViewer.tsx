@@ -4,6 +4,7 @@ import Image from 'next/image'
 import {
   CalendarDays,
   Cloud,
+  Loader2,
   Pause,
   Play,
   SkipBack,
@@ -52,16 +53,20 @@ export function TimeLapseViewer({
 
   return (
     <figure className="relative mx-auto overflow-hidden rounded-2xl border bg-muted aspect-[1400/1780] max-h-[75vh] w-full max-w-full">
-      <Image
-        key={tl.current.publicUrl}
-        src={tl.current.publicUrl}
-        alt={`Logatec, ${tl.current.capturedAt.slice(0, 10)}`}
-        fill
-        sizes="(max-width: 768px) 100vw, 700px"
-        className="object-contain bg-black/5"
-        priority
-        unoptimized
-      />
+      {tl.frames.map((frame, i) => (
+        <Image
+          key={frame.publicUrl}
+          src={frame.publicUrl}
+          alt={`Logatec, ${frame.capturedAt.slice(0, 10)}`}
+          fill
+          sizes="(max-width: 768px) 100vw, 700px"
+          className={cn(
+            'object-contain bg-black/5 transition-opacity duration-200',
+            i === tl.index ? 'opacity-100' : 'opacity-0',
+          )}
+          priority={i === tl.index}
+        />
+      ))}
       <DateActionsOverlay
         capturedAt={tl.current.capturedAt}
         actions={actions}
@@ -117,6 +122,8 @@ export function ControlsOverlay({
   index,
   frames,
   playing,
+  ready,
+  buffering,
   canStep,
   togglePlay,
   setIndex,
@@ -124,6 +131,7 @@ export function ControlsOverlay({
   stepBack,
   stepForward,
 }: ReturnType<typeof useTimeLapse>) {
+  const showSpinner = !ready || buffering
   return (
     <div className="absolute bottom-0 inset-x-0 z-10 bg-black/65 backdrop-blur-sm text-white">
       <div className="flex items-center gap-2 px-3 py-2">
@@ -131,10 +139,20 @@ export function ControlsOverlay({
           onClick={togglePlay}
           disabled={!canStep}
           size="icon"
-          aria-label={playing ? 'Ustavi' : 'Predvajaj'}
-          className="bg-white text-foreground hover:bg-white/90 shrink-0 h-8 w-8"
+          aria-label={
+            !ready
+              ? 'Pripravljam'
+              : buffering
+                ? 'Nalagam naslednjo sceno'
+                : playing
+                  ? 'Ustavi'
+                  : 'Predvajaj'
+          }
+          className="bg-white text-foreground hover:bg-white/90 shrink-0 h-8 w-8 disabled:opacity-100 disabled:bg-white/85"
         >
-          {playing ? (
+          {showSpinner ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : playing ? (
             <Pause className="h-4 w-4" />
           ) : (
             <Play className="h-4 w-4" />
