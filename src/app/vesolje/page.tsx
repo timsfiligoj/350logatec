@@ -25,6 +25,14 @@ type ViewCard = {
 
 const VIEW_CARDS: ViewCard[] = [
   {
+    href: '/vesolje/casovni-pregled',
+    label: 'Časovni pregled',
+    indexCode: 'RGB',
+    icon: Clock,
+    teaser: 'Logatec v naravnih barvah skozi leta — kot animacija iz orbite.',
+    viewKind: 'true_color',
+  },
+  {
     href: '/vesolje/rastje',
     label: 'Rastje',
     indexCode: 'NDVI',
@@ -47,14 +55,6 @@ const VIEW_CARDS: ViewCard[] = [
     icon: Snowflake,
     teaser: 'Kako dolga je snežna sezona in koliko občine je prekrite belo.',
     viewKind: 'ndsi',
-  },
-  {
-    href: '/vesolje/casovni-pregled',
-    label: 'Časovni pregled',
-    indexCode: 'RGB',
-    icon: Clock,
-    teaser: 'Logatec v naravnih barvah skozi leta — kot animacija iz orbite.',
-    viewKind: 'true_color',
   },
 ]
 
@@ -84,13 +84,12 @@ export default async function VesoljePage() {
           <h2 className="font-display text-sm md:text-base uppercase tracking-widest text-muted-foreground font-semibold">
             Štirje pogledi na občino
           </h2>
-          <div className="mt-4 grid grid-cols-2 gap-3 md:gap-5">
+          <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
             {VIEW_CARDS.map((card, i) => (
               <ViewCardLink
                 key={card.href}
                 card={card}
                 thumbUrl={latestByView[i]?.public_url ?? null}
-                capturedAt={latestByView[i]?.captured_at ?? null}
               />
             ))}
           </div>
@@ -166,11 +165,9 @@ export default async function VesoljePage() {
 function ViewCardLink({
   card,
   thumbUrl,
-  capturedAt,
 }: {
   card: ViewCard
   thumbUrl: string | null
-  capturedAt: string | null
 }) {
   const Icon = card.icon
   return (
@@ -185,7 +182,7 @@ function ViewCardLink({
             alt={`Najnovejša ${card.label.toLowerCase()} scena Logatca iz vesolja`}
             fill
             className="object-cover transition-transform group-hover:scale-105"
-            sizes="(min-width: 768px) 320px, 50vw"
+            sizes="(min-width: 768px) 220px, 50vw"
             unoptimized
           />
         ) : (
@@ -197,20 +194,17 @@ function ViewCardLink({
           {card.indexCode}
         </span>
       </div>
-      <div className="p-4 md:p-5">
+      <div className="p-3 md:p-4">
         <div className="flex items-center gap-2">
           <Icon className="h-4 w-4 text-emerald-600 shrink-0" />
-          <h3 className="font-display text-base md:text-lg font-semibold">
+          <h3 className="font-display text-sm md:text-base font-semibold">
             {card.label}
           </h3>
         </div>
-        <p className="mt-1.5 text-sm text-muted-foreground leading-snug line-clamp-2">
+        <p className="mt-1.5 hidden md:line-clamp-2 text-xs text-muted-foreground leading-snug">
           {card.teaser}
         </p>
-        <div className="mt-3 flex items-center justify-between text-xs">
-          <span className="text-muted-foreground/70 tabular-nums">
-            {capturedAt ? capturedAt.slice(0, 7) : '—'}
-          </span>
+        <div className="mt-2 md:mt-3 flex items-center justify-end text-xs">
           <span className="flex items-center gap-1 font-medium text-emerald-600 group-hover:gap-2 transition-all">
             Odpri
             <ArrowRight className="h-3.5 w-3.5" />
