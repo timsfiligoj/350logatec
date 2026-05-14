@@ -14,13 +14,18 @@ function setup() {
 
 function evaluatePixel(s) {
   const ndwi = (s.B03 - s.B08) / (s.B03 + s.B08);
+  // The McFeeters threshold for water is 0. The two stops very close
+  // together (-0.05 and 0.0) give a sharp visual jump from land to water
+  // at the boundary so even a single sub-pixel river shows up as blue.
   return colorBlend(
     ndwi,
-    [-1.0, 0.0, 0.3, 1.0],
+    [-1.0, -0.4, -0.05, 0.0, 0.3, 1.0],
     [
-      [0.66, 0.55, 0.39],
-      [0.85, 0.85, 0.85],
-      [0.45, 0.65, 0.85],
+      [0.55, 0.45, 0.30],
+      [0.75, 0.68, 0.50],
+      [0.88, 0.85, 0.75],
+      [0.40, 0.70, 0.90],
+      [0.20, 0.50, 0.80],
       [0.05, 0.20, 0.55],
     ]
   );
