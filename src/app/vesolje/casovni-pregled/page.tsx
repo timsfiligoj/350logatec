@@ -91,18 +91,14 @@ export default async function CasovniPregledPage() {
 
   return (
     <VesoljeShell>
-      <article className="container mx-auto px-4 py-6 md:py-8 max-w-5xl">
-        <header className="mb-5 md:mb-6">
+      <article className="container mx-auto px-4 py-5 md:py-6 max-w-6xl">
+        <header className="mb-4 md:mb-5">
           <p className="text-xs uppercase tracking-widest text-emerald-600 font-semibold">
             350space · časovni pregled
           </p>
           <h1 className="mt-1 font-display text-2xl md:text-3xl font-bold tracking-tight">
             Logatec skozi <span className="text-gradient">{yearLabel}</span>
           </h1>
-          <p className="mt-1.5 text-sm md:text-base text-muted-foreground max-w-2xl">
-            Premikaj se po časovni osi ali pritisni Predvajaj — opazuj, kako
-            se občina spreminja skozi sezone v naravnih barvah.
-          </p>
         </header>
 
         <TimeLapseViewer frames={frames} actions={forGeeks} />

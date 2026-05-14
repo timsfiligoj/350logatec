@@ -53,8 +53,7 @@ export function TimeLapseViewer({
   const [playing, setPlaying] = useState(false)
   const timer = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  // Drive autoplay forward; wrap around at the end so the loop never
-  // stalls.
+  // Drive autoplay forward; wrap around at the end so the loop never stalls.
   useEffect(() => {
     if (!playing) return
     timer.current = setInterval(() => {
@@ -64,6 +63,22 @@ export function TimeLapseViewer({
       if (timer.current) clearInterval(timer.current)
     }
   }, [playing, frames.length])
+
+  // Preload every frame on mount so playback doesn't flash blank while the
+  // browser fetches a fresh source URL. The HEAD requests cache the images
+  // so future <Image src=...> swaps render instantly.
+  useEffect(() => {
+    const preloaded: HTMLImageElement[] = []
+    for (const frame of frames) {
+      const img = new window.Image()
+      img.src = frame.publicUrl
+      preloaded.push(img)
+    }
+    return () => {
+      // Allow GC to release them when the viewer unmounts.
+      preloaded.length = 0
+    }
+  }, [frames])
 
   if (frames.length === 0) {
     return (
@@ -78,15 +93,15 @@ export function TimeLapseViewer({
   const canStep = frames.length > 1
 
   return (
-    <div className="flex flex-col gap-4">
-      <figure className="relative overflow-hidden rounded-2xl border bg-muted flex flex-col">
-        <div className="relative w-full bg-black/5 flex-1 min-h-0 max-h-[58vh] md:max-h-[68vh] aspect-[1400/1780]">
+    <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(280px,360px)] md:gap-6">
+      <figure className="relative overflow-hidden rounded-2xl border bg-muted flex flex-col max-h-[58vh] md:max-h-[68vh]">
+        <div className="relative w-full bg-black/5 flex-1 min-h-0">
           <Image
             key={current.publicUrl}
             src={current.publicUrl}
             alt={`Logatec, ${current.capturedAt.slice(0, 10)}`}
             fill
-            sizes="(max-width: 768px) 100vw, 1000px"
+            sizes="(max-width: 768px) 100vw, 60vw"
             className="object-contain"
             priority
             unoptimized
@@ -112,50 +127,44 @@ export function TimeLapseViewer({
         </figcaption>
       </figure>
 
-      <div className="rounded-2xl border bg-card p-4 md:p-5">
-        <div className="flex flex-wrap items-center gap-3">
-          <Button
-            size="lg"
-            onClick={() => setPlaying((p) => !p)}
-            disabled={!canStep}
-            className="gap-2 min-w-[110px]"
-          >
-            {playing ? (
-              <>
-                <Pause className="h-4 w-4" /> Ustavi
-              </>
-            ) : (
-              <>
-                <Play className="h-4 w-4" /> Predvajaj
-              </>
-            )}
-          </Button>
+      <div className="rounded-2xl border bg-card p-4 md:p-5 flex flex-col gap-4">
+        <div className="flex items-center justify-between gap-3">
+          <span className="text-xs uppercase tracking-widest text-emerald-600 font-semibold">
+            Predvajanje
+          </span>
+          <span className="text-sm text-muted-foreground tabular-nums">
+            {index + 1} / {frames.length}
+          </span>
+        </div>
+
+        <Button
+          size="lg"
+          onClick={() => setPlaying((p) => !p)}
+          disabled={!canStep}
+          className="gap-2 w-full"
+        >
+          {playing ? (
+            <>
+              <Pause className="h-4 w-4" /> Ustavi
+            </>
+          ) : (
+            <>
+              <Play className="h-4 w-4" /> Predvajaj
+            </>
+          )}
+        </Button>
+
+        <div className="flex items-center gap-2">
           <Button
             variant="outline"
             size="icon"
             onClick={() => setIndex((i) => Math.max(0, i - 1))}
             disabled={index === 0 || !canStep}
             aria-label="Prejšnja scena"
+            className="shrink-0"
           >
             <SkipBack className="h-4 w-4" />
           </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() =>
-              setIndex((i) => Math.min(frames.length - 1, i + 1))
-            }
-            disabled={index === frames.length - 1 || !canStep}
-            aria-label="Naslednja scena"
-          >
-            <SkipForward className="h-4 w-4" />
-          </Button>
-          <div className="ml-auto text-sm text-muted-foreground tabular-nums">
-            {index + 1} / {frames.length}
-          </div>
-        </div>
-
-        <div className="mt-4">
           <input
             type="range"
             min={0}
@@ -167,18 +176,31 @@ export function TimeLapseViewer({
             }}
             disabled={!canStep}
             className={cn(
-              'w-full h-2 rounded-full appearance-none cursor-pointer bg-muted',
+              'flex-1 h-2 rounded-full appearance-none cursor-pointer bg-muted',
               'accent-emerald-500',
               '[&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-emerald-500 [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-grab',
               '[&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-emerald-500 [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:cursor-grab',
             )}
           />
-          <div className="mt-2 flex justify-between text-xs text-muted-foreground tabular-nums">
-            <span>{formatSlovenianMonth(frames[0].capturedAt)}</span>
-            <span>
-              {formatSlovenianMonth(frames[frames.length - 1].capturedAt)}
-            </span>
-          </div>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() =>
+              setIndex((i) => Math.min(frames.length - 1, i + 1))
+            }
+            disabled={index === frames.length - 1 || !canStep}
+            aria-label="Naslednja scena"
+            className="shrink-0"
+          >
+            <SkipForward className="h-4 w-4" />
+          </Button>
+        </div>
+
+        <div className="flex justify-between text-xs text-muted-foreground tabular-nums">
+          <span>{formatSlovenianMonth(frames[0].capturedAt)}</span>
+          <span>
+            {formatSlovenianMonth(frames[frames.length - 1].capturedAt)}
+          </span>
         </div>
       </div>
     </div>
