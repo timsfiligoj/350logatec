@@ -11,7 +11,12 @@ import { getCdseAccessToken } from './cdse-auth'
 const STATISTICS_ENDPOINT =
   'https://sh.dataspace.copernicus.eu/api/v1/statistics'
 const WGS84_CRS = 'http://www.opengis.net/def/crs/EPSG/0/4326'
-const NATIVE_RES_M = 10
+// resx/resy for EPSG:4326 bounds are in DEGREES per pixel, not metres. At
+// Logatec's latitude 0.001° lon ≈ 78 m and 0.001° lat ≈ 111 m, which gives
+// us ~180×160 sample points across the AOI — more than enough for
+// accurate fraction-above-threshold metrics and orders of magnitude
+// cheaper in processing-units than asking for the native 10 m raster.
+const STATISTICAL_RES_DEG = 0.001
 
 export type IndexId = 'ndwi' | 'ndvi' | 'ndsi'
 
@@ -106,8 +111,8 @@ export async function fetchIndexStatistics(args: {
       },
       aggregationInterval: { of: 'P1M' },
       evalscript: args.evalscript,
-      resx: NATIVE_RES_M,
-      resy: NATIVE_RES_M,
+      resx: STATISTICAL_RES_DEG,
+      resy: STATISTICAL_RES_DEG,
     },
     calculations: {
       [args.indexId]: {
