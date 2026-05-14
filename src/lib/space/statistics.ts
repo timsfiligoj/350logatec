@@ -94,6 +94,14 @@ export async function fetchIndexStatistics(args: {
   const fromDate = new Date(Date.UTC(year, month - 1, 1))
   const toDate = new Date(Date.UTC(year, month, 1))
 
+  // Sentinel Hub Statistical API rejects integer-typed histogram params
+  // when paired with a FLOAT32 evalscript output. JavaScript can't
+  // distinguish 1 from 1.0 in JSON output, so we nudge each numeric edge
+  // by a sub-significand epsilon — JSON.stringify then writes a decimal
+  // and the API accepts the histogram as float-typed. The shift is
+  // ~12 orders of magnitude below our bin width, so metric outputs are
+  // unaffected.
+  const FLOAT_EPSILON = 1e-9
   const calculations: Record<string, unknown> = {
     [args.indexId]: {
       statistics: { default: {} },
@@ -101,9 +109,9 @@ export async function fetchIndexStatistics(args: {
         ? {
             histograms: {
               default: {
-                binWidth: args.histogram.binWidth,
-                lowEdge: args.histogram.lowEdge,
-                highEdge: args.histogram.highEdge,
+                binWidth: args.histogram.binWidth + FLOAT_EPSILON,
+                lowEdge: args.histogram.lowEdge + FLOAT_EPSILON,
+                highEdge: args.histogram.highEdge + FLOAT_EPSILON,
               },
             },
           }
