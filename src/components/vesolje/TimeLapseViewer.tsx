@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import {
   CalendarDays,
-  Cloud,
   Pause,
   Play,
   SkipBack,
@@ -105,10 +104,6 @@ export function TimeLapseViewer({
           <CalendarDays className="h-3.5 w-3.5 shrink-0" />
           <span className="font-medium">
             {formatSlovenianMonth(current.capturedAt)}
-          </span>
-          <span className="inline-flex items-center gap-1 opacity-80 border-l border-white/30 pl-2">
-            <Cloud className="h-3 w-3" />
-            {current.cloudCoverPct.toFixed(1)}%
           </span>
         </div>
         {actions ? <div>{actions}</div> : null}
