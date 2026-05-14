@@ -3,7 +3,7 @@ import { Clock, Sparkles } from 'lucide-react'
 import { VesoljeShell } from '@/components/vesolje/VesoljeShell'
 import { ForGeeksDialog } from '@/components/vesolje/ForGeeksDialog'
 import { TimeLapseViewer } from '@/components/vesolje/TimeLapseViewer'
-import { getHistoryForView } from '@/lib/space/db'
+import { getMonthlyForView } from '@/lib/space/db'
 
 export const metadata: Metadata = {
   title: 'Časovni pregled — Logatec iz vesolja | 350logatec',
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 export const revalidate = 3600
 
 export default async function CasovniPregledPage() {
-  const history = await getHistoryForView('true_color')
+  const history = await getMonthlyForView('true_color')
   const frames = history.map((row) => ({
     publicUrl: row.public_url,
     capturedAt: row.captured_at,

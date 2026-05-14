@@ -75,3 +75,24 @@ export function peakBy(
   }
   return best
 }
+
+/**
+ * One canonical row per calendar month for the given view_kind, picking the
+ * scene with the lowest cloud cover when multiple acquisitions exist for the
+ * same month. Used by the timelapse so the slider steps one frame per month.
+ */
+export async function getMonthlyForView(
+  viewKind: ViewKind,
+): Promise<AcquisitionWithUrl[]> {
+  const all = await getHistoryForView(viewKind)
+  const byMonth = new Map<string, AcquisitionWithUrl>()
+  for (const row of all) {
+    const existing = byMonth.get(row.month)
+    if (!existing || row.cloud_cover_pct < existing.cloud_cover_pct) {
+      byMonth.set(row.month, row)
+    }
+  }
+  return [...byMonth.values()].sort((a, b) =>
+    a.captured_at.localeCompare(b.captured_at),
+  )
+}
