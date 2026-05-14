@@ -12,14 +12,21 @@ project (for preview + production).
 
 ## Keys
 
-| Variable             | Scope          | Required | Used by                            |
-| -------------------- | -------------- | -------- | ---------------------------------- |
-| `CDSE_CLIENT_ID`     | Server-only    | Yes      | `src/lib/space/cdse-auth.ts`       |
-| `CDSE_CLIENT_SECRET` | Server-only    | Yes      | `src/lib/space/cdse-auth.ts`       |
+| Variable                   | Scope          | Required | Used by                                            |
+| -------------------------- | -------------- | -------- | -------------------------------------------------- |
+| `CDSE_CLIENT_ID`           | Server-only    | Yes      | `src/lib/space/cdse-auth.ts`                       |
+| `CDSE_CLIENT_SECRET`       | Server-only    | Yes      | `src/lib/space/cdse-auth.ts`                       |
+| `VESOLJE_TRIGGER_SECRET`   | Server-only    | Yes      | `src/app/api/vesolje/acquire/route.ts` (Bearer)    |
 
-> Neither key is `NEXT_PUBLIC_*`. They must never leak to the browser bundle.
-> `cdse-auth.ts` is server-only and is consumed exclusively from API routes /
-> server components / cron handlers.
+> None of these keys are `NEXT_PUBLIC_*`. They must never leak to the browser
+> bundle. The modules that consume them are server-only and are reached
+> exclusively from API routes / server components / cron handlers.
+
+### Generating `VESOLJE_TRIGGER_SECRET`
+
+Use `openssl rand -hex 32` to mint a fresh 64-character hex secret. This is
+the Bearer token required by `POST /api/vesolje/acquire`. Store it in
+`.env.local` and add the same value to Vercel (Production + Preview).
 
 ## How to obtain the CDSE OAuth client credentials
 

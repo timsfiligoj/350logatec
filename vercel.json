@@ -2,6 +2,9 @@
   "functions": {
     "src/app/api/cron/notify/route.ts": {
       "maxDuration": 60
+    },
+    "src/app/api/vesolje/acquire/route.ts": {
+      "maxDuration": 60
     }
   },
   "crons": [
