@@ -5,7 +5,9 @@
 
 import { NextResponse, type NextRequest } from 'next/server'
 import { timingSafeEqual } from 'node:crypto'
+import { revalidatePath } from 'next/cache'
 import { acquire } from '@/lib/space/acquire'
+import { VESOLJE_PAGE_PATHS } from '@/lib/space/pages'
 import type { ViewKind } from '@/lib/space/storage'
 
 export const maxDuration = 60
@@ -78,6 +80,9 @@ export async function POST(req: NextRequest) {
 
   try {
     const result = await acquire({ viewKind, month, force })
+    if (result.status === 'acquired') {
+      for (const path of VESOLJE_PAGE_PATHS) revalidatePath(path)
+    }
     return NextResponse.json(result)
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)

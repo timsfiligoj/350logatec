@@ -5,12 +5,19 @@
     },
     "src/app/api/vesolje/acquire/route.ts": {
       "maxDuration": 60
+    },
+    "src/app/api/cron/vesolje-acquire/route.ts": {
+      "maxDuration": 60
     }
   },
   "crons": [
     {
       "path": "/api/cron/notify",
       "schedule": "0 16 * * *"
+    },
+    {
+      "path": "/api/cron/vesolje-acquire",
+      "schedule": "0 6 1 * *"
     }
   ],
   "headers": [
