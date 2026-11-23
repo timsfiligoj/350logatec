@@ -28,8 +28,10 @@ export function describeSnow(pct: number): string {
 }
 
 // Radar flood extent over the Planinsko polje frame. The polje floor is
-// roughly 10 km²; ~0.3 km² is always "water" (the Unica and a few ponds),
-// so anything under 0.5 km² reads as dry.
+// roughly 10 km²; on dry days the median is ~0.05 km² and rarely above
+// 0.4 km² (the Unica and a few ponds), so anything under 0.5 km² reads as
+// dry. Backfill 2025-10..2026-11: peaks 1.7 (Nov 2025), 2.2 (Feb 2026),
+// 6.6 km² (22 Nov 2026).
 export function describeFloodKm2(km2: number): string {
   if (km2 >= 7) return 'polje je postalo jezero'
   if (km2 >= 4) return 'večji del polja pod vodo'

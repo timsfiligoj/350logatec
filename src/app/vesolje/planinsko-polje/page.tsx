@@ -85,8 +85,8 @@ export default async function PlaninskoPoljePage() {
         </li>
         <li>
           <strong>km²</strong>: število vodnih pikslov × površina piksla
-          (~10 × 10 m) v okvirju 14,19–14,33° V, 45,80–45,89° S. Okoli
-          0,3 km² je vedno »voda«: Unica in nekaj ribnikov.
+          (~10 × 10 m) v okvirju 14,19–14,33° V, 45,80–45,89° S. Na suh
+          dan je vode navadno manj kot pol km²: Unica in nekaj ribnikov.
         </li>
         <li>
           Poplavljen gozd ob strugi radar vidi kot kopno, ker se signal od
