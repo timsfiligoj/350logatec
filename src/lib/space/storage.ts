@@ -7,8 +7,13 @@ export const SPACE_IMAGERY_BUCKET = 'space-imagery'
 
 export type ViewKind = 'true_color' | 'ndwi' | 'ndvi' | 'ndsi'
 
+// Everything stored in space-imagery / space_acquisitions. Radar lives
+// beside the optical ViewKinds rather than inside them so the per-kind
+// optical config tables in acquire.ts don't need a radar entry.
+export type StoredKind = ViewKind | 's1_water'
+
 export function buildStoragePath(
-  viewKind: ViewKind,
+  viewKind: StoredKind,
   sceneId: string,
   capturedAt: string,
 ): string {

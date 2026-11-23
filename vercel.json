@@ -8,6 +8,12 @@
     },
     "src/app/api/cron/vesolje-acquire/route.ts": {
       "maxDuration": 60
+    },
+    "src/app/api/cron/vesolje-radar/route.ts": {
+      "maxDuration": 60
+    },
+    "src/app/api/vesolje/acquire-radar/route.ts": {
+      "maxDuration": 60
     }
   },
   "crons": [
@@ -18,6 +24,10 @@
     {
       "path": "/api/cron/vesolje-acquire",
       "schedule": "0 6 1 * *"
+    },
+    {
+      "path": "/api/cron/vesolje-radar",
+      "schedule": "0 7 * * *"
     }
   ],
   "headers": [

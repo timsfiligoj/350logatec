@@ -26,3 +26,17 @@ export const LOGATEC_AOI_PIXELS = {
 // water-percentage statistic is computed over this rectangle to avoid
 // confounding from non-polje water bodies (rivers, ponds) inside the AOI.
 export const PLANINSKO_POLJE_BBOX: Bbox = [14.21, 45.8, 14.3, 45.84] as const
+
+// Frame for the Sentinel-1 radar flood view on /vesolje/planinsko-polje.
+// Wider than PLANINSKO_POLJE_BBOX on purpose: during the 2026-11 flood the
+// water reached west to ~14.22 and north to ~45.873, both outside that
+// rectangle. Covers the whole polje floor plus a ring of surrounding hills
+// for orientation (Planina village, the A1 motorway, Laze).
+export const PLANINSKO_POLJE_VIEW_BBOX: Bbox = [14.19, 45.8, 14.33, 45.89] as const
+
+// ~10 m per pixel at this latitude. Do not edit independently of
+// PLANINSKO_POLJE_VIEW_BBOX: water_km2 is pixel count x pixel area.
+export const PLANINSKO_POLJE_VIEW_PIXELS = {
+  width: 1090,
+  height: 1000,
+} as const

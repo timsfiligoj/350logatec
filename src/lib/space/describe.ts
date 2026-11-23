@@ -26,3 +26,22 @@ export function describeSnow(pct: number): string {
   if (pct >= 0.5) return 'samo posamezne sledi'
   return 'brez snega'
 }
+
+// Radar flood extent over the Planinsko polje frame. The polje floor is
+// roughly 10 km²; ~0.3 km² is always "water" (the Unica and a few ponds),
+// so anything under 0.5 km² reads as dry.
+export function describeFloodKm2(km2: number): string {
+  if (km2 >= 7) return 'polje je postalo jezero'
+  if (km2 >= 4) return 'večji del polja pod vodo'
+  if (km2 >= 1.5) return 'polje se polni'
+  if (km2 >= 0.5) return 'voda se razliva ob Unici'
+  return 'polje je suho'
+}
+
+/** "7,0" style: Slovenian decimal comma, one decimal. */
+export function formatKm2(km2: number): string {
+  return km2.toLocaleString('sl-SI', {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  })
+}

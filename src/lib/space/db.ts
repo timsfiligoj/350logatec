@@ -96,3 +96,31 @@ export async function getMonthlyForView(
     a.captured_at.localeCompare(b.captured_at),
   )
 }
+
+export type RadarFrame = {
+  public_url: string
+  captured_at: string
+  water_km2: number
+}
+
+/**
+ * All Sentinel-1 radar flood frames (view_kind 's1_water'), oldest first.
+ * One row per UTC pass day; metrics.water_km2 is always set by radar.ts.
+ */
+export async function getRadarFloodHistory(): Promise<RadarFrame[]> {
+  const supabase = createAdminClient()
+  const { data, error } = await supabase
+    .from('space_acquisitions')
+    .select('captured_at, storage_path, metrics')
+    .eq('view_kind', 's1_water')
+    .order('captured_at', { ascending: true })
+
+  if (error) throw new Error(`getRadarFloodHistory failed: ${error.message}`)
+  return (data ?? [])
+    .filter((row) => typeof row.metrics?.water_km2 === 'number')
+    .map((row) => ({
+      public_url: getPublicUrl(row.storage_path),
+      captured_at: row.captured_at,
+      water_km2: row.metrics.water_km2 as number,
+    }))
+}
