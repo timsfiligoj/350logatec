@@ -76,7 +76,13 @@ export function LoginForm() {
         if (needsOnboarding) {
           router.push('/dobrodosli')
         } else {
-          const redirectTo = searchParams.get('redirectTo') || '/odvoz'
+          // Only same-origin paths: blocks ?redirectTo=https://evil.example
+          // and protocol-relative //evil.example open redirects.
+          const requested = searchParams.get('redirectTo')
+          const redirectTo =
+            requested && requested.startsWith('/') && !requested.startsWith('//') && !requested.startsWith('/\\')
+              ? requested
+              : '/odvoz'
           router.push(redirectTo)
         }
       } else {
